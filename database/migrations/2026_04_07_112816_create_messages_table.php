@@ -15,7 +15,6 @@ return new class extends Migration
             $table->foreignUuid('appointment_id')->constrained('appointments')->onDelete('cascade');
             $table->foreignUuid('sender_id')->constrained('users')->onDelete('cascade');
             $table->text('message');
-            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }
