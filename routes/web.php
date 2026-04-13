@@ -82,4 +82,5 @@ Route::get('/dashboard/riwayat', function () {
 // Route::get('/dashboard/profile', function () {
 //     return view('profile');
 // })->name('profile');
-Route::get('/dashboard/profile/{id}', [ProfileController::class, 'index'])->name('profile');
+//Route::get('/dashboard/profile/{id}', [ProfileController::class, 'index'])->name('profile');
+Route::get('/dashboard/profile/', [ProfileController::class, 'index'])->name('profile');

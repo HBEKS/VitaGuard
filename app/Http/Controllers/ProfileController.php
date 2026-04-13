@@ -11,10 +11,11 @@ class profileController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($id)
+    public function index(/*$id*/)
     {
-        $user = User::find($id);
-        return view('profile.index', compact('user'));
+        // $user = User::find($id);
+        $user = user::All();
+        return view('profile.index');
     }
 
     /**
