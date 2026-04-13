@@ -10,8 +10,8 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('transactions', function (Blueprint $table) {
+{
+    Schema::create('transactions', function (Blueprint $table) {
         $table->uuid('id')->primary();
 
         $table->foreignUuid('appointment_id')->constrained('appointments')->onDelete('cascade');
@@ -22,7 +22,7 @@ return new class extends Migration
         $table->timestamp('paid_at')->nullable();
         $table->timestamps();
         });
-    }
+}
 
     /**
      * Reverse the migrations.
