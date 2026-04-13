@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        $table->uuid('id')->primary();
+
+        $table->foreignUuid('appointment_id')->constrained('appointments')->onDelete('cascade');
+
+        $table->integer('amount');
+        $table->string('payment_method');
+        $table->string('payment_status');
+        $table->timestamp('paid_at')->nullable();
+        $table->timestamps();
         });
     }
 

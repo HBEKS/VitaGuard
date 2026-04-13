@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,9 +33,10 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 
-Route::get('/dashboard/artikel', function () {
-    return view('artikel');
-})->name('artikel');
+// Route::get('/dashboard/artikel', function () {
+//     return view('artikel');
+// })->name('artikel');
+Route::get('/dashboard/artikel', [ArticleController::class, 'index'])->name('artikel');
 
 Route::get('/dashboard/my-artikel', function () {
     return view('my_artikel');
@@ -42,9 +46,10 @@ Route::get('/dashboard/tambah-artikel', function () {
     return view('tambah_artikel');
 })->name('tambah.artikel');
 
-Route::get('/dashboard/dokter', function () {
-    return view('dokter');
-})->name('dokter');
+// Route::get('/dashboard/dokter', function () {
+//     return view('dokter');
+// })->name('dokter');
+Route::get('/dashboard/dokter', [DoctorController::class, 'index'])->name('dokter');
 
 Route::get('/dashboard/member', function () {
     return view('member');
@@ -74,6 +79,7 @@ Route::get('/dashboard/riwayat', function () {
     return view('riwayat');
 })->name('riwayat');
 
-Route::get('/dashboard/profile', function () {
-    return view('profile');
-})->name('profile');
+// Route::get('/dashboard/profile', function () {
+//     return view('profile');
+// })->name('profile');
+Route::get('/dashboard/profile/{id}', [ProfileController::class, 'index'])->name('profile');
