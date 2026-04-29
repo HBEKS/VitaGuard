@@ -1,40 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.adminlte4')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
+@section('title', 'Dashboard')
+@section('sidebar-dashboard', 'active')
 
-<body>
-    <h1>Dashboard</h1>
+@section('content')
+<div class="container py-4">
 
-    <h3>Menu Member</h3>
-    <a href="{{ route('artikel') }}"><button>Artikel</button></a>
-    <a href="{{ route('dokter') }}"><button>Daftar Dokter</button></a>
-    <a href="{{ route('riwayat') }}"><button>Riwayat Konsultasi</button></a>
-    <a href="{{ route('profile') }}"><button>Profile</button></a>
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold">VitaGuard Dashboard</h2>
+        <p class="text-muted">Welcome</p>
+    </div>
 
-    <hr>
+    <div class="row g-4">
 
-    <h3>Menu Doctor</h3>
-    <a href="{{ route('artikel') }}"><button>Artikel</button></a>
-    <a href="{{ route('tambah.artikel') }}"><button>Tambah Artikel</button></a>
-    <a href="{{ route('my.artikel') }}"><button>My Artikel</button></a>
-    <a href="{{ route('chat') }}"><button>Chat Member</button></a>
-    <a href="{{ route('konsultasi') }}"><button>Daftar Konsultasi</button></a>
-    <a href="{{ route('laporan') }}"><button>List Laporan</button></a>
-    <a href="{{ route('profile') }}"><button>Profile</button></a>
+        <div class="col-md-4">
+            <a href="{{ route('artikel') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5>Artikel</h5>
+                    <p class="text-muted">Lihat informasi kesehatan</p>
+                </div>
+            </a>
+        </div>
 
-    <hr>
+        <div class="col-md-4">
+            <a href="{{ route('dokter') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5>Dokter</h5>
+                    <p class="text-muted">Daftar dokter tersedia</p>
+                </div>
+            </a>
+        </div>
 
-    <h3>Menu Admin</h3>
-    <a href="{{ route('member') }}"><button>Daftar Member</button></a>
-    <a href="{{ route('dokter') }}"><button>Kelola Dokter</button></a>
-    <a href="{{ route('artikel') }}"><button>Kelola Artikel</button></a>
-    <a href="{{ route('laporan') }}"><button>Daftar Laporan</button></a>
-</body>
+        <div class="col-md-4">
+            <a href="{{ route('booking') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5>Booking</h5>
+                    <p class="text-muted">Buat janji konsultasi</p>
+                </div>
+            </a>
+        </div>
 
-</html>
+        <div class="col-md-4">
+            <a href="{{ route('chat') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5>Chat</h5>
+                    <p class="text-muted">Konsultasi dengan dokter</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="{{ route('transaksi') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5>Riwayat</h5>
+                    <p class="text-muted">Lihat transaksi</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="{{ route('profile') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5>Profile</h5>
+                    <p class="text-muted">Kelola akun</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+@endsection

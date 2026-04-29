@@ -4,18 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <h1>Login Page</h1>
+<body class="bg-light">
 
-    <a href="{{ route('dashboard') }}"><button>Login</button></a>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card shadow p-4" style="width: 350px;">
+            <h3 class="text-center mb-1 fw-bold">VitaGuard</h3>
+            <p class="text-center text-muted mb-4">Login to your account</p>
+            <form>
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" class="form-control" placeholder="Enter email">
+                </div>
 
-    <br><br>
+                <div class="mb-3">
+                    <label>Password</label>
+                    <input type="password" class="form-control" placeholder="Enter password">
+                </div>
 
-    <a href="{{ route('register') }}"><button>Register</button></a>
+
+                <a href="{{ route('dashboard') }}" class="btn btn-primary w-100">
+                    Login
+                </a>
+            </form>
+
+            <hr>
+
+            <p class="text-center mb-0">
+                Belum punya akun?
+                <a href="{{ route('register') }}">Register</a>
+            </p>
+
+        </div>
+    </div>
+
 </body>
 
 </html>

@@ -12,9 +12,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // ---------------------------------------------------------
-        // 1. Akun Admin (Sesuai Permintaan)
-        // ---------------------------------------------------------
         DB::table('users')->insert([
             'id' => Str::uuid(),
             'name' => 'admin',
@@ -25,9 +22,6 @@ class UserSeeder extends Seeder
             'updated_at' => now()
         ]);
 
-        // ---------------------------------------------------------
-        // 2. Data Dokter Nyata & Password Unik
-        // ---------------------------------------------------------
         $doctors = [
             ['name' => 'dr. Andi Pratama', 'email' => 'andi@vitaguard.com', 'password' => 'AndiGizi2026', 'spec' => 'Sp. Gizi Klinik'],
             ['name' => 'dr. Budi Santoso', 'email' => 'budi@vitaguard.com', 'password' => 'BudiMata2026', 'spec' => 'Sp. Mata'],
@@ -40,7 +34,6 @@ class UserSeeder extends Seeder
             $doctorId = Str::uuid();
             $specId = DB::table('specializations')->where('name', $doc['spec'])->value('id');
 
-            // Insert User Dokter
             DB::table('users')->insert([
                 'id' => $doctorId,
                 'name' => $doc['name'],
@@ -51,7 +44,6 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ]);
 
-            // Insert Profil Dokter
             DB::table('doctor_profiles')->insert([
                 'user_id' => $doctorId,
                 'specialization_id' => $specId,
@@ -62,9 +54,6 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        // ---------------------------------------------------------
-        // 3. Data Member Nyata & Password Unik
-        // ---------------------------------------------------------
         $members = [
             ['name' => 'Ahmad Faisal', 'email' => 'ahmad@mail.com', 'password' => 'AhmadPass01'],
             ['name' => 'Bunga Citra', 'email' => 'bunga@mail.com', 'password' => 'BungaPass02'],

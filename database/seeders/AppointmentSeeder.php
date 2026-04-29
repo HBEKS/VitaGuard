@@ -18,7 +18,7 @@ class AppointmentSeeder extends Seeder
             return;
         }
 
-        // Data dummy appointment (tanpa doctor_id dan member_id)
+        // Data dummy appointment
         $appointmentTemplates = [
             [
                 'appointment_date' => '2026-04-13',
@@ -46,12 +46,12 @@ class AppointmentSeeder extends Seeder
             ],
         ];
 
-        // Assign random doctor & member untuk setiap appointment
+        // Assign random doctor & member 
         foreach ($appointmentTemplates as $template) {
             DB::table('appointments')->insert(array_merge($template, [
                 'id' => Str::uuid(),
-                'doctor_id' => $doctors->random()->id,  // ✅ Random dokter
-                'member_id' => $members->random()->id,  // ✅ Random member
+                'doctor_id' => $doctors->random()->id,
+                'member_id' => $members->random()->id, 
                 'created_at' => now(),
                 'updated_at' => now(),
             ]));

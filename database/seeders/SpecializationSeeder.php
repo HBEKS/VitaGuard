@@ -14,7 +14,6 @@ class SpecializationSeeder extends Seeder
      */
     public function run(): void
     {
-        // Daftar spesialisasi standar rumah sakit besar (Hospital Grade)
         $specializations = [
             ['name' => 'Dokter Umum', 'category' => 'General'],
             ['name' => 'Sp. Anak', 'category' => 'Pediatrics'],
