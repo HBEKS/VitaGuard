@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('appointment_id')->constrained('appointments')->onDelete('cascade');
-            $table->foreignUuid('sender_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade');
+            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
             $table->text('message');
             $table->timestamps();
         });

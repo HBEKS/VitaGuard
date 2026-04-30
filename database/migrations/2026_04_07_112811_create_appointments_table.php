@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void {
         Schema::create('appointments', function (Blueprint $table) {
-            $table->uuid('id')->primary(); // Standar Industri untuk transaksi
-            $table->foreignUuid('member_id')->constrained('users')->onDelete('cascade');
-            $table->foreignUuid('doctor_id')->constrained('users')->onDelete('cascade');
+            $table->id(); 
+            $table->foreignId('member_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade');
             $table->date('appointment_date');
             $table->time('appointment_time');
             $table->decimal('consultation_fee', 12, 2); // Snapshot tarif dokter

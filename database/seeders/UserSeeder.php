@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents; // Hanya import di sini
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -12,8 +12,8 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Admin
         DB::table('users')->insert([
-            'id' => Str::uuid(),
             'name' => 'admin',
             'email' => 'admin@vitaguard.com',
             'password' => Hash::make('password'),
@@ -31,11 +31,8 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($doctors as $doc) {
-            $doctorId = Str::uuid();
-            $specId = DB::table('specializations')->where('name', $doc['spec'])->value('id');
-
-            DB::table('users')->insert([
-                'id' => $doctorId,
+            // Insert user dulu
+            $userId = DB::table('users')->insertGetId([ // 👈 Ambil ID yang baru dibuat
                 'name' => $doc['name'],
                 'email' => $doc['email'],
                 'password' => Hash::make($doc['password']),
@@ -44,8 +41,12 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ]);
 
+            // Ambil specialization_id
+            $specId = DB::table('specializations')->where('name', $doc['spec'])->value('id');
+
+            // Insert doctor_profile dengan user_id
             DB::table('doctor_profiles')->insert([
-                'user_id' => $doctorId,
+                'user_id' => $userId, // 👈 Tambah ini (foreign key ke users.id)
                 'specialization_id' => $specId,
                 'experience_years' => rand(10, 30),
                 'str_number' => 'STR-'.rand(1000000000, 9999999999),
@@ -69,7 +70,6 @@ class UserSeeder extends Seeder
 
         foreach ($members as $member) {
             DB::table('users')->insert([
-                'id' => Str::uuid(),
                 'name' => $member['name'],
                 'email' => $member['email'],
                 'password' => Hash::make($member['password']),

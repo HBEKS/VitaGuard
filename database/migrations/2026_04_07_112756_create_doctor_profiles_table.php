@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void {
         Schema::create('doctor_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('specialization_id')->constrained('specializations')->onDelete('restrict');
             $table->integer('experience_years')->default(0);
             $table->string('str_number')->nullable(); // Surat Tanda Registrasi

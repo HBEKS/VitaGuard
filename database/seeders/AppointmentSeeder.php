@@ -46,15 +46,20 @@ class AppointmentSeeder extends Seeder
             ],
         ];
 
-        // Assign random doctor & member 
+        // Assign random doctor & member
         foreach ($appointmentTemplates as $template) {
-            DB::table('appointments')->insert(array_merge($template, [
-                'id' => Str::uuid(),
+            DB::table('appointments')->insert([
                 'doctor_id' => $doctors->random()->id,
-                'member_id' => $members->random()->id, 
+                'member_id' => $members->random()->id,
+                'appointment_date' => $template['appointment_date'],
+                'appointment_time' => $template['appointment_time'],
+                'consultation_fee' => $template['consultation_fee'],
+                'status' => $template['status'],
+                'member_complaint' => $template['member_complaint'],
+                'doctor_notes' => $template['doctor_notes'],
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]));
+            ]);
         }
     }
 }

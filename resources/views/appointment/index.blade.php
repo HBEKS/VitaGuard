@@ -10,8 +10,8 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Member</th>
                 <th>Doctor</th>
+                <th>Patient</th>
                 <th>Date</th>
                 <th>Status</th>
             </tr>
@@ -20,8 +20,8 @@
             @foreach ($appointments as $a)
             <tr>
                 <td>{{ $a->id }}</td>
-                <td>{{ $a->member->name }}</td>
                 <td>{{ $a->doctor->name }}</td>
+                <td>{{ $a->member->name }}</td>
                 <td>{{ $a->appointment_date }}</td>
                 <td>{{ $a->status }}</td>
             </tr>

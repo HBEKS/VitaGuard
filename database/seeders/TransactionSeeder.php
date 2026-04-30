@@ -15,7 +15,6 @@ class TransactionSeeder extends Seeder
 
         foreach ($appointments as $app) {
             DB::table('transactions')->insert([
-                'id' => Str::uuid(),
                 'appointment_id' => $app->id,
                 'amount' => ($app->doctor_id == DB::table('users')->where('email', 'budi@vitaguard.com')->value('id')) ? 200000 : 150000,
                 'payment_method' => 'qris',
