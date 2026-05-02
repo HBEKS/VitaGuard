@@ -25,4 +25,9 @@ class DoctorProfile extends Model
     {
         return $this->belongsTo(Specialization::class);
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'doctor_service', 'doctor_profile_id', 'service_id');
+    }
 }

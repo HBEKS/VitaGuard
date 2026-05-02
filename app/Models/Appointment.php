@@ -16,6 +16,7 @@ class Appointment extends Model
         'id',
         'member_id',
         'doctor_id',
+        'service_id',
         'appointment_date',
         'appointment_time',
         'consultation_fee',
@@ -36,6 +37,11 @@ class Appointment extends Model
     public function doctor()
     {
         return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
     }
 
     public function messages()
@@ -69,7 +75,6 @@ class Appointment extends Model
         return $query->where('status', 'cancelled');
     }
 
-    // Helpers
     public function getStatusBadgeAttribute()
     {
         $badges = [
@@ -79,5 +84,10 @@ class Appointment extends Model
             'cancelled' => ['bg-danger', 'Dibatalkan'],
         ];
         return $badges[$this->status] ?? ['bg-secondary', $this->status];
+    }
+
+    public function getServiceNameAttribute()
+    {
+        return $this->service->service_name ?? '-';
     }
 }

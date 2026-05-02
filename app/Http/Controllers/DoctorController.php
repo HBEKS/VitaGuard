@@ -13,7 +13,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        $doctors = DoctorProfile::with(['user', 'specialization'])->get();
+        $doctors = DoctorProfile::with(['user', 'specialization', 'services'])->get();
         return view('doctor.index', compact('doctors'));
     }
 

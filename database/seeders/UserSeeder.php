@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@vitaguard.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
+            'avatar' => 'img/profiles/admin.jpg',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -30,13 +31,17 @@ class UserSeeder extends Seeder
             ['name' => 'dr. Eka Wijaya', 'email' => 'eka@vitaguard.com', 'password' => 'EkaUmum2026', 'spec' => 'Dokter Umum'],
         ];
 
+
+        $doctorPictureCounter = 1;
+
         foreach ($doctors as $doc) {
-            // Insert user dulu
-            $userId = DB::table('users')->insertGetId([ // 👈 Ambil ID yang baru dibuat
+            // Insert user dulu dengan avatar
+            $userId = DB::table('users')->insertGetId([
                 'name' => $doc['name'],
                 'email' => $doc['email'],
                 'password' => Hash::make($doc['password']),
                 'role' => 'doctor',
+                'avatar' => 'img/profiles/doctor' . $doctorPictureCounter . '.jpg',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -46,13 +51,15 @@ class UserSeeder extends Seeder
 
             // Insert doctor_profile dengan user_id
             DB::table('doctor_profiles')->insert([
-                'user_id' => $userId, // 👈 Tambah ini (foreign key ke users.id)
+                'user_id' => $userId,
                 'specialization_id' => $specId,
-                'experience_years' => rand(10, 30),
-                'str_number' => 'STR-'.rand(1000000000, 9999999999),
+                'experience_years' => rand(1, 15),
+                'str_number' => 'STR-' . rand(1000000000, 9999999999),
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            $doctorPictureCounter++; // Increment ke 2, 3, 4, 5
         }
 
         $members = [
@@ -68,15 +75,20 @@ class UserSeeder extends Seeder
             ['name' => 'Joko Susilo', 'email' => 'joko@mail.com', 'password' => 'JokoPass10'],
         ];
 
+        $memberPictureCounter = 1;
+
         foreach ($members as $member) {
             DB::table('users')->insert([
                 'name' => $member['name'],
                 'email' => $member['email'],
                 'password' => Hash::make($member['password']),
                 'role' => 'member',
+                'avatar' => 'img/profiles/member' . $memberPictureCounter . '.jpg',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            $memberPictureCounter++;
         }
     }
 }

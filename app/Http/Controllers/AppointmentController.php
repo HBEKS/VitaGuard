@@ -12,7 +12,8 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $appointments = Appointment::all();
+        $appointments = Appointment::with(['doctor', 'member', 'service'])->get();
+
         return view('appointment.index', compact('appointments'));
     }
 
