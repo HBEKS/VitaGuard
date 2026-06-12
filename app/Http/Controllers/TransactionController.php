@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Service; 
+use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,9 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        //
+        $services = Service::all();
+        $users = User::all();
+        return view('transaction.create', compact('services', 'users'));
     }
 
     /**
@@ -29,7 +32,12 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = new Transaction();
+        $data->service_id = $request->get('service_id');
+        $data->user_id = $request->get('user_id');
+        $data->save();
+
+        return redirect()->route('transaction.index')->with('success', 'Successfully created data.');
     }
 
     /**

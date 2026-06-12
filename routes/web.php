@@ -27,21 +27,25 @@ Route::get('/dashboard', function () {
 // ==================== CATEGORY ROUTES ====================
 Route::resource('/dashboard/categories', CategoryController::class);
 Route::get('/dashboard/categories/showExpensiveService', [CategoryController::class, 'showExpensiveService'])->name('categories.expensive');
-Route::post('/dashboard/category/showInfo', [CategoryController::class, 'showInfo'])->name('category.showInfo');
-Route::post('/dashboard/category/showListServices', [CategoryController::class, 'showListServices'])->name('category.showListServices');
+Route::post('/dashboard/categories/showInfo', [CategoryController::class, 'showInfo'])->name('categories.showInfo');
+Route::post('/dashboard/categories/showListServices', [CategoryController::class, 'showListServices'])->name('categories.showListServices');
 
 // ==================== SERVICE ROUTES ====================
 Route::resource('/dashboard/services', ServiceController::class);
 
 // ==================== DOCTOR ROUTES ====================
-Route::get('/dashboard/dokter', [DoctorController::class, 'index'])->name('dokter');
+Route::get('/dashboard/doctor', [DoctorController::class, 'index'])->name('doctor');
 
 // ==================== ARTICLE ROUTES ====================
-Route::get('/dashboard/artikel', [ArticleController::class, 'index'])->name('artikel');
-Route::get('/dashboard/artikel/{id}', [ArticleController::class, 'show'])->name('artikel.show');
+Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
+Route::get('/dashboard/article/{id}', [ArticleController::class, 'show'])->name('article.show');
+
+// ==================== TRANSACTION ROUTES ====================
+Route::resource('/dashboard/transaction', TransactionController::class);
+Route::get('/dashboard/transaction', [TransactionController::class, 'index'])->name('transaction'); 
 
 // ==================== OTHER ROUTES ====================
 Route::get('/dashboard/profile', [ProfileController::class, 'index'])->name('profile');
 Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name('booking');
 Route::get('/dashboard/chat', [MessageController::class, 'index'])->name('chat');
-Route::get('/dashboard/transaksi', [TransactionController::class, 'index'])->name('transaksi');
+

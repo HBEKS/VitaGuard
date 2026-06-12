@@ -14,7 +14,7 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm h-100">
                 <!-- LINK menggunakan route artikel.show dengan ID -->
-                <a href="{{ route('artikel.show', $article->id) }}" class="text-decoration-none">
+                <a href="{{ route('article.show', $article->id) }}" class="text-decoration-none">
                     @if ($article->image_url)
                     <img src="{{ asset('storage/' . $article->image_url) }}" class="card-img-top" style="height:200px; object-fit:cover;">
                     @else
@@ -26,7 +26,7 @@
 
                 <div class="card-body d-flex flex-column">
                     <!-- JUDUL menjadi LINK -->
-                    <a href="{{ route('artikel.show', $article->id) }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('article.show', $article->id) }}" class="text-decoration-none text-dark">
                         <h5 class="fw-bold">{{ $article->title }}</h5>
                     </a>
 
@@ -44,7 +44,7 @@
                         </small>
 
                         <!-- TOMBOL BACA SELENGKAPNYA -->
-                        <a href="{{ route('artikel.show', $article->id) }}" class="btn btn-sm btn-primary">
+                        <a href="{{ route('article.show', $article->id) }}" class="btn btn-sm btn-primary">
                             Baca Selengkapnya →
                         </a>
                     </div>

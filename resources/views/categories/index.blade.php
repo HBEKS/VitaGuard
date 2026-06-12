@@ -10,7 +10,8 @@
 
 @push('styles')
 <style>
-    .table-bordered td, .table-bordered th {
+    .table-bordered td,
+    .table-bordered th {
         border: 1px solid #dee2e6 !important;
         vertical-align: middle;
     }
@@ -34,7 +35,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '{{ route("category.showInfo") }}',
+            url: '{{ route("categories.showInfo") }}',
             data: {
                 _token: '{{ csrf_token() }}'
             },
@@ -60,7 +61,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '{{ route("category.showListServices") }}',
+            url: '{{ route("categories.showListServices") }}',
             data: {
                 '_token': '{{ csrf_token() }}',
                 'idcat': id
@@ -84,7 +85,11 @@
     <div class="container-table">
         <h1 class="mb-4">List of Service Categories</h1>
         <p>The <a href="#" onclick="showInfo(); return false;">.table</a> class adds basic styling (light padding and only horizontal dividers) to a table:</p>
-
+        @if (@session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+        @endif
         <div class="table-responsive">
             <div id="showinfo"></div>
             <table class="table table-bordered table-striped table-hover align-middle">
@@ -102,30 +107,30 @@
                     <tr>
                         <td class="text-center">
                             <span class="badge bg-secondary">{{ $cat->id }}</span>
-                         </span>
+                            </span>
                         <td class="fw-bold text-primary">{{ $cat->category_name }}</span>
                         <td class="text-center">
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imageModal-{{ $cat->id }}">
                                 <i class="fas fa-image"></i> Show Image
                             </button>
-                        </span>
+                            </span>
                         <td class="text-center">
                             <span class="badge bg-info rounded-pill">{{ $cat->services->count() }}</span>
-                        </span>
+                            </span>
                         <td class="text-center">
                             <button type="button" class="btn btn-info btn-sm" onclick="showDetail('{{ $cat->id }}')">
                                 <i class="fas fa-list"></i> Details
                             </button>
-                        </span>
+                            </span>
                     </tr>
                     @empty
                     <table>
                         <td colspan="5" class="text-center text-muted py-4">
                             <i class="fas fa-folder-open fa-2x mb-2 d-block"></i>
                             No categories found. Please run seeder.
-                        </span>
-                    </tr>
-                    @endforelse
+                            </span>
+                            </tr>
+                            @endforelse
                 </tbody>
             </table>
         </div>
@@ -133,11 +138,12 @@
         <hr class="my-4">
 
         <div class="d-flex gap-3 justify-content-center">
+            <a href="{{route('categories.create')}}" class="btn btn-primary">+ New Category</a>
+            <a href="{{ url('dashboard/services') }}" class="btn btn-warning">
+                <i class="fas fa-stethoscope"></i> View Services
+            </a>
             <a href="{{ url('/') }}" class="btn btn-outline-dark">
                 <i class="fas fa-home"></i> Back to Home
-            </a>
-            <a href="{{ url('dashboard/services') }}" class="btn btn-primary">
-                <i class="fas fa-stethoscope"></i> View Services
             </a>
         </div>
     </div>
@@ -155,38 +161,38 @@
                 </div>
                 <div class="modal-body text-center">
                     @php
-                        $imageFound = false;
-                        $imageUrl = null;
+                    $imageFound = false;
+                    $imageUrl = null;
 
-                        // List kemungkinan path gambar
-                        $possiblePaths = [
-                            $cat->image, // dari database (contoh: img/categories/1.jpg)
-                            'img/categories/' . $cat->id . '.jpg',
-                            'img/categories/' . $cat->id . '.png',
-                            'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.jpg',
-                            'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.png',
-                        ];
+                    // List kemungkinan path gambar
+                    $possiblePaths = [
+                    $cat->image, // dari database (contoh: img/categories/1.jpg)
+                    'img/categories/' . $cat->id . '.jpg',
+                    'img/categories/' . $cat->id . '.png',
+                    'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.jpg',
+                    'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.png',
+                    ];
 
-                        foreach ($possiblePaths as $path) {
-                            if ($path && file_exists(public_path('storage/' . $path))) {
-                                $imageFound = true;
-                                $imageUrl = asset('storage/' . $path);
-                                break;
-                            }
-                        }
+                    foreach ($possiblePaths as $path) {
+                    if ($path && file_exists(public_path('storage/' . $path))) {
+                    $imageFound = true;
+                    $imageUrl = asset('storage/' . $path);
+                    break;
+                    }
+                    }
                     @endphp
 
                     @if($imageFound)
-                        <img src="{{ $imageUrl }}"
-                            alt="{{ $cat->category_name }}"
-                            class="img-fluid rounded"
-                            style="max-height: 300px;">
+                    <img src="{{ $imageUrl }}"
+                        alt="{{ $cat->category_name }}"
+                        class="img-fluid rounded"
+                        style="max-height: 300px;">
                     @else
-                        <div class="p-5 bg-light rounded">
-                            <i class="fas fa-image fa-4x text-muted mb-3"></i>
-                            <h5>{{ $cat->category_name }}</h5>
-                            <p class="text-muted">No image available for this category</p>
-                        </div>
+                    <div class="p-5 bg-light rounded">
+                        <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                        <h5>{{ $cat->category_name }}</h5>
+                        <p class="text-muted">No image available for this category</p>
+                    </div>
                     @endif
                 </div>
                 <div class="modal-footer">

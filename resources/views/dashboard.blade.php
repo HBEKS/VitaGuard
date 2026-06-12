@@ -15,7 +15,7 @@
     <div class="row g-4">
 
         <div class="col-md-4">
-            <a href="{{ route('artikel') }}" class="text-decoration-none">
+            <a href="{{ route('article') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Artikel</h5>
                     <p class="text-muted">Lihat informasi kesehatan</p>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-md-4">
-            <a href="{{ route('dokter') }}" class="text-decoration-none">
+            <a href="{{ route('doctor') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Dokter</h5>
                     <p class="text-muted">Daftar dokter tersedia</p>
@@ -51,7 +51,7 @@
         </div>
 
         <div class="col-md-4">
-            <a href="{{ route('transaksi') }}" class="text-decoration-none">
+            <a href="{{ route('transaction') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Riwayat</h5>
                     <p class="text-muted">Lihat transaksi</p>

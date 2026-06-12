@@ -311,21 +311,21 @@
                         </li>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('dokter') }}" class="nav-link @yield('sidebar-doctors')">
+                            <a href="{{ route('doctor') }}" class="nav-link @yield('sidebar-doctors')">
                                 <i class="nav-icon bi bi-person-badge"></i>
                                 <p>Doctors</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ route('artikel') }}" class="nav-link @yield('sidebar-artikel')">
+                            <a href="{{ route('article') }}" class="nav-link @yield('sidebar-artikel')">
                                 <i class="nav-icon bi bi-file-earmark-text"></i>
                                 <p>Articles</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ route('transaksi') }}" class="nav-link @yield('sidebar-transaksi')">
+                            <a href="{{ route('transaction') }}" class="nav-link @yield('sidebar-transaksi')">
                                 <i class="nav-icon bi bi-cash-stack"></i>
                                 <p>Transactions</p>
                             </a>
