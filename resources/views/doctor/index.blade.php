@@ -3,13 +3,13 @@
 @section('sidebar-doctors', 'active')
 
 @section('content')
-<div class="container">
-    <h2>Doctor List</h2>
+<div class="container mt-4">
+    <h1 class="mb-4">Doctor List</h1>
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
-            <thead>
-                <tr>
+            <thead class="table-light">
+                <tr scope="col" class="text-center" >
                     <th style="width: 50px;">ID</th>
                     <th style="width: 100px;">Photo</th>
                     <th>Name</th>
@@ -21,7 +21,7 @@
             <tbody>
                 @foreach ($doctors as $d)
                 <tr>
-                    <td>{{ $d->id }}</span></span></td>
+                    <td class="text-center"><span class="badge bg-secondary">{{ $d->id }}</span></span></td>
                     <td class="text-center" style="width: 100px; padding: 5px;">
                         @php
                         $avatarPath = $d->user->avatar ?? null;
@@ -38,13 +38,13 @@
                             alt="Default Avatar"
                             style="width: 100px; height: 100px; object-fit: cover;">
                         @endif
-                    </span></span></td>
-                    <td>{{ $d->user->name }}</span></span></td>
+                    </td>
+                    <td>{{ $d->user->name }}</td>
                     <td style="white-space: normal; word-wrap: break-word;">
                         <span class="badge bg-primary" style="font-size: 0.9rem; padding: 8px 12px; white-space: normal; text-align: left;">
                             {{ $d->specialization->name }}
                         </span>
-                    </span></span></td>
+                    </td>
                     <td>
                         @if($d->services && $d->services->count() > 0)
                             @foreach($d->services as $service)

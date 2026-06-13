@@ -84,7 +84,7 @@
 <div class="container mt-4">
     <div class="container-table">
         <h1 class="mb-4">List of Service Categories</h1>
-        <p>The <a href="#" onclick="showInfo(); return false;">.table</a> class adds basic styling (light padding and only horizontal dividers) to a table:</p>
+        <!-- <p>The <a href="#" onclick="showInfo(); return false;">.table</a> class adds basic styling (light padding and only horizontal dividers) to a table:</p> -->
         @if (@session('success'))
         <div class="alert alert-success">
             {{ session('success') }}

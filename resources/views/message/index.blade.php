@@ -4,11 +4,11 @@
 
 @section('content')
 <div class="container">
-    <h2>Messages</h2>
+    <h1 class="mb-4">Messages</h1>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-light">
+            <tr scope="col" class="text-center" >
                 <th>Appointment</th>
                 <th>Sender</th>
                 <th>Message</th>
@@ -18,7 +18,7 @@
         <tbody>
             @foreach ($messages as $m)
             <tr>
-                <td>{{ $m->appointment_id }}</td>
+                <td class="text-center"><span class="badge bg-secondary">{{ $m->appointment_id }}</td>
                 <td>{{ $m->sender->name }}</td>
                 <td>{{ $m->message }}</td>
                 <td>{{ $m->created_at }}</td>

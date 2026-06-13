@@ -6,7 +6,7 @@
 @section('content')
 <div class="container mt-4">
 
-    <h2 class="mb-3">Daftar Artikel</h2>
+    <h1 class="mb-4">Daftar Artikel</h1>
     <hr>
 
     <div class="row">

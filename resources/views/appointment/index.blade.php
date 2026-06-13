@@ -3,13 +3,13 @@
 @section('sidebar-booking', 'active')
 
 @section('content')
-<div class="container">
-    <h2>Appointments</h2>
+<div class="container mt-4">
+    <h1 class="mb-4">Appointments</h1>
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
+            <thead class="table-light">
+                <tr scope="col" class="text-center" >
                     <th>ID</th>
                     <th>Doctor</th>
                     <th>Patient</th>
@@ -21,9 +21,9 @@
             <tbody>
                 @foreach ($appointments as $a)
                 <tr>
-                    <td>{{ $a->id }}</span></span></td>
-                    <td>{{ $a->doctor->name ?? '-' }}</span></span></td>
-                    <td>{{ $a->member->name ?? '-' }}</span></span></td>
+                    <td class="text-center"><span class="badge bg-secondary">{{ $a->id }}</span></td>
+                    <td>{{ $a->doctor->name ?? '-' }}</td>
+                    <td>{{ $a->member->name ?? '-' }}</td>
                     <td>
                         @php
                             // Cek apakah service ini tersedia untuk dokter yang dipilih
@@ -62,5 +62,15 @@
             </tbody>
         </table>
     </div>
+    <hr class="my-4">
+
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="{{ url('dashboard/transaction') }}" class="btn btn-warning">
+                <i class="fas fa-stethoscope"></i> View Transactions
+            </a>
+            <a href="{{ url('/') }}" class="btn btn-outline-dark">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
 </div>
 @endsection

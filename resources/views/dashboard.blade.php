@@ -8,7 +8,7 @@
 
     <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold">VitaGuard Dashboard</h2>
+        <h1 class="mb-4">VitaGuard Dashboard</h1>
         <p class="text-muted">Welcome</p>
     </div>
 
