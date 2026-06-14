@@ -35,6 +35,9 @@ Route::resource('/dashboard/services', ServiceController::class);
 
 // ==================== DOCTOR ROUTES ====================
 Route::get('/dashboard/doctor', [DoctorController::class, 'index'])->name('doctor');
+Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
+Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
+Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
 
 // ==================== ARTICLE ROUTES ====================
 Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
@@ -46,6 +49,10 @@ Route::get('/dashboard/transaction', [TransactionController::class, 'index'])->n
 
 // ==================== OTHER ROUTES ====================
 Route::get('/dashboard/profile', [ProfileController::class, 'index'])->name('profile');
-Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name('booking');
 Route::get('/dashboard/chat', [MessageController::class, 'index'])->name('chat');
 
+// ==================== APPOINTMENT ROUTES ====================
+Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name('booking');
+Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
+Route::post('/ajax/appointment/saveDataUpdate', [AppointmentController::class, 'saveDataUpdate'])->name('appointment.saveDataUpdate');
+Route::post('/ajax/appointment/deleteData', [AppointmentController::class, 'deleteData'])->name('appointment.deleteData');
