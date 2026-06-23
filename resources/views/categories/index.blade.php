@@ -25,80 +25,71 @@
     .btn-sm {
         padding: 5px 12px;
     }
+
+    .modal-xl {
+        max-width: 1140px;
+    }
 </style>
 @endpush
 
-@push('scripts')
+@section('content')
 <script>
-    function showInfo(event) {
-        if (event) event.preventDefault();
-
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("categories.showInfo") }}',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            beforeSend: function() {
-                $('#showinfo').html('<div class="text-info"><i class="fas fa-spinner fa-spin me-2"></i>Loading...</div>');
-            },
-            success: function(data) {
-                $('#showinfo').html(data.msg);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                $('#showinfo').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Gagal memuat data</div>');
-            }
-        });
-
-        return false;
-    }
-
     function showDetail(id) {
+        // Tampilkan loading
         $('#detail-title').html('Loading...');
-        $('#detail-body').html('<p class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></p>');
+        $('#detail-body').html('<div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x"></i> Loading...</div>');
+
+        // Buka modal
         $('#detailModal').modal('show');
 
         $.ajax({
             type: 'POST',
-            url: '{{ route("categories.showListServices") }}',
+            url: '{{ route("category.showListServices") }}',
             data: {
                 '_token': '{{ csrf_token() }}',
                 'idcat': id
             },
+            dataType: 'json',
             success: function(data) {
-                $('#detail-title').html(data.title);
-                $('#detail-body').html(data.body);
+                console.log('Data:', data);
+                if (data.status == 'oke') {
+                    $('#detail-title').html(data.title);
+                    $('#detail-body').html(data.body);
+                } else {
+                    $('#detail-title').html('Error');
+                    $('#detail-body').html('<div class="alert alert-danger">' + (data.body || 'Terjadi kesalahan') + '</div>');
+                }
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
                 $('#detail-title').html('Error');
                 $('#detail-body').html('<p class="text-danger">Gagal memuat data layanan</p>');
             }
         });
     }
 </script>
-@endpush
 
-@section('content')
 <div class="container mt-4">
     <div class="container-table">
         <h1 class="mb-4">List of Service Categories</h1>
-        <!-- <p>The <a href="#" onclick="showInfo(); return false;">.table</a> class adds basic styling (light padding and only horizontal dividers) to a table:</p> -->
+
         @if (@session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
         @endif
+
         <div class="table-responsive">
             <div id="showinfo"></div>
             <table class="table table-bordered table-striped table-hover align-middle">
                 <thead class="table-light">
                     <tr>
                         <th scope="col" class="text-center" style="width: 60px;">ID</th>
-                        <th scope="col" style="width: 300px;">Category Name</th>
+                        <th scope="col" style="width: 250px;">Category Name</th>
                         <th scope="col" class="text-center" style="width: 150px;">Image</th>
                         <th scope="col" class="text-center" style="width: 130px;">Total Services</th>
+                        <th scope="col" class="text-center" style="width: 100px;">List Services</th>
                         <th scope="col" class="text-center" style="width: 100px;">Action</th>
                     </tr>
                 </thead>
@@ -107,30 +98,33 @@
                     <tr>
                         <td class="text-center">
                             <span class="badge bg-secondary">{{ $cat->id }}</span>
-                            </span>
-                        <td class="fw-bold text-primary">{{ $cat->category_name }}</span>
+                        </td>
+                        <td class="fw-bold text-primary">{{ $cat->category_name }}</td>
                         <td class="text-center">
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imageModal-{{ $cat->id }}">
                                 <i class="fas fa-image"></i> Show Image
                             </button>
-                            </span>
+                        </td>
                         <td class="text-center">
                             <span class="badge bg-info rounded-pill">{{ $cat->services->count() }}</span>
-                            </span>
+                        </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-info btn-sm" onclick="showDetail('{{ $cat->id }}')">
                                 <i class="fas fa-list"></i> Details
                             </button>
-                            </span>
+                        </td>
+                        <td>
+                            
+                        </td>
                     </tr>
                     @empty
-                    <table>
+                    <tr>
                         <td colspan="5" class="text-center text-muted py-4">
                             <i class="fas fa-folder-open fa-2x mb-2 d-block"></i>
                             No categories found. Please run seeder.
-                            </span>
-                            </tr>
-                            @endforelse
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -148,7 +142,7 @@
         </div>
     </div>
 
-    <!-- Modals untuk setiap kategori -->
+    <!-- Modals untuk setiap kategori (Show Image) -->
     @foreach($allCategories as $cat)
     <div class="modal fade" id="imageModal-{{ $cat->id }}" tabindex="-1" aria-labelledby="imageModalLabel-{{ $cat->id }}" aria-hidden="true">
         <div class="modal-dialog">
@@ -164,21 +158,20 @@
                     $imageFound = false;
                     $imageUrl = null;
 
-                    // List kemungkinan path gambar
                     $possiblePaths = [
-                    $cat->image, // dari database (contoh: img/categories/1.jpg)
-                    'img/categories/' . $cat->id . '.jpg',
-                    'img/categories/' . $cat->id . '.png',
-                    'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.jpg',
-                    'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.png',
+                        $cat->image,
+                        'img/categories/' . $cat->id . '.jpg',
+                        'img/categories/' . $cat->id . '.png',
+                        'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.jpg',
+                        'img/categories/' . \Illuminate\Support\Str::slug($cat->category_name) . '.png',
                     ];
 
                     foreach ($possiblePaths as $path) {
-                    if ($path && file_exists(public_path('storage/' . $path))) {
-                    $imageFound = true;
-                    $imageUrl = asset('storage/' . $path);
-                    break;
-                    }
+                        if ($path && file_exists(public_path('storage/' . $path))) {
+                            $imageFound = true;
+                            $imageUrl = asset('storage/' . $path);
+                            break;
+                        }
                     }
                     @endphp
 
@@ -205,7 +198,7 @@
 
     <!-- Detail Modal -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-info text-white">
                     <h5 class="modal-title" id="detail-title">

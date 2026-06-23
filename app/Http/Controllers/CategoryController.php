@@ -104,11 +104,11 @@ class CategoryController extends Controller
         $category = Category::with('services')->find($request->idcat);
 
         if (!$category) {
-            return response()->json(array(
+            return response()->json([
                 'status' => 'error',
                 'title' => 'Error',
-                'body' => '<p class="text-danger">Category not found</p>'
-            ), 404);
+                'body' => '<div class="alert alert-danger">Category not found</div>'
+            ]);
         }
 
         $name = $category->category_name;
@@ -116,11 +116,11 @@ class CategoryController extends Controller
 
         $html = view('categories.showListServices', compact('services'))->render();
 
-        return response()->json(array(
+        return response()->json([
             'status' => 'oke',
             'title' => $name . ' - Service List',
             'body' => $html
-        ), 200);
+        ]);
     }
 
 

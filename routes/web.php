@@ -26,9 +26,10 @@ Route::get('/dashboard', function () {
 
 // ==================== CATEGORY ROUTES ====================
 Route::resource('/dashboard/categories', CategoryController::class);
-Route::get('/dashboard/categories/showExpensiveService', [CategoryController::class, 'showExpensiveService'])->name('categories.expensive');
-Route::post('/dashboard/categories/showInfo', [CategoryController::class, 'showInfo'])->name('categories.showInfo');
-Route::post('/dashboard/categories/showListServices', [CategoryController::class, 'showListServices'])->name('categories.showListServices');
+Route::get('/categories/showExpensiveService', [CategoryController::class, 'showExpensiveService'])->name('categories.expensive');
+Route::post('/categories/showInfo', [CategoryController::class, 'showInfo'])->name('categories.showInfo');
+Route::post('/categories/showListServices', [CategoryController::class, 'showListServices'])->name('categories.showListServices');
+
 
 // ==================== SERVICE ROUTES ====================
 Route::resource('/dashboard/services', ServiceController::class);
@@ -45,7 +46,7 @@ Route::get('/dashboard/article/{id}', [ArticleController::class, 'show'])->name(
 
 // ==================== TRANSACTION ROUTES ====================
 Route::resource('/dashboard/transaction', TransactionController::class);
-Route::get('/dashboard/transaction', [TransactionController::class, 'index'])->name('transaction'); 
+Route::get('/dashboard/transaction', [TransactionController::class, 'index'])->name('transaction');
 
 // ==================== OTHER ROUTES ====================
 Route::get('/dashboard/profile', [ProfileController::class, 'index'])->name('profile');
