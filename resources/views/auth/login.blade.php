@@ -14,21 +14,21 @@
         <div class="card shadow p-4" style="width: 350px;">
             <h3 class="text-center mb-1 fw-bold">VitaGuard</h3>
             <p class="text-center text-muted mb-4">Login to your account</p>
-            <form>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
                 <div class="mb-3">
                     <label>Email</label>
-                    <input type="email" class="form-control" placeholder="Enter email">
+                    <input type="email" name="email" class="form-control" placeholder="Enter email">
                 </div>
 
                 <div class="mb-3">
                     <label>Password</label>
-                    <input type="password" class="form-control" placeholder="Enter password">
+                    <input type="password" name="password" class="form-control" placeholder="Enter password">
                 </div>
 
-
-                <a href="{{ route('dashboard') }}" class="btn btn-primary w-100">
+                <button type="submit" class="btn btn-primary w-100">
                     Login
-                </a>
+                </button>
             </form>
 
             <hr>

@@ -8,8 +8,10 @@
 
     <!-- Header -->
     <div class="mb-4">
-        <h1 class="mb-4">VitaGuard Dashboard</h1>
-        <p class="text-muted">Welcome</p>
+        <h3 class="text-muted">VitaGuard Dashboard</h3>
+        <h1 class="mb-4">
+            Welcome, {{ Auth::user()->name }}! 
+        </h1>
     </div>
 
     <div class="row g-4">

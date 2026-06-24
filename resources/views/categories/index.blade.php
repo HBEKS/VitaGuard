@@ -44,7 +44,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '{{ route("category.showListServices") }}',
+            url: '{{ route("categories.showListServices") }}',
             data: {
                 '_token': '{{ csrf_token() }}',
                 'idcat': id

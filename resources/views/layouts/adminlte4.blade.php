@@ -243,7 +243,13 @@
                             <!--begin::Menu Footer-->
                             <li class="user-footer">
                                 <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                                <!--<a href="#" class="btn btn-default btn-flat float-end">Sign out</a>-->
+                                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-default btn-flat float-end">
+                                        Sign out
+                                    </button>
+                                </form>
                             </li>
                             <!--end::Menu Footer-->
                         </ul>
@@ -336,7 +342,18 @@
                                 <p>Chat</p>
                             </a>
                         </li>
-
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                        style="background:none;border:none;width:100%;text-align:left;"
+                                        class="nav-link">
+                                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                                    <p>Logout</p>
+                                </button>
+                            </form>
+                            </a>
+                        </li>
                     </ul>
                     <!--end::Sidebar Menu-->
                 </nav>

@@ -18,11 +18,11 @@ use App\Http\Controllers\ServiceController;
 
 Route::get('/', function () {
     return view('dashboard');
-});
+})->middleware(['auth']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('dashboard');
+})->middleware(['auth']) ->name('dashboard');
 
 // ==================== CATEGORY ROUTES ====================
 Route::resource('/dashboard/categories', CategoryController::class);
@@ -57,3 +57,14 @@ Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name(
 Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
 Route::post('/ajax/appointment/saveDataUpdate', [AppointmentController::class, 'saveDataUpdate'])->name('appointment.saveDataUpdate');
 Route::post('/ajax/appointment/deleteData', [AppointmentController::class, 'deleteData'])->name('appointment.deleteData');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// ==================== REGISTER ROUTES ====================
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
+
+
