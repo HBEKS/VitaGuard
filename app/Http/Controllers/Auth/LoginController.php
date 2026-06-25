@@ -37,4 +37,16 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+    public function authenticated($request, $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'doctor') {
+            return redirect()->route('doctor.dashboard');
+        } elseif ($user->role === 'member') {
+            return redirect()->route('member.dashboard');
+        }
+
+        return redirect('/login')->with('error', 'Invalid role. Please contact the administrator.');
+    }
 }

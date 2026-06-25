@@ -2,101 +2,66 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Service;
+
 class AppointmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = Appointment::with(['doctor', 'member', 'service'])->get();
+        $status = $request->query('status', 'all');
 
-        return view('appointment.index', compact('appointments'));
-    }
-    public function getEditFormB(Request $request)
-    {
-        $id = $request->id;
-        $data = Appointment::with(['doctor', 'member', 'service'])->find($id);
-        $services = Service::all();
-        $statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
-        return response()->json([
-            'status' => 'oke',
-            'msg' => view('appointment.getEditFormB', compact('data', 'services', 'statuses'))->render()
-        ], 200);
-    }
+        $query = Appointment::with(['member', 'doctor']);
 
-    public function saveDataUpdate(Request $request)
-    {
-        $id = $request->id;
-        $data = Appointment::find($id);
-        $data->status = $request->status;
-        $data->appointment_date = $request->appointment_date;
-        $data->doctor_notes = $request->doctor_notes;
-        $data->save();
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
 
-        return response()->json([
-            'status' => 'oke',
-            'new_status' => $data->status,
-            'new_date' => $data->appointment_date->format('Y-m-d'),
-            'msg' => 'Appointment updated!'
-        ], 200);
-    }
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('member', function ($sq) use ($search) {
+                    $sq->where('name', 'like', "%{$search}%")
+                       ->orWhere('email', 'like', "%{$search}%");
+                })->orWhereHas('doctor', function ($sq) use ($search) {
+                    $sq->where('name', 'like', "%{$search}%")
+                       ->orWhere('email', 'like', "%{$search}%");
+                })->orWhere('id', 'like', "%{$search}%");
+            });
+        }
 
-    public function deleteData(Request $request)
-    {
-        $id = $request->id;
-        $data = Appointment::find($id);
-        $data->delete();
-        return response()->json(['status' => 'oke', 'msg' => 'Appointment deleted!'], 200);
-    }
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $appointments = $query->orderBy('appointment_date', 'desc')
+            ->orderBy('appointment_time', 'desc')
+            ->paginate(15);
+
+        $stats = [
+            'total' => Appointment::count(),
+            'pending' => Appointment::pending()->count(),
+            'confirmed' => Appointment::confirmed()->count(),
+            'completed' => Appointment::completed()->count(),
+            'cancelled' => Appointment::cancelled()->count(),
+        ];
+
+        return view('admin.appointments.index', compact('appointments', 'stats', 'status'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(Appointment $appointment)
     {
-        //
+        $appointment->load(['member', 'doctor.doctorProfile.specialization', 'messages.sender', 'transaction']);
+
+        return view('admin.appointments.show', compact('appointment'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function updateStatus(Request $request, Appointment $appointment)
     {
-        //
-    }
+        $validated = $request->validate([
+            'status' => 'required|in:pending,confirmed,completed,cancelled',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $appointment->update(['status' => $validated['status']]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', 'Status appointment berhasil diperbarui.');
     }
 }

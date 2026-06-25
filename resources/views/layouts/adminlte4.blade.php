@@ -284,38 +284,51 @@
             <div class="sidebar-wrapper">
                 <nav class="mt-2">
                     <!--begin::Sidebar Menu-->
+                    @php
+                        $role = Auth::user()->role;
+                    @endphp
                     <ul
                         class="nav sidebar-menu flex-column"
                         data-lte-toggle="treeview"
                         role="menu"
                         data-accordion="false">
+
+                        //dashboard
+                        @php
+                            if ($role === 'admin') {
+                                $dashboardRoute = route('admin.dashboard');
+                            } elseif ($role === 'doctor') {
+                                $dashboardRoute = route('doctor.dashboard');
+                            } elseif ($role === 'member') {
+                                $dashboardRoute = route('member.dashboard');
+                            }
+                        @endphp
                         <li class="nav-item">
-                            <a href="{{ route('dashboard') }}" class="nav-link @yield('sidebar-dashboard')">
+                            <a href="{{ $dashboardRoute }}" class="nav-link @yield('sidebar-dashboard')">
                                 <i class="nav-icon bi bi-speedometer"></i>
                                 <p>
                                     Dashboard
                                 </p>
                             </a>
                         </li>
+
+                        //services
                         <li class="nav-item">
                             <a href="{{ route('services.index') }}" class="nav-link @yield('sidebar-services')">
                                 <i class="nav-icon bi bi-chat-dots"></i>
                                 <p>Services</p>
                             </a>
                         </li>
+
+                        //category
                         <li class="nav-item">
                             <a href="{{ route('categories.index') }}" class="nav-link @yield('sidebar-categories')">
                                 <i class="nav-icon bi bi-tags"></i>
                                 <p>Category</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('booking') }}" class="nav-link @yield('sidebar-booking')">
-                                <i class="nav-icon bi bi-box"></i>
-                                <p>Booking Appointment</p>
-                            </a>
-                        </li>
-                        </li>
+
+                        //doctor
                         <li class="nav-item">
                             <a href="{{ route('doctor') }}" class="nav-link @yield('sidebar-doctors')">
                                 <i class="nav-icon bi bi-person-badge"></i>
@@ -323,25 +336,45 @@
                             </a>
                         </li>
 
+                        //articles
                         <li class="nav-item">
                             <a href="{{ route('article') }}" class="nav-link @yield('sidebar-artikel')">
                                 <i class="nav-icon bi bi-file-earmark-text"></i>
                                 <p>Articles</p>
                             </a>
                         </li>
+                        
+                        //booking appointment
+                        @if($role === 'member' || $role === 'doctor')
+                        <li class="nav-item">
+                            <a href="{{ route('booking') }}" class="nav-link @yield('sidebar-booking')">
+                                <i class="nav-icon bi bi-box"></i>
+                                <p>Booking Appointment</p>
+                            </a>
+                        </li>
+                        @endif
 
+                        //transaction
+                        @if($role === 'admin' || $role === 'member')
                         <li class="nav-item">
                             <a href="{{ route('transaction') }}" class="nav-link @yield('sidebar-transaksi')">
                                 <i class="nav-icon bi bi-cash-stack"></i>
                                 <p>Transactions</p>
                             </a>
                         </li>
+                        @endif
+
+                        //chat
+                        @if($role === 'doctor' || $role === 'member')
                         <li class="nav-item">
                             <a href="{{ route('chat') }}" class="nav-link @yield('sidebar-chat')">
                                 <i class="nav-icon bi bi-chat-dots"></i>
                                 <p>Chat</p>
                             </a>
                         </li>
+                        @endif
+
+                        //logout
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
@@ -352,7 +385,6 @@
                                     <p>Logout</p>
                                 </button>
                             </form>
-                            </a>
                         </li>
                     </ul>
                     <!--end::Sidebar Menu-->

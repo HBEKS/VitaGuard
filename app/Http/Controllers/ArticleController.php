@@ -3,69 +3,98 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::all();
-        return view('article.index', compact('articles'));
+        $status = $request->query('status', 'all');
+
+        $query = Article::with('author');
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $articles = $query->orderBy('created_at', 'desc')->paginate(12);
+
+        $stats = [
+            'total' => Article::count(),
+            'published' => Article::published()->count(),
+            'draft' => Article::draft()->count(),
+        ];
+
+        return view('admin.articles.index', compact('articles', 'stats', 'status'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $authors = User::admins()->orderBy('name')->get();
+        return view('admin.articles.create', compact('authors'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image_url' => 'nullable|url',
+            'status' => 'required|in:draft,published',
+            'author_id' => 'required|exists:users,id',
+        ]);
+
+        $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
+
+        Article::create($validated);
+
+        return redirect()->route('admin.articles.index')
+            ->with('success', 'Artikel berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function show(Article $article)
     {
-        // Cari artikel berdasarkan ID
-        $article = Article::findOrFail($id);
+        $article->load('author');
 
-        // Kirim ke view detail
-        return view('article.show', compact('article'));
+        return view('admin.articles.show', compact('article'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Article $article)
     {
-        //
+        $authors = User::admins()->orderBy('name')->get();
+
+        return view('admin.articles.edit', compact('article', 'authors'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Article $article)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image_url' => 'nullable|url',
+            'status' => 'required|in:draft,published',
+            'author_id' => 'required|exists:users,id',
+        ]);
+
+        // Only update slug if title changed
+        if ($article->title !== $validated['title']) {
+            $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
+        }
+
+        $article->update($validated);
+
+        return redirect()->route('admin.articles.index')
+            ->with('success', 'Artikel berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Article $article)
     {
-        //
+        $article->delete();
+
+        return redirect()->route('admin.articles.index')
+            ->with('success', 'Artikel berhasil dihapus.');
     }
 }

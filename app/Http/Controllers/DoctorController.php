@@ -3,104 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\DoctorProfile;
+use App\Models\User;
 use App\Models\Specialization;
+use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $doctors = DoctorProfile::with(['user', 'specialization', 'services'])->get();
-        return view('doctor.index', compact('doctors'));
-    }
-    //
-    public function deleteData(Request $request)
-    {
-        $id = $request->id;
-        $data = DoctorProfile::find($id);
-        $data->delete();
-        return response()->json(['status' => 'oke', 'msg' => 'Doctor deleted!'], 200);
-    }
-    
-        public function getEditFormB(Request $request)
-    {
-        $id = $request->id;
-        $data = DoctorProfile::with(['user', 'specialization', 'services'])->find($id);
-        $specializations = Specialization::all();
-        return response()->json([
-            'status' => 'oke',
-            'msg' => view('doctor.getEditFormB', compact('data', 'specializations'))->render()
-        ], 200);
+        $query = User::doctors()
+            ->with(['doctorProfile.specialization', 'schedules'])
+            ->withCount(['doctorAppointments as total_appointments'])
+            ->withCount(['doctorAppointments as completed_appointments' => function ($q) {
+                $q->where('status', 'completed');
+            }]);
+
+        // Filter by specialization
+        if ($request->has('specialization')) {
+            $query->whereHas('doctorProfile', function ($q) use ($request) {
+                $q->where('specialization_id', $request->specialization);
+            });
+        }
+
+        $doctors = $query->orderBy('name')->paginate(12);
+
+        $specializations = Specialization::orderBy('name')->get();
+
+        return view('admin.doctors.index', compact('doctors', 'specializations'));
     }
 
-    public function saveDataUpdate(Request $request)
+    public function show(User $doctor)
     {
-        $id = $request->id;
-        $data = DoctorProfile::find($id);
-        $data->experience_years = $request->experience_years;
-        $data->specialization_id = $request->specialization_id;
-        $data->str_number = $request->str_number;
-        $data->save();
+        $doctor->load([
+            'doctorProfile.specialization',
+            'schedules',
+            'doctorAppointments' => function ($q) {
+                $q->with('member')->latest()->take(10);
+            }
+        ]);
 
-        $specializationName = $data->specialization->name;
+        $doctor->loadCount([
+            'doctorAppointments as total_appointments',
+            'doctorAppointments as completed_appointments' => function ($q) {
+                $q->where('status', 'completed');
+            },
+            'doctorAppointments as pending_appointments' => function ($q) {
+                $q->where('status', 'pending');
+            }
+        ]);
 
-        return response()->json([
-            'status' => 'oke',
-            'specialization_name' => $specializationName,
-            'msg' => 'Doctor updated!'
-        ], 200);
-    }
-    //
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return view('admin.doctors.show', compact('doctor'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function schedules(User $doctor)
     {
-        //
-    }
+        $schedules = $doctor->schedules()->orderBy('day_of_week')->orderBy('start_time')->get();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('admin.doctors.schedules', compact('doctor', 'schedules'));
     }
 }
