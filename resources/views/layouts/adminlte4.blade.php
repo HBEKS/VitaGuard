@@ -293,7 +293,7 @@
                         role="menu"
                         data-accordion="false">
 
-                        //dashboard
+                        <!-- dashboard -->
                         @php
                             if ($role === 'admin') {
                                 $dashboardRoute = route('admin.dashboard');
@@ -312,7 +312,7 @@
                             </a>
                         </li>
 
-                        //services
+                        <!-- services -->   
                         <li class="nav-item">
                             <a href="{{ route('services.index') }}" class="nav-link @yield('sidebar-services')">
                                 <i class="nav-icon bi bi-chat-dots"></i>
@@ -320,7 +320,7 @@
                             </a>
                         </li>
 
-                        //category
+                        <!-- category -->
                         <li class="nav-item">
                             <a href="{{ route('categories.index') }}" class="nav-link @yield('sidebar-categories')">
                                 <i class="nav-icon bi bi-tags"></i>
@@ -328,7 +328,7 @@
                             </a>
                         </li>
 
-                        //doctor
+                        <!-- doctor -->
                         <li class="nav-item">
                             <a href="{{ route('doctor') }}" class="nav-link @yield('sidebar-doctors')">
                                 <i class="nav-icon bi bi-person-badge"></i>
@@ -336,7 +336,7 @@
                             </a>
                         </li>
 
-                        //articles
+                        <!-- articles -->
                         <li class="nav-item">
                             <a href="{{ route('article') }}" class="nav-link @yield('sidebar-artikel')">
                                 <i class="nav-icon bi bi-file-earmark-text"></i>
@@ -344,7 +344,7 @@
                             </a>
                         </li>
                         
-                        //booking appointment
+                        <!-- booking appointment -->
                         @if($role === 'member' || $role === 'doctor')
                         <li class="nav-item">
                             <a href="{{ route('booking') }}" class="nav-link @yield('sidebar-booking')">
@@ -354,7 +354,7 @@
                         </li>
                         @endif
 
-                        //transaction
+                        <!-- transaction -->
                         @if($role === 'admin' || $role === 'member')
                         <li class="nav-item">
                             <a href="{{ route('transaction') }}" class="nav-link @yield('sidebar-transaksi')">
@@ -364,7 +364,7 @@
                         </li>
                         @endif
 
-                        //chat
+                        <!-- chat -->
                         @if($role === 'doctor' || $role === 'member')
                         <li class="nav-item">
                             <a href="{{ route('chat') }}" class="nav-link @yield('sidebar-chat')">
@@ -374,7 +374,15 @@
                         </li>
                         @endif
 
-                        //logout
+                        <!-- profile -->
+                        <li class="nav-item">
+                            <a href="{{ route('profile') }}" class="nav-link @yield('sidebar-profile')">
+                                <i class="nav-icon bi bi-person"></i>
+                                <p>Profile</p>
+                            </a>
+                        </li>
+
+                        <!--  logout -->
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf

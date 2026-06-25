@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 
 class profileController extends Controller
 {
@@ -13,9 +16,9 @@ class profileController extends Controller
      */
     public function index(/*$id*/)
     {
-        // $user = User::find($id);
-        $user = user::All();
-        return view('profile.index');
+        $user = Auth::user();
+        return view('profile.index', compact('user'));
+        dd($user->avatar);
     }
 
     /**
@@ -45,17 +48,62 @@ class profileController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit()
     {
-        //
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        // Update password 
+        if ($request->filled('password')) {
+
+            $request->validate([
+                'password' => 'min:8|confirmed',
+            ]);
+
+            $user->password = Hash::make($request->password);
+        }
+
+        // Update avatar
+        if ($request->hasFile('avatar')) {
+
+            if ($user->avatar && File::exists(public_path('adminlte4/assets/' . $user->avatar))) {
+                File::delete(public_path('adminlte4/assets/' . $user->avatar));
+            }
+
+            $file = $request->file('avatar');
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(
+                public_path('adminlte4/assets/img/profiles'),
+                $filename
+            );
+
+            $user->avatar = 'img/profiles/' . $filename;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 
     /**

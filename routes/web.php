@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 //Authentication routes
 Auth::routes();
 Route::middleware(['auth'])->group(function () {
+
     // all user can access
     Route::get('/', function () {
         return redirect()->route('login');
@@ -21,6 +22,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->route('login');
     });
+
+    //profile
+    Route::get('/profile', [ProfileController::class, 'index'])
+    ->name('profile');
+    //profile edit 
+    Route::post('/ajax/profile/edit', [ProfileController::class, 'edit'])
+    ->name('profile.edit');
+    Route::post('/ajax/profile/update', [ProfileController::class, 'update'])
+    ->name('profile.update');
 
     //only admin can access
     Route::middleware(['role:admin'])->group(function () {
