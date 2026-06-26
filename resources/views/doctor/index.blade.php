@@ -1,151 +1,135 @@
 @extends('layouts.adminlte4')
-@section('title', 'Doctors')
+@section('title', 'Doctor List')
 @section('sidebar-doctors', 'active')
-
+@section('breadcrumb')
+<li class="breadcrumb-item active">Doctors</li>
+@endsection
 @section('content')
-<div class="container mt-4">
-    <h1 class="mb-4">Doctor List</h1>
 
+<div class="container mt-4">
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Doctor List</h1>
+        <span class="badge bg-primary fs-6">
+            {{ $doctors->total() }} Doctors
+        </span>
+    </div>
+
+    {{-- Show Entries + Pagination --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form method="GET" class="d-flex align-items-center">
+            <label class="me-2 mb-0">Show</label>
+            <select
+                name="per_page"
+                class="form-select form-select-sm"
+                style="width:80px"
+                onchange="this.form.submit()">
+
+                <option value="5" {{ request('per_page',5)==5?'selected':'' }}>5</option>
+                <option value="10" {{ request('per_page')==10?'selected':'' }}>10</option>
+                <option value="25" {{ request('per_page')==25?'selected':'' }}>25</option>
+
+            </select>
+            <span class="ms-2">entries</span>
+        </form>
+        {{ $doctors->withQueryString()->links() }}
+    </div>
+
+    {{-- Table --}}
     <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
+        <table class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-light">
-                <tr class="text-center">
-                    <th style="width: 50px;">ID</th>
-                    <th style="width: 100px;">Photo</th>
+                <tr>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Photo</th>
                     <th>Name</th>
-                    <th id="td_spec_header">Specialization</th>
+                    <th>Specialization</th>
                     <th>Services</th>
-                    <th style="width: 100px;">Experience</th>
-                    <th style="width: 100px;">STR Number</th>
-                    <th style="width: 180px;">Action</th>
+                    <th>Experience</th>
+                    <th>STR Number</th>
+
+                    @if(Auth::user()->role=="admin")
+                        <th class="text-center">Action</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
-                @foreach ($doctors as $d)
-                <tr id="tr_{{ $d->id }}">
-                    <td class="text-center"><span class="badge bg-secondary">{{ $d->id }}</span></td>
-                    <td class="text-center" style="padding: 5px;">
-                        @php
-                            $avatarPath = $d->user->avatar ?? null;
-                            $fullPath = $avatarPath ? public_path('storage/' . $avatarPath) : null;
-                            $hasValidImage = $avatarPath && $fullPath && file_exists($fullPath);
-                        @endphp
-                        @if($hasValidImage)
-                            <img src="{{ asset('storage/' . $avatarPath) }}" alt="{{ $d->user->name }}"
-                                style="width: 100px; height: 100px; object-fit: cover;">
-                        @else
-                            <img src="{{ asset('storage/img/profiles/default-avatar.jpg') }}" alt="Default Avatar"
-                                style="width: 100px; height: 100px; object-fit: cover;">
-                        @endif
-                    </td>
-                    <td>{{ $d->user->name }}</td>
-                    <td id="td_spec_{{ $d->id }}" style="white-space: normal; word-wrap: break-word;">
-                        <span class="badge bg-primary" style="font-size: 0.9rem; padding: 8px 12px;">
-                            {{ $d->specialization->name }}
+            @forelse($doctors as $doctor)
+                <tr>
+                    {{-- ID --}}
+                    <td class="text-center">
+                        <span class="badge bg-secondary">
+                            {{ $doctor->id }}
                         </span>
                     </td>
-                    <td>
-                        @if($d->services && $d->services->count() > 0)
-                            @foreach($d->services as $service)
-                                <span class="badge bg-secondary mb-1" style="font-size: 0.7rem; display: inline-block; margin-right: 3px;">
-                                    {{ $service->service_name }}
-                                </span>
-                            @endforeach
+                    {{-- Avatar --}}
+                    <td class="text-center">
+                        @if($doctor->avatar && file_exists(public_path('adminlte4/assets/'.$doctor->avatar)))
+                            <img
+                                src="{{ asset('adminlte4/assets/'.$doctor->avatar) }}"
+                                width="60"
+                                height="60"
+                                class="rounded-circle"
+                                style="object-fit:cover;"
+                            >
                         @else
-                            <span class="text-muted">-</span>
+                            <i class="bi bi-person-circle text-primary"
+                               style="font-size:50px;">
+                            </i>
                         @endif
                     </td>
-                    <td id="td_exp_{{ $d->id }}">{{ $d->experience_years }} years</td>
-                    <td id="td_str_{{ $d->id }}">{{ $d->str_number }}</td>
+                    {{-- Name --}}
+                    <td>
+                        {{ $doctor->name }}
+                    </td>
+
+                    {{-- Specialization --}}
+                    <td>
+                        {{ $doctor->doctorProfile?->specialization?->name ?? '-' }}
+                    </td>
+
+                    {{-- Services --}}
+                    <td>
+                        @forelse($doctor->doctorProfile?->services ?? [] as $service)
+                            <span class="badge bg-info mb-1">
+                                {{ $service->service_name }}
+                            </span>
+                        @empty
+                            -
+                        @endforelse
+                    </td>
+
+                    {{-- Experience --}}
+                    <td>
+                        {{ $doctor->doctorProfile?->experience_years ?? '-' }}
+                        Years
+                    </td>
+
+                    {{-- STR --}}
+                    <td>
+                        {{ $doctor->doctorProfile?->str_number ?? '-' }}
+                    </td>
+
+                    {{-- Action --}}
+                    @if(Auth::user()->role=="admin")
+
                     <td class="text-center">
-                        <a href="#modalEditB" class="btn btn-sm btn-primary mb-1" data-bs-toggle="modal"
-                           onclick="getEditFormB({{ $d->id }})">Edit</a>
-                        <a href="#" class="btn btn-sm btn-danger"
-                           onclick="if(confirm('Hapus dr. {{ $d->user->name }}?')) deleteDataRemove({{ $d->id }})">Delete</a>
+                        <button class="btn btn-warning btn-sm">
+                            Edit
+                        </button>
+                    </td>
+                    @endif
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="8" class="text-center">
+                        No doctors found.
                     </td>
                 </tr>
-                @endforeach
+            @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- Modal Edit B --}}
-<div class="modal fade" id="modalEditB" tabindex="-1" role="basic" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Edit Doctor</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="modalContentB">
-                <div class="text-center py-3">Loading...</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
-
-@push('script')
-<script>
-function getEditFormB(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("doctor.getEditFormB") }}',
-        data: {
-            '_token': '<?php echo csrf_token(); ?>',
-            'id': id
-        },
-        success: function(data) {
-            $('#modalContentB').html(data.msg);
-        }
-    });
-}
-
-function saveDataUpdate(id) {
-    var experience_years = $('#edit_experience_years').val();
-    var specialization_id = $('#edit_specialization_id').val();
-    var str_number = $('#edit_str_number').val();
-
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("doctor.saveDataUpdate") }}',
-        data: {
-            '_token': '<?php echo csrf_token(); ?>',
-            'id': id,
-            'experience_years': experience_years,
-            'specialization_id': specialization_id,
-            'str_number': str_number
-        },
-        success: function(data) {
-            if (data.status == "oke") {
-                $('#td_exp_' + id).html(experience_years + ' years');
-                $('#td_str_' + id).html(str_number);
-                $('#td_spec_' + id).html('<span class="badge bg-primary" style="font-size:0.9rem;padding:8px 12px;">' + data.specialization_name + '</span>');
-                $('#modalEditB').modal('hide');
-            }
-        }
-    });
-}
-
-function deleteDataRemove(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("doctor.deleteData") }}',
-        data: {
-            '_token': '<?php echo csrf_token(); ?>',
-            'id': id
-        },
-        success: function(data) {
-            if (data.status == "oke") {
-                $('#tr_' + id).remove();
-            }
-        }
-    });
-}
-</script>
-@endpush

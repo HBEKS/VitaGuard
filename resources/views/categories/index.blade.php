@@ -72,7 +72,7 @@
 
 <div class="container mt-4">
     <div class="container-table">
-        <h1 class="mb-4">List of Service Categories</h1>
+        <h1 class="mb-4">Categories List</h1>
 
         @if (@session('success'))
         <div class="alert alert-success">
@@ -82,6 +82,27 @@
 
         <div class="table-responsive">
             <div id="showinfo"></div>
+            <!-- pagination -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <form method="GET" class="d-flex align-items-center">
+                        <label>Show</label>
+                        <select name="per_page" onchange="this.form.submit()">
+                            <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 15 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 25 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 50 ? 'selected' : '' }}>100</option>
+                        </select>
+                        entries
+                    </form>
+                    <!-- <small class="text-muted">
+                        Showing {{ $allCategories->firstItem() }}
+                        to {{ $allCategories->lastItem() }}
+                        of {{ $allCategories->total() }} results
+                    </small> -->
+                    {{ $allCategories->links() }}
+                </div>
+
             <table class="table table-bordered table-striped table-hover align-middle">
                 <thead class="table-light">
                     <tr>
@@ -90,32 +111,41 @@
                         <th scope="col" class="text-center" style="width: 150px;">Image</th>
                         <th scope="col" class="text-center" style="width: 130px;">Total Services</th>
                         <th scope="col" class="text-center" style="width: 100px;">List Services</th>
+                        @if(Auth::user()->role == "admin")
                         <th scope="col" class="text-center" style="width: 100px;">Action</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($allCategories as $cat)
                     <tr>
+                        <!-- id -->
                         <td class="text-center">
                             <span class="badge bg-secondary">{{ $cat->id }}</span>
                         </td>
+                        <!-- name -->
                         <td class="fw-bold text-primary">{{ $cat->category_name }}</td>
+                        <!-- image -->
                         <td class="text-center">
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imageModal-{{ $cat->id }}">
                                 <i class="fas fa-image"></i> Show Image
                             </button>
                         </td>
+                        <!-- total service -->
                         <td class="text-center">
                             <span class="badge bg-info rounded-pill">{{ $cat->services->count() }}</span>
                         </td>
+                        <!-- list service -->
                         <td class="text-center">
                             <button type="button" class="btn btn-info btn-sm" onclick="showDetail('{{ $cat->id }}')">
                                 <i class="fas fa-list"></i> Details
                             </button>
                         </td>
+                        @if(Auth::user()->role == "admin")
                         <td>
                             
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>
@@ -131,6 +161,7 @@
 
         <hr class="my-4">
 
+        @if(Auth::user()->role == "admin")
         <div class="d-flex gap-3 justify-content-center">
             <a href="{{route('categories.create')}}" class="btn btn-primary">+ New Category</a>
             <a href="{{ url('dashboard/services') }}" class="btn btn-warning">
@@ -140,6 +171,7 @@
                 <i class="fas fa-home"></i> Back to Home
             </a>
         </div>
+        @endif
     </div>
 
     <!-- Modals untuk setiap kategori (Show Image) -->

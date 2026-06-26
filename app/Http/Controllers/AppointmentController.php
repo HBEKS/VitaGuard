@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -13,55 +13,99 @@ class AppointmentController extends Controller
     {
         $status = $request->query('status', 'all');
 
-        $query = Appointment::with(['member', 'doctor']);
+        $query = Appointment::with([
+            'member',
+            'doctor',
+            'service'
+        ]);
 
-        if ($status !== 'all') {
+        // Jika login sebagai doctor, hanya tampilkan appointment miliknya
+        if (Auth::user()->role == 'doctor') {
+            $query->where('doctor_id', Auth::id());
+        }
+
+        // Filter status
+        if ($status != 'all') {
             $query->where('status', $status);
         }
 
-        if ($request->has('search')) {
+        // Search
+        if ($request->filled('search')) {
             $search = $request->search;
+
             $query->where(function ($q) use ($search) {
                 $q->whereHas('member', function ($sq) use ($search) {
                     $sq->where('name', 'like', "%{$search}%")
-                       ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('doctor', function ($sq) use ($search) {
-                    $sq->where('name', 'like', "%{$search}%")
-                       ->orWhere('email', 'like', "%{$search}%");
-                })->orWhere('id', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('doctor', function ($sq) use ($search) {
+                        $sq->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhere('id', 'like', "%{$search}%");
             });
         }
 
-        $appointments = $query->orderBy('appointment_date', 'desc')
-            ->orderBy('appointment_time', 'desc')
-            ->paginate(15);
+        $appointments = $query
+            ->orderBy('id', 'asc')
+            ->paginate(5);
+
+        $statsQuery = Appointment::query();
+
+        if (Auth::user()->role == 'doctor') {
+            $statsQuery->where('doctor_id', Auth::id());
+        }
 
         $stats = [
-            'total' => Appointment::count(),
-            'pending' => Appointment::pending()->count(),
-            'confirmed' => Appointment::confirmed()->count(),
-            'completed' => Appointment::completed()->count(),
-            'cancelled' => Appointment::cancelled()->count(),
+            'total' => (clone $statsQuery)->count(),
+            'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'confirmed' => (clone $statsQuery)->where('status', 'confirmed')->count(),
+            'completed' => (clone $statsQuery)->where('status', 'completed')->count(),
+            // yang ini buat member aja yang mau cancel appointment
+            'cancelled' => (clone $statsQuery)->where('status', 'cancelled')->count(),
         ];
 
-        return view('admin.appointments.index', compact('appointments', 'stats', 'status'));
+        return view('booking.index', compact(
+            'appointments',
+            'stats',
+            'status'
+        ));
     }
 
     public function show(Appointment $appointment)
     {
-        $appointment->load(['member', 'doctor.doctorProfile.specialization', 'messages.sender', 'transaction']);
+        $appointment->load([
+            'member',
+            'doctor.doctorProfile.specialization',
+            'messages.sender',
+            'transaction'
+        ]);
 
-        return view('admin.appointments.show', compact('appointment'));
+        return view('booking.show', compact('appointment'));
     }
 
     public function updateStatus(Request $request, Appointment $appointment)
     {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,completed,cancelled',
+        $request->validate([
+            'status' => 'required|in:confirmed,completed'
         ]);
 
-        $appointment->update(['status' => $validated['status']]);
+        $appointment->status = $request->status;
+        $appointment->save();
 
-        return back()->with('success', 'Status appointment berhasil diperbarui.');
+        return back()->with('success', 'Status updated');
+    }
+
+    public function saveNotes(Request $request)
+    {
+        $appointment = Appointment::findOrFail($request->id);
+
+        $appointment->doctor_notes = $request->doctor_notes;
+
+        $appointment->save();
+
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }

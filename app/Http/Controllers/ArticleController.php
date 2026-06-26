@@ -28,7 +28,7 @@ class ArticleController extends Controller
             'draft' => Article::draft()->count(),
         ];
 
-        return view('admin.articles.index', compact('articles', 'stats', 'status'));
+        return view('article.index', compact('articles', 'stats', 'status'));
     }
 
     public function create()

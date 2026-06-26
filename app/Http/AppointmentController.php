@@ -14,7 +14,7 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::with(['doctor', 'member', 'service'])->get();
 
-        return view('appointment.index', compact('appointments'));
+        return view('booking.index', compact('appointments'));
     }
     public function getEditFormB(Request $request)
     {

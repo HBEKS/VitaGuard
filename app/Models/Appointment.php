@@ -27,6 +27,7 @@ class Appointment extends Model
 
     protected $casts = [
         'appointment_date' => 'date',
+        'appointment_time' => "datetime:H:i",
     ];
 
     public function member()

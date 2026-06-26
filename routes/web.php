@@ -23,14 +23,39 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('login');
     });
 
+    // ==================== CATEGORY ROUTES ====================
+    Route::resource('/categories', CategoryController::class);
+    Route::get(
+        '/categories/showExpensiveService',
+        [CategoryController::class, 'showExpensiveService']
+    )->name('categories.expensive');
+    Route::post(
+        '/categories/showInfo',
+        [CategoryController::class, 'showInfo']
+    )->name('categories.showInfo');
+    Route::post(
+        '/categories/showListServices',
+        [CategoryController::class, 'showListServices']
+    )->name('categories.showListServices');
+
+    // ==================== SERVICE ROUTES ====================
+    Route::resource('/services', ServiceController::class);
+
+    // ==================== DOCTOR ROUTES ====================
+    Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
+    Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
+    Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
+    Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
+
+
     //profile
     Route::get('/profile', [ProfileController::class, 'index'])
-    ->name('profile');
+        ->name('profile');
     //profile edit 
     Route::post('/ajax/profile/edit', [ProfileController::class, 'edit'])
-    ->name('profile.edit');
+        ->name('profile.edit');
     Route::post('/ajax/profile/update', [ProfileController::class, 'update'])
-    ->name('profile.update');
+        ->name('profile.update');
 
     //only admin can access
     Route::middleware(['role:admin'])->group(function () {
@@ -44,6 +69,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/doctor', function () {
             return view('doctor.dashboard');
         })->name('doctor.dashboard');
+
+        Route::get('/chat/{appointment}', [MessageController::class, 'show'])
+            ->name('chat.show');
+
+        Route::put(
+            '/appointment/{appointment}/status',
+            [AppointmentController::class, 'updateStatus']
+        )->name('appointment.updateStatus');
+
+        Route::post(
+            '/appointment/saveNotes',
+            [AppointmentController::class, 'saveNotes']
+        )->name('appointment.saveNotes');
     });
 
     //only member can access
@@ -53,20 +91,17 @@ Route::middleware(['auth'])->group(function () {
         })->name('member.dashboard');
     });
 
-    // ==================== CATEGORY ROUTES ====================
-    Route::resource('/dashboard/categories', CategoryController::class);
-    Route::get('/categories/showExpensiveService', [CategoryController::class, 'showExpensiveService'])->name('categories.expensive');
-    Route::post('/categories/showInfo', [CategoryController::class, 'showInfo'])->name('categories.showInfo');
-    Route::post('/categories/showListServices', [CategoryController::class, 'showListServices'])->name('categories.showListServices');
+    //doctor and admin can access
+    Route::middleware(['role:doctor, admin'])->group(function () {
+        // ==================== APPOINTMENT ROUTES ====================
+        Route::get('booking/index', [AppointmentController::class, 'index'])->name('doctorBooking');
+        Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
+        Route::post('/ajax/appointment/saveDataUpdate', [AppointmentController::class, 'saveDataUpdate'])->name('appointment.saveDataUpdate');
+        Route::post('/ajax/appointment/deleteData', [AppointmentController::class, 'deleteData'])->name('appointment.deleteData');
+    });
 
-    // ==================== SERVICE ROUTES ====================
-    Route::resource('/dashboard/services', ServiceController::class);
 
-    // ==================== DOCTOR ROUTES ====================
-    Route::get('/dashboard/doctor', [DoctorController::class, 'index'])->name('doctor');
-    Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
-    Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
-    Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
+
 
     // ==================== ARTICLE ROUTES ====================
     Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
@@ -79,14 +114,6 @@ Route::middleware(['auth'])->group(function () {
     // ==================== OTHER ROUTES ====================
     Route::get('/dashboard/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/dashboard/chat', [MessageController::class, 'index'])->name('chat');
-
-    // ==================== APPOINTMENT ROUTES ====================
-    Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name('booking');
-    Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
-    Route::post('/ajax/appointment/saveDataUpdate', [AppointmentController::class, 'saveDataUpdate'])->name('appointment.saveDataUpdate');
-    Route::post('/ajax/appointment/deleteData', [AppointmentController::class, 'deleteData'])->name('appointment.deleteData');
-
-
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -96,17 +123,12 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-// admin access only
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('/dashboard/categories', CategoryController::class);
-    Route::resource('/dashboard/services', ServiceController::class);
-});
-// doctor access only
-Route::middleware(['auth', 'role:doctor'])->group(function () {
-    Route::get('/dashboard/doctor', [DoctorController::class, 'index'])->name('doctor');
-});
-// member access only
-Route::middleware(['auth', 'role:member'])->group(function () {
-    Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name('booking');
-});
 
+// // doctor access only
+// Route::middleware(['auth', 'role:doctor'])->group(function () {
+//     Route::get('/dashboard/doctor', [DoctorController::class, 'index'])->name('doctor');
+// });
+// // member access only
+// Route::middleware(['auth', 'role:member'])->group(function () {
+//     Route::get('/dashboard/booking', [AppointmentController::class, 'index'])->name('booking');
+// });

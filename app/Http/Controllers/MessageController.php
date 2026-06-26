@@ -45,7 +45,7 @@ class MessageController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return view('chat.show', compact('appointment'));
     }
 
     /**

@@ -14,7 +14,11 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
+        //$services = Service::paginate(5);
+        $perPage = request()->get('per_page', 5);
+        $services = Service::with('category')
+            ->paginate($perPage)
+            ->withQueryString();
 
         return view('services.index', compact('services'));
     }

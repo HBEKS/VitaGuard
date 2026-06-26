@@ -330,7 +330,7 @@
 
                         <!-- doctor -->
                         <li class="nav-item">
-                            <a href="{{ route('doctor') }}" class="nav-link @yield('sidebar-doctors')">
+                            <a href="{{ route('listDoctor') }}" class="nav-link @yield('sidebar-doctors')">
                                 <i class="nav-icon bi bi-person-badge"></i>
                                 <p>Doctors</p>
                             </a>
@@ -347,9 +347,9 @@
                         <!-- booking appointment -->
                         @if($role === 'member' || $role === 'doctor')
                         <li class="nav-item">
-                            <a href="{{ route('booking') }}" class="nav-link @yield('sidebar-booking')">
+                            <a href="{{ route('doctorBooking') }}" class="nav-link @yield('sidebar-booking')">
                                 <i class="nav-icon bi bi-box"></i>
-                                <p>Booking Appointment</p>
+                                <p>My Appointment</p>
                             </a>
                         </li>
                         @endif
@@ -364,7 +364,7 @@
                         </li>
                         @endif
 
-                        <!-- chat -->
+                        <!-- chat >> ini harusnya di akses dari my booking. my appointment itu
                         @if($role === 'doctor' || $role === 'member')
                         <li class="nav-item">
                             <a href="{{ route('chat') }}" class="nav-link @yield('sidebar-chat')">
@@ -372,7 +372,7 @@
                                 <p>Chat</p>
                             </a>
                         </li>
-                        @endif
+                        @endif -->
 
                         <!-- profile -->
                         <li class="nav-item">

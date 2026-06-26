@@ -11,9 +11,14 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $allCategories = Category::all();
+        // $allCategories = Category::all();
+        $perPage = $request->get('per_page', 5);
+
+        $allCategories = Category::with('services')
+            ->paginate($perPage)
+            ->withQueryString();
         return view('categories.index', compact('allCategories'));
     }
 

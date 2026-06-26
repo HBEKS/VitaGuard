@@ -11,25 +11,29 @@ class DoctorController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::doctors()
-            ->with(['doctorProfile.specialization', 'schedules'])
-            ->withCount(['doctorAppointments as total_appointments'])
-            ->withCount(['doctorAppointments as completed_appointments' => function ($q) {
-                $q->where('status', 'completed');
-            }]);
+        $query = User::where('role', 'doctor')
+        ->with([
+            'doctorProfile.specialization',
+            'doctorProfile.services'
+        ]);
 
-        // Filter by specialization
-        if ($request->has('specialization')) {
+        // Filter specialization (opsional)
+        if ($request->filled('specialization')) {
             $query->whereHas('doctorProfile', function ($q) use ($request) {
                 $q->where('specialization_id', $request->specialization);
             });
         }
 
-        $doctors = $query->orderBy('name')->paginate(12);
-
+        $doctors = $query->orderBy('name')->paginate(5);
         $specializations = Specialization::orderBy('name')->get();
+        return view('doctor.index', compact('doctors', 'specializations'));
 
-        return view('admin.doctors.index', compact('doctors', 'specializations'));
+        
+        $perPage = request('per_page',5);
+        $doctors = $query
+            ->orderBy('name')
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function show(User $doctor)
