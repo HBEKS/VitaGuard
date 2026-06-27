@@ -5,23 +5,61 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
-
+use Illuminate\Support\Facades\Auth;
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+      public function index(Request $request)
     {
-        // $allCategories = Category::all();
         $perPage = $request->get('per_page', 5);
-
         $allCategories = Category::with('services')
             ->paginate($perPage)
             ->withQueryString();
         return view('categories.index', compact('allCategories'));
     }
 
+    public function getEditFormB(Request $request)
+    {
+        $id = $request->id;
+        $data = Category::find($id);
+        return response()->json([
+            'status' => 'oke',
+            'msg' => view('categories.getEditFormB', compact('data'))->render()
+        ], 200);
+    }
+
+    public function saveDataUpdate(Request $request)
+    {
+        $this->authorize('update-permission', Auth::user());
+        $data = Category::find($request->id);
+        $data->category_name = $request->category_name;
+        $data->save();
+        return response()->json([
+            'status' => 'oke',
+            'new_name' => $data->category_name,
+            'msg' => 'Updated!'
+        ], 200);
+    }
+
+    public function deleteData(Request $request)
+    {
+        $this->authorize('delete-permission', Auth::user());
+        $data = Category::find($request->id);
+        $data->delete();
+        return response()->json(['status' => 'oke', 'msg' => 'Deleted!'], 200);
+    }
+
+    public function storeData(Request $request)
+    {
+        $this->authorize('create-permission', Auth::user());
+        Category::create([
+            'category_name' => $request->category_name,
+            'image'         => $request->image ?? '',
+        ]);
+        return response()->json(['status' => 'oke', 'msg' => 'Created!'], 200);
+    }
     public function showExpensiveService()
     {
         // Ambil semua kategori beserta relasi services-nya
@@ -127,7 +165,6 @@ class CategoryController extends Controller
             'body' => $html
         ]);
     }
-
 
     /**
      * Show the form for creating a new resource.

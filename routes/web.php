@@ -25,21 +25,21 @@ Route::middleware(['auth'])->group(function () {
 
     // ==================== CATEGORY ROUTES ====================
     Route::resource('/categories', CategoryController::class);
-    Route::get(
-        '/categories/showExpensiveService',
-        [CategoryController::class, 'showExpensiveService']
-    )->name('categories.expensive');
-    Route::post(
-        '/categories/showInfo',
-        [CategoryController::class, 'showInfo']
-    )->name('categories.showInfo');
-    Route::post(
-        '/categories/showListServices',
-        [CategoryController::class, 'showListServices']
-    )->name('categories.showListServices');
+    Route::get('/categories/showExpensiveService',[CategoryController::class, 'showExpensiveService'])->name('categories.expensive');
+    Route::post('/categories/showInfo',[CategoryController::class, 'showInfo'])->name('categories.showInfo');
+    Route::post('/categories/showListServices',[CategoryController::class, 'showListServices'])->name('categories.showListServices');
 
+    Route::post('/ajax/categories/getEditFormB', [CategoryController::class, 'getEditFormB'])->name('categories.getEditFormB');
+    Route::post('/ajax/categories/saveDataUpdate', [CategoryController::class, 'saveDataUpdate'])->name('categories.saveDataUpdate');
+    Route::post('/ajax/categories/deleteData', [CategoryController::class, 'deleteData'])->name('categories.deleteData');
+    Route::post('/ajax/categories/storeData', [CategoryController::class, 'storeData'])->name('categories.storeData');
     // ==================== SERVICE ROUTES ====================
     Route::resource('/services', ServiceController::class);
+
+    Route::post('/ajax/services/getEditFormB', [ServiceController::class, 'getEditFormB'])->name('services.getEditFormB');
+    Route::post('/ajax/services/saveDataUpdate', [ServiceController::class, 'saveDataUpdate'])->name('services.saveDataUpdate');
+    Route::post('/ajax/services/deleteData', [ServiceController::class, 'deleteData'])->name('services.deleteData');
+    Route::post('/ajax/services/storeData', [ServiceController::class, 'storeData'])->name('services.storeData');
 
     // ==================== DOCTOR ROUTES ====================
     Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
