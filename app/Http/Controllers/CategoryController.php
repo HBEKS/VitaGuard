@@ -11,12 +11,10 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-      public function index(Request $request)
+    public function index(Request $request)
     {
         $perPage = $request->get('per_page', 5);
-        $allCategories = Category::with('services')
-            ->paginate($perPage)
-            ->withQueryString();
+        $allCategories = Category::with('services')->paginate($perPage)->withQueryString();
         return view('categories.index', compact('allCategories'));
     }
 
@@ -32,34 +30,20 @@ class CategoryController extends Controller
 
     public function saveDataUpdate(Request $request)
     {
-        $this->authorize('update-permission', Auth::user());
         $data = Category::find($request->id);
-        $data->category_name = $request->category_name;
+        $data->category_name = $request->name;
         $data->save();
-        return response()->json([
-            'status' => 'oke',
-            'new_name' => $data->category_name,
-            'msg' => 'Updated!'
-        ], 200);
+        return response()->json(['status' => 'oke', 'msg' => 'category data is up-to-date!'], 200);
     }
 
     public function deleteData(Request $request)
     {
-        $this->authorize('delete-permission', Auth::user());
         $data = Category::find($request->id);
         $data->delete();
-        return response()->json(['status' => 'oke', 'msg' => 'Deleted!'], 200);
+        return response()->json(['status' => 'oke', 'msg' => 'category data is removed!'], 200);
     }
 
-    public function storeData(Request $request)
-    {
-        $this->authorize('create-permission', Auth::user());
-        Category::create([
-            'category_name' => $request->category_name,
-            'image'         => $request->image ?? '',
-        ]);
-        return response()->json(['status' => 'oke', 'msg' => 'Created!'], 200);
-    }
+
     public function showExpensiveService()
     {
         // Ambil semua kategori beserta relasi services-nya
@@ -173,7 +157,6 @@ class CategoryController extends Controller
     {
         return view('categories.create');
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -181,11 +164,15 @@ class CategoryController extends Controller
     {
         $data = new Category();
         $data->category_name = $request->get('name');
+        $data->image = '';
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = strtolower(str_replace(' ', '_', $request->name)) . '.' . $file->extension();
+            $data->image = $file->storeAs('img/categories', $filename, 'public');
+        }
         $data->save();
-
-        return redirect()->route('categories.index')->with('success', 'Successfully added a new category.');
+        return redirect()->route('categories.index')->with('success', 'Successfully created data.');
     }
-
     /**
      * Display the specified resource.
      */
@@ -213,8 +200,17 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        try {
+            if ($category->image) {
+                $path = storage_path('app/public/' . $category->image);
+                if (file_exists($path)) unlink($path);
+            }
+            $category->delete();
+            return redirect()->route('categories.index')->with('success', 'Successfully deleted.');
+        } catch (\PDOException $ex) {
+            return redirect()->route('categories.index')->with('status', 'Make sure no related data.');
+        }
     }
 }

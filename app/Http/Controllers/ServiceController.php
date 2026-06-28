@@ -27,7 +27,7 @@ class ServiceController extends Controller
         $categories = Category::all();
         return view('services.create', compact('categories'));
     }
-        public function getEditFormB(Request $request)
+    public function getEditFormB(Request $request)
     {
         $data = Service::with('category')->find($request->id);
         $categories = Category::all();
@@ -39,31 +39,28 @@ class ServiceController extends Controller
 
     public function saveDataUpdate(Request $request)
     {
-        $this->authorize('update-permission', Auth::user());
         $data = Service::find($request->id);
-        $data->service_name  = $request->service_name;
-        $data->description   = $request->description;
-        $data->availability  = $request->availability;
-        $data->price         = $request->price;
-        $data->category_id   = $request->category_id;
+        $data->service_name = $request->service_name;
+        $data->description  = $request->description;
+        $data->availability = $request->availability;
+        $data->price        = $request->price;
+        $data->category_id  = $request->category_id;
         $data->save();
-        return response()->json([
-            'status' => 'oke',
-            'msg' => 'Updated!'
-        ], 200);
+        return response()->json(['status' => 'oke', 'msg' => 'service updated'], 200);
     }
-
     public function deleteData(Request $request)
     {
-        $this->authorize('delete-permission', Auth::user());
         $data = Service::find($request->id);
         $data->delete();
-        return response()->json(['status' => 'oke', 'msg' => 'Deleted!'], 200);
+        return response()->json(['status' => 'oke', 'msg' => 'service deleted'], 200);
     }
 
-    public function storeData(Request $request)
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $this->authorize('create-permission', Auth::user());
         Service::create([
             'category_id'  => $request->category_id,
             'service_name' => $request->service_name,
@@ -71,15 +68,7 @@ class ServiceController extends Controller
             'availability' => $request->availability,
             'price'        => $request->price,
         ]);
-        return response()->json(['status' => 'oke', 'msg' => 'Created!'], 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return redirect()->route('services.index')->with('success', 'Successfully created service.');
     }
 
     /**

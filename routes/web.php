@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\MemberController;
 
 //Authentication routes
 Auth::routes();
@@ -32,30 +33,28 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ajax/categories/getEditFormB', [CategoryController::class, 'getEditFormB'])->name('categories.getEditFormB');
     Route::post('/ajax/categories/saveDataUpdate', [CategoryController::class, 'saveDataUpdate'])->name('categories.saveDataUpdate');
     Route::post('/ajax/categories/deleteData', [CategoryController::class, 'deleteData'])->name('categories.deleteData');
-    Route::post('/ajax/categories/storeData', [CategoryController::class, 'storeData'])->name('categories.storeData');
     // ==================== SERVICE ROUTES ====================
     Route::resource('/services', ServiceController::class);
 
     Route::post('/ajax/services/getEditFormB', [ServiceController::class, 'getEditFormB'])->name('services.getEditFormB');
     Route::post('/ajax/services/saveDataUpdate', [ServiceController::class, 'saveDataUpdate'])->name('services.saveDataUpdate');
     Route::post('/ajax/services/deleteData', [ServiceController::class, 'deleteData'])->name('services.deleteData');
-    Route::post('/ajax/services/storeData', [ServiceController::class, 'storeData'])->name('services.storeData');
 
     // ==================== DOCTOR ROUTES ====================
-    Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
+    Route::resource('/listDoctor', DoctorController::class);
     Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
     Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
     Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
-
-
+    //member
+    Route::resource('/members', MemberController::class);
+    Route::post('/ajax/members/getEditFormB', [MemberController::class, 'getEditFormB'])->name('members.getEditFormB');
+    Route::post('/ajax/members/saveDataUpdate', [MemberController::class, 'saveDataUpdate'])->name('members.saveDataUpdate');
+    Route::post('/ajax/members/deleteData', [MemberController::class, 'deleteData'])->name('members.deleteData');
     //profile
-    Route::get('/profile', [ProfileController::class, 'index'])
-        ->name('profile');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     //profile edit 
-    Route::post('/ajax/profile/edit', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-    Route::post('/ajax/profile/update', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::post('/ajax/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/ajax/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
     //only admin can access
     Route::middleware(['role:admin'])->group(function () {
@@ -92,7 +91,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     //doctor and admin can access
-    Route::middleware(['role:doctor, admin'])->group(function () {
+    Route::middleware(['role:doctor,admin'])->group(function () {
         // ==================== APPOINTMENT ROUTES ====================
         Route::get('booking/index', [AppointmentController::class, 'index'])->name('doctorBooking');
         Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
