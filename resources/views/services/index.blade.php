@@ -1,7 +1,6 @@
 @extends('layouts.adminlte4')
 
 @section('title', 'Service List')
-
 @section('sidebar-services', 'active')
 
 @section('breadcrumb')
@@ -9,124 +8,191 @@
 @endsection
 
 @section('content')
-<div class="container mt-4">
-    <div class="page-header">
-        <h1 class="mb-4">
-            <!-- <i class="fas fa-stethoscope"></i> -->
-            Services List
-        </h1>
-        <div class="d-flex align-items-center gap-3">
-            <!-- <span class="stats-badge">
-                <i class="fas fa-list me-2"></i>
-                {{ count($services) }} Services per page
-            </span> -->
-            <!-- <a href="{{ url('/') }}" class="btn btn-outline-secondary rounded-pill px-4">
-                <i class="fas fa-arrow-left me-2"></i>Back
-            </a> -->
+    <div class="container mt-4">
+        <h1 class="mb-4">Services List</h1>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form method="GET" class="d-flex align-items-center">
+                <label>Show</label>
+                <select name="per_page" onchange="this.form.submit()">
+                    <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                </select>
+                entries
+            </form>
+            {{ $services->links() }}
         </div>
-    </div>
 
-    <!-- pagination -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <form method="GET" class="d-flex align-items-center">
-            <label>Show</label>
-            <select name="per_page" onchange="this.form.submit()">
-                <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                <option value="25" {{ request('per_page') == 15 ? 'selected' : '' }}>25</option>
-                <option value="50" {{ request('per_page') == 25 ? 'selected' : '' }}>50</option>
-                <option value="100" {{ request('per_page') == 50 ? 'selected' : '' }}>100</option>
-            </select>
-            entries
-        </form>
-        <!-- <small class="text-muted">
-            Showing {{ $services->firstItem() }}
-            to {{ $services->lastItem() }}
-            of {{ $services->total() }} results
-        </small> -->
-        {{ $services->links() }}
-    </div>
-
-    <div class="table-container">
-        <div class="table-responsive">             
+        <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col" class="text-center" width="5%">ID</th>
-                        <th scope="col" class="text-center" width="15%">Service Name</th>
-                        <th scope="col" class="text-center" width="15%">Description</th>
-                        <th scope="col" class="text-center" width="15%">Availability</th>
-                        <th scope="col" class="text-center" width="12%">Price</th>
-                        <th scope="col" class="text-center" width="10%">Category Name</th>
-                        @if(Auth::user()->role == "admin")
-                            <th scope="col" class="text-center" width="5%">Action</th>
-                        @endif
+                        <th class="text-center" width="5%">ID</th>
+                        <th class="text-center" width="15%">Service Name</th>
+                        <th class="text-center" width="15%">Description</th>
+                        <th class="text-center" width="15%">Availability</th>
+                        <th class="text-center" width="12%">Price</th>
+                        <th class="text-center" width="10%">Category Name</th>
+                        @can('update-permission', Auth::user())
+                            <th class="text-center" width="10%">Action</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($services as $item)
-                    <tr>
-                        <td class="text-center">
-                            <span class="badge bg-secondary">{{ $item->id }}</span>
-                        </td>
-                        <td>
-                            <div class="service-name">
-                                <i class="fas fa-briefcase-medical text-primary me-2"></i>
-                                <!-- any idea why ini dibuat routing? -->
-                                <!-- <a href={{ route('services.show', $item->id) }} class="fw-bold text-primary" style="text-decoration: none;">
-                                    {{ $item->service_name }}
-                                </a> -->
-                                {{$item->service_name}}
-                            </div>
-                        </td>
-                        <td style="white-space: normal;">
-                            <i class="fas fa-align-left text-muted me-2"></i>
-                            {{$item->description}}
-                        </td>
-                        <td>
-                            <span class="availability-badge">
-                                <i class="far fa-clock me-1"></i>
-                                {{ $item->availability }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="price-tag">
-                                Rp {{ number_format($item->price, 0, ',', '.') }}
-                            </span>
-                        </td>
-                        <td>
-                            <span>
-                                {{ $item->category->category_name }}
-                            </span>
-                        </td>
-                        @if(Auth::user()->role == "admin")
-                        <td class="text-center">
-                            <button type="button" class="btn btn-info btn-sm" onclick="">
-                                <i class="fas fa-list"></i> Edit
-                            </button>
-                        </td>
-                        @endif
-                    </tr>
+                        <tr id="tr_{{ $item->id }}">
+                            <td class="text-center">
+                                <span class="badge bg-secondary">{{ $item->id }}</span>
+                            </td>
+                            <td>{{ $item->service_name }}</td>
+                            <td style="white-space: normal;">{{ $item->description }}</td>
+                            <td>{{ $item->availability }}</td>
+                            <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                            <td>{{ $item->category->category_name }}</td>
+                            @can('update-permission', Auth::user())
+                                <td class="text-center">
+                                    <a href="#modalEditB" class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        onclick="getEditFormB('{{ $item->id }}')">Edit</a>
+                                    @can('delete-permission', Auth::user())
+                                        <a href="#" class="btn btn-sm btn-danger"
+                                            onclick="if(confirm('Hapus {{ $item->service_name }}?')) deleteDataRemove('{{ $item->id }}')">
+                                            Delete
+                                        </a>
+                                    @endcan
+                                </td>
+                            @endcan
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
-        
         </div>
-    </div>
 
-    <hr class="my-4">
-    
-    @if (Auth::user()->role == "admin")
-    <div class="d-flex gap-3 justify-content-center">
-            <a href="{{route('services.create')}}" class="btn btn-primary">+ New Service</a>
-            <a href="{{ url('dashboard/categories') }}" class="btn btn-warning">
-                <i class="fas fa-stethoscope"></i> View Categories
-            </a>
-            <a href="{{ url('/') }}" class="btn btn-outline-dark">
-                <i class="fas fa-home"></i> Back to Home
-            </a>
+        <hr class="my-4">
+
+        @can('create-permission', Auth::user())
+            <div class="d-flex gap-3 justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#btnFormModal">
+                    + New Service
+                </button>
+                <a href="{{ url('/categories') }}" class="btn btn-warning">View Categories</a>
+                <a href="{{ url('/') }}" class="btn btn-outline-dark">Back to Home</a>
+            </div>
+        @endcan
+
+        {{-- Modal Create --}}
+        <div class="modal fade" id="btnFormModal" tabindex="-1" role="basic">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add New Service</h4>
+                    </div>
+                    <form method="POST" action="{{ route('services.store') }}">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Service Name</label>
+                                <input type="text" name="service_name" class="form-control" placeholder="Service name">
+                            </div>
+                            <div class="mb-3">
+                                <label>Description</label>
+                                <textarea name="description" class="form-control" placeholder="Description"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label>Availability</label>
+                                <input type="text" name="availability" class="form-control"
+                                    placeholder="e.g. 08.00 - 17.00">
+                            </div>
+                            <div class="mb-3">
+                                <label>Price</label>
+                                <input type="number" name="price" class="form-control" placeholder="0">
+                            </div>
+                            <div class="mb-3">
+                                <label>Category</label>
+                                <select name="category_id" class="form-select">
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}">{{ $cat->category_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+
+        {{-- Modal Edit B --}}
+        <div class="modal fade" id="modalEditB" tabindex="-1" role="basic">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Service</h4>
+                    </div>
+                    <div class="modal-body" id="modalContentB"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-    @endif
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection
+
+@push('script')
+    <script>
+        function getEditFormB(id) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ route("services.getEditFormB") }}',
+                data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
+                success: function (data) {
+                    $('#modalContentB').html(data.msg);
+                }
+            });
+        }
+
+        function saveDataUpdate(id) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ route("services.saveDataUpdate") }}',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'id': id,
+                    'service_name': $('#edit_service_name').val(),
+                    'description': $('#edit_description').val(),
+                    'availability': $('#edit_availability').val(),
+                    'price': $('#edit_price').val(),
+                    'category_id': $('#edit_category_id').val(),
+                },
+                success: function (data) {
+                    if (data.status == "oke") {
+                        $('#modalEditB').modal('hide');
+                        $('body').removeClass('modal-open');
+                        $('.modal-backdrop').remove();
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function deleteDataRemove(id) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ route("services.deleteData") }}',
+                data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
+                success: function (data) {
+                    if (data.status == "oke") {
+                        $('#tr_' + id).remove();
+                    }
+                }
+            });
+        }
+    </script>
+@endpush

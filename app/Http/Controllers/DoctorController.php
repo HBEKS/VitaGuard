@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Specialization;
 use Illuminate\Http\Request;
+use App\Models\DoctorProfile;
+use App\Models\Service; 
 
 class DoctorController extends Controller
 {
@@ -23,19 +25,54 @@ class DoctorController extends Controller
                 $q->where('specialization_id', $request->specialization);
             });
         }
-
+        $members = User::where('role', 'member')->orderBy('name')->get();
         $doctors = $query->orderBy('name')->paginate(5);
         $specializations = Specialization::orderBy('name')->get();
-        return view('doctor.index', compact('doctors', 'specializations'));
+        return view('doctor.index', compact('doctors', 'specializations', 'members'));;
 
-        
-        $perPage = request('per_page',5);
-        $doctors = $query
-            ->orderBy('name')
-            ->paginate($perPage)
-            ->withQueryString();
+    }
+    public function getEditFormB(Request $request)
+    {
+        $doctor = User::with(['doctorProfile.specialization', 'doctorProfile.services'])->find($request->id);
+        $specializations = Specialization::orderBy('name')->get();
+        $services = Service::orderBy('service_name')->get();
+        return response()->json([
+            'status' => 'oke',
+            'msg' => view('doctor.getEditFormB', compact('doctor', 'specializations', 'services'))->render()
+        ], 200);
+    }
+    public function saveDataUpdate(Request $request)
+    {
+        $profile = DoctorProfile::where('user_id', $request->id)->first();
+        $profile->specialization_id = $request->specialization_id;
+        $profile->experience_years  = $request->experience_years;
+        $profile->str_number        = $request->str_number;
+        $profile->save();
+        $profile->services()->sync($request->service_ids ?? []);
+        return response()->json(['status' => 'oke', 'msg' => 'Doctor updated!'], 200);
+    }
+    public function store(Request $request)
+    {
+        $user = User::find($request->user_id);
+        $user->role = 'doctor';
+        $user->save();
+
+        DoctorProfile::create([
+            'user_id'           => $user->id,
+            'specialization_id' => $request->specialization_id,
+            'experience_years'  => $request->experience_years,
+            'str_number'        => $request->str_number,
+        ]);
+
+        return redirect()->route('listDoctor.index')->with('success', 'Doctor added!');
     }
 
+    public function deleteData(Request $request)
+    {
+        $user = User::find($request->id);
+        $user->delete();
+        return response()->json(['status' => 'oke', 'msg' => 'Doctor deleted!'], 200);
+    }
     public function show(User $doctor)
     {
         $doctor->load([
@@ -65,4 +102,5 @@ class DoctorController extends Controller
 
         return view('admin.doctors.schedules', compact('doctor', 'schedules'));
     }
+    
 }

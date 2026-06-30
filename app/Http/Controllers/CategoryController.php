@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
-
+use Illuminate\Support\Facades\Auth;
 class CategoryController extends Controller
 {
     /**
@@ -13,14 +13,36 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        // $allCategories = Category::all();
         $perPage = $request->get('per_page', 5);
-
-        $allCategories = Category::with('services')
-            ->paginate($perPage)
-            ->withQueryString();
+        $allCategories = Category::with('services')->paginate($perPage)->withQueryString();
         return view('categories.index', compact('allCategories'));
     }
+
+    public function getEditFormB(Request $request)
+    {
+        $id = $request->id;
+        $data = Category::find($id);
+        return response()->json([
+            'status' => 'oke',
+            'msg' => view('categories.getEditFormB', compact('data'))->render()
+        ], 200);
+    }
+
+    public function saveDataUpdate(Request $request)
+    {
+        $data = Category::find($request->id);
+        $data->category_name = $request->name;
+        $data->save();
+        return response()->json(['status' => 'oke', 'msg' => 'category data is up-to-date!'], 200);
+    }
+
+    public function deleteData(Request $request)
+    {
+        $data = Category::find($request->id);
+        $data->delete();
+        return response()->json(['status' => 'oke', 'msg' => 'category data is removed!'], 200);
+    }
+
 
     public function showExpensiveService()
     {
@@ -128,7 +150,6 @@ class CategoryController extends Controller
         ]);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -136,7 +157,6 @@ class CategoryController extends Controller
     {
         return view('categories.create');
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -144,11 +164,15 @@ class CategoryController extends Controller
     {
         $data = new Category();
         $data->category_name = $request->get('name');
+        $data->image = '';
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = strtolower(str_replace(' ', '_', $request->name)) . '.' . $file->extension();
+            $data->image = $file->storeAs('img/categories', $filename, 'public');
+        }
         $data->save();
-
-        return redirect()->route('categories.index')->with('success', 'Successfully added a new category.');
+        return redirect()->route('categories.index')->with('success', 'Successfully created data.');
     }
-
     /**
      * Display the specified resource.
      */
@@ -176,8 +200,17 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        try {
+            if ($category->image) {
+                $path = storage_path('app/public/' . $category->image);
+                if (file_exists($path)) unlink($path);
+            }
+            $category->delete();
+            return redirect()->route('categories.index')->with('success', 'Successfully deleted.');
+        } catch (\PDOException $ex) {
+            return redirect()->route('categories.index')->with('status', 'Make sure no related data.');
+        }
     }
 }
