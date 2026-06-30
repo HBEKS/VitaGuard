@@ -119,20 +119,15 @@
                         </a>
 
                         {{-- Notes --}}
-                        @php
-                        $notes = addslashes($a->doctor_notes ?? '');
-                        @endphp
-
                         <button
-                            class="btn btn-secondary btn-sm w-100"
-                            onclick="showNotesModal('{{ $a->id }}','{{ $notes }}')">
-
+                            id="btnNotes{{ $a->id }}"
+                            class="btn {{ $a->doctor_notes ? 'btn-dark' : 'btn-secondary' }} btn-sm w-100"
+                            data-id="{{ $a->id }}"
+                            data-notes="{{ $a->doctor_notes }}"
+                            onclick="showNotesModal(this)">
                             <i class="bi bi-journal-medical"></i>
-
                             {{ $a->doctor_notes ? 'Edit Notes' : 'Add Notes' }}
-
                         </button>
-
                         @endif
 
                         <!-- admin -->
@@ -159,10 +154,91 @@
     @endif
 </div>
 
+<!-- Modal Doctor Notes -->
+<div class="modal fade" id="modalNotes" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Doctor Notes
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <input
+                    type="hidden"
+                    id="notes_id">
+                <div class="mb-3">
+                    <label class="form-label">
+                        Notes
+                    </label>
+                    <textarea
+                        id="doctor_notes_input"
+                        class="form-control"
+                        rows="6"
+                        placeholder="Write doctor notes here..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button
+                    class="btn btn-success"
+                    onclick="saveNotes()">
+                    Save Notes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('script')
 <script>
+    function showNotesModal(button) {
+        let id = button.dataset.id;
+        let notes = button.dataset.notes ?? '';
+
+        $('#notes_id').val(id);
+        $('#doctor_notes_input').val(notes);
+        $('#modalNotes').modal('show');
+    }
+
+    function saveNotes() {
+        var id = $('#notes_id').val();
+        var doctor_notes = $('#doctor_notes_input').val();
+
+        $.ajax({
+            type: "POST",
+            url: "{{ route('appointment.saveNotes') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: id,
+                doctor_notes: doctor_notes
+            },
+
+            success: function(response) {
+                console.log(response);
+                alert("Doctor notes berhasil disimpan!");
+                location.reload();
+            },
+
+            error: function(xhr) {
+                console.log(xhr);
+                alert("ERROR");
+            }
+        });
+
+    }
+
     function getEditFormB(id) {
         $.ajax({
             type: 'POST',

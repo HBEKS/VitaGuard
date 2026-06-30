@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Message;
 use Illuminate\Http\Request;
 
@@ -10,10 +11,20 @@ class MessageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Appointment $appointment)
     {
-        $messages = Message::all();
-        return view('message.index', compact('messages'));
+        $messages = Message::with('sender')
+            ->where('appointment_id', $appointment->id)
+            ->orderBy('created_at')
+            ->get();
+
+        return view(
+            'chat.index',
+            compact(
+                'appointment',
+                'messages'
+            )
+        );
     }
 
     /**
@@ -29,7 +40,12 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Message::create([
+            'appointment_id' => $request->appointment_id,
+            'sender_id' => auth()->id(),
+            'message' => $request->message
+        ]);
+        return redirect()->back();
     }
 
     /**

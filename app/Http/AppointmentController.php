@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Models\Service;
+use GuzzleHttp\Psr7\Response;
+
 class AppointmentController extends Controller
 {
     /**
@@ -42,6 +44,19 @@ class AppointmentController extends Controller
             'new_status' => $data->status,
             'new_date' => $data->appointment_date->format('Y-m-d'),
             'msg' => 'Appointment updated!'
+        ], 200);
+    }
+
+    public function saveNotes(Request $request)
+    {
+        $appointment = Appointment::find($request->id);
+
+        $appointment->doctor_notes = $request->doctor_notes;
+        $appointment -> save();
+
+        return response()->json([
+            'status' => 'oke',
+            'doctor_notes' => $appointment -> doctor_notes
         ], 200);
     }
 

@@ -14,7 +14,7 @@ use App\Http\Controllers\ServiceController;
 Auth::routes();
 Route::middleware(['auth'])->group(function () {
 
-    // all user can access
+    #region all user can access
     Route::get('/', function () {
         return redirect()->route('login');
     });
@@ -43,10 +43,6 @@ Route::middleware(['auth'])->group(function () {
 
     // ==================== DOCTOR ROUTES ====================
     Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
-    Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
-    Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
-    Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
-
 
     //profile
     Route::get('/profile', [ProfileController::class, 'index'])
@@ -56,15 +52,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('profile.edit');
     Route::post('/ajax/profile/update', [ProfileController::class, 'update'])
         ->name('profile.update');
+    #endregion
 
-    //only admin can access
-    Route::middleware(['role:admin'])->group(function () {
-        Route::get('/admin', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
-    });
-
+    #region doctor access
     //only doctor can access
+    Route::post('ajax/appointment/saveNotes', [AppointmentController::class, 'saveNotes'])->name('appointment.saveNotes');
     Route::middleware(['role:doctor'])->group(function () {
         Route::get('/doctor', function () {
             return view('doctor.dashboard');
@@ -77,21 +69,31 @@ Route::middleware(['auth'])->group(function () {
             '/appointment/{appointment}/status',
             [AppointmentController::class, 'updateStatus']
         )->name('appointment.updateStatus');
-
-        Route::post(
-            '/appointment/saveNotes',
-            [AppointmentController::class, 'saveNotes']
-        )->name('appointment.saveNotes');
     });
+    #endregion
 
+    #region admin access
+    //only admin can access
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('/admin', function () {
+            return view('admin.dashboard');
+        })->name('admin.dashboard');
+    });
+    Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
+    Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
+    Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
+    #endregion
+
+    #region member access only
     //only member can access
     Route::middleware(['role:member'])->group(function () {
         Route::get('/member', function () {
             return view('member.dashboard');
         })->name('member.dashboard');
     });
+    #endregion
 
-    //doctor and admin can access
+    #region doctor and admin access 
     Route::middleware(['role:doctor, admin'])->group(function () {
         // ==================== APPOINTMENT ROUTES ====================
         Route::get('booking/index', [AppointmentController::class, 'index'])->name('doctorBooking');
@@ -99,8 +101,15 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/ajax/appointment/saveDataUpdate', [AppointmentController::class, 'saveDataUpdate'])->name('appointment.saveDataUpdate');
         Route::post('/ajax/appointment/deleteData', [AppointmentController::class, 'deleteData'])->name('appointment.deleteData');
     });
+    #endregion
 
-
+    #region doctor and member access
+    //chat 
+    Route::get('/chat/{appointment}', [MessageController::class, 'index'])
+        ->name('chat.show');
+    Route::post('/chat/send', [MessageController::class, 'store'])
+        ->name('chat.send');
+    #endregion
 
 
     // ==================== ARTICLE ROUTES ====================
