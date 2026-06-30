@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+
 class CategoryController extends Controller
 {
     /**
@@ -163,15 +164,22 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $data = new Category();
-        $data->category_name = $request->get('name');
-        $data->image = '';
+        $data->category_name = $request->name;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = strtolower(str_replace(' ', '_', $request->name)) . '.' . $file->extension();
-            $data->image = $file->storeAs('img/categories', $filename, 'public');
+            $filename = strtolower(str_replace(' ', '_', $request->name))
+                . '.' .
+                $file->getClientOriginalExtension();
+            $file->move(
+                public_path('adminlte4/assets/img/categories'),
+                $filename
+            );
+            $data->image = $filename;
         }
         $data->save();
-        return redirect()->route('categories.index')->with('success', 'Successfully created data.');
+        return redirect()
+            ->route('categories.index')
+            ->with('success', 'Successfully created data.');
     }
     /**
      * Display the specified resource.

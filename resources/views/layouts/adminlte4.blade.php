@@ -258,21 +258,23 @@
                 <nav class="mt-2">
                     <!--begin::Sidebar Menu-->
                     @php
-                        $role = Auth::user()->role;
+                    $role = Auth::user()->role;
                     @endphp
+
                     <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu"
                         data-accordion="false">
 
-                        <!-- dashboard -->
+                        <!-- dashboard routing -->
                         @php
-                            if ($role === 'admin') {
-                                $dashboardRoute = route('admin.dashboard');
-                            } elseif ($role === 'doctor') {
-                                $dashboardRoute = route('doctor.dashboard');
-                            } elseif ($role === 'member') {
-                                $dashboardRoute = route('member.dashboard');
-                            }
+                        if ($role === 'admin') {
+                        $dashboardRoute = route('admin.dashboard');
+                        } elseif ($role === 'doctor') {
+                        $dashboardRoute = route('doctor.dashboard');
+                        } elseif ($role === 'member') {
+                        $dashboardRoute = route('member.dashboard');
+                        }
                         @endphp
+
                         <li class="nav-item">
                             <a href="{{ $dashboardRoute }}" class="nav-link @yield('sidebar-dashboard')">
                                 <i class="nav-icon bi bi-speedometer"></i>
@@ -282,76 +284,94 @@
                             </a>
                         </li>
 
-                        <!-- services -->
+                        <!-- admin menu -->
+                        @if($role == "admin")
+                        <!-- daftar service -->
                         <li class="nav-item">
                             <a href="{{ route('services.index') }}" class="nav-link @yield('sidebar-services')">
-                                <i class="nav-icon bi bi-chat-dots"></i>
-                                <p>Services</p>
+                                <i class="nav-icon bi bi-heart-pulse"></i>
+                                <p>List of Service</p>
                             </a>
                         </li>
 
-                        <!-- category -->
+                        <!-- daftar kategori -->
                         <li class="nav-item">
                             <a href="{{ route('categories.index') }}" class="nav-link @yield('sidebar-categories')">
                                 <i class="nav-icon bi bi-tags"></i>
-                                <p>Category</p>
+                                <p>List of Categories</p>
                             </a>
                         </li>
 
-                        <!-- doctor -->
+                        <!-- daftar dokter -->
                         <li class="nav-item">
-                            <a href="{{ route('listDoctor.index') }}" class="nav-link @yield('sidebar-doctors')">
+                            <a href="{{ route('listDoctor') }}" class="nav-link @yield('sidebar-doctors')">
                                 <i class="nav-icon bi bi-person-badge"></i>
-                                <p>Doctors</p>
+                                <p>List of Doctors</p>
                             </a>
                         </li>
-                        
-                        @if($role === 'admin')
-                            <li class="nav-item">
-                                <a href="{{ route('members.index') }}" class="nav-link @yield('sidebar-members')">
-                                    <i class="nav-icon bi bi-people"></i>
-                                    <p>Members</p>
-                                </a>
-                            </li>
-                        @endif
 
-                        <!-- articles -->
+                        <!-- daftar member -->
+                        <li class="nav-item">
+                            <a href="{{ route('members.index') }}" class="nav-link @yield('sidebar-members')">
+                                <i class="nav-icon bi bi-people"></i>
+                                <p>List of Members</p>
+                            </a>
+                        </li>
+
+                        <!-- daftar artikel -->
                         <li class="nav-item">
                             <a href="{{ route('article') }}" class="nav-link @yield('sidebar-artikel')">
                                 <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <p>List Of Articles</p>
+                            </a>
+                        </li>
+
+                        <!-- appointment & payment -->
+                        <li class="nav-item">
+                            <a href="{{ route('doctorBooking') }}" class="nav-link @yield('sidebar-booking')">
+                                <i class="nav-icon bi bi-box"></i>
+                                <p>List of Consultations</p>
+                            </a>
+                        </li>
+                        @endif
+
+                        <!-- doctor menu -->
+                        @if($role == "doctor")
+                        <!-- appointment -->
+                        <li class="nav-item">
+                            <a href="{{ route('doctorBooking') }}" class="nav-link">
+                                <i class="nav-icon bi bi-box"></i>
+                                <p>My Appointments</p>
+                            </a>
+                        </li>
+                        @endif
+
+                        <!-- member menu -->
+                        @if($role == "member")
+                        <li class="nav-item">
+                            <a href="{{ route('article') }}" class="nav-link">
                                 <p>Articles</p>
                             </a>
                         </li>
 
-                        <!-- booking appointment -->
-                        @if($role === 'member' || $role === 'doctor')
-                            <li class="nav-item">
-                                <a href="{{ route('doctorBooking') }}" class="nav-link @yield('sidebar-booking')">
-                                    <i class="nav-icon bi bi-box"></i>
-                                    <p>My Appointment</p>
-                                </a>
-                            </li>
-                        @endif
-
-                        <!-- transaction -->
-                        @if($role === 'admin' || $role === 'member')
-                            <li class="nav-item">
-                                <a href="{{ route('transaction') }}" class="nav-link @yield('sidebar-transaksi')">
-                                    <i class="nav-icon bi bi-cash-stack"></i>
-                                    <p>Transactions</p>
-                                </a>
-                            </li>
-                        @endif
-
-                        <!-- chat >> ini harusnya di akses dari my booking. my appointment itu
-                        @if($role === 'doctor' || $role === 'member')
                         <li class="nav-item">
-                            <a href="{{ route('chat') }}" class="nav-link @yield('sidebar-chat')">
-                                <i class="nav-icon bi bi-chat-dots"></i>
-                                <p>Chat</p>
+                            <a href="{{ route('listDoctor') }}" class="nav-link">
+                                <p>Doctors</p>
                             </a>
                         </li>
-                        @endif -->
+
+                        <li class="nav-item">
+                            <a href="{{ route('doctorBooking') }}" class="nav-link">
+                                <p>Booking</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('doctorBooking') }}" class="nav-link">
+                                <p>Appointment History</p>
+                            </a>
+                        </li>
+                        @endif
 
                         <!-- profile -->
                         <li class="nav-item">
@@ -429,7 +449,7 @@
             scrollbarAutoHide: 'leave',
             scrollbarClickScroll: true,
         };
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
             if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
                 OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
@@ -475,13 +495,13 @@
 
         const sales_chart_options = {
             series: [{
-                name: 'Digital Goods',
-                data: [28, 48, 40, 19, 86, 27, 90],
-            },
-            {
-                name: 'Electronics',
-                data: [65, 59, 80, 81, 56, 55, 40],
-            },
+                    name: 'Digital Goods',
+                    data: [28, 48, 40, 19, 86, 27, 90],
+                },
+                {
+                    name: 'Electronics',
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                },
             ],
             chart: {
                 height: 300,
@@ -556,7 +576,7 @@
         const option_sparkline1 = {
             series: [{
                 data: [1000, 1200, 920, 927, 931, 1027, 819, 930, 1021],
-            },],
+            }, ],
             chart: {
                 type: 'area',
                 height: 50,
@@ -582,7 +602,7 @@
         const option_sparkline2 = {
             series: [{
                 data: [515, 519, 520, 522, 652, 810, 370, 627, 319, 630, 921],
-            },],
+            }, ],
             chart: {
                 type: 'area',
                 height: 50,
@@ -608,7 +628,7 @@
         const option_sparkline3 = {
             series: [{
                 data: [15, 19, 20, 22, 33, 27, 31, 27, 19, 30, 21],
-            },],
+            }, ],
             chart: {
                 type: 'area',
                 height: 50,

@@ -7,17 +7,17 @@ use App\Models\User;
 use App\Models\Specialization;
 use Illuminate\Http\Request;
 use App\Models\DoctorProfile;
-use App\Models\Service; 
+use App\Models\Service;
 
 class DoctorController extends Controller
 {
     public function index(Request $request)
     {
         $query = User::where('role', 'doctor')
-        ->with([
-            'doctorProfile.specialization',
-            'doctorProfile.services'
-        ]);
+            ->with([
+                'doctorProfile.specialization',
+                'doctorProfile.services'
+            ]);
 
         // Filter specialization (opsional)
         if ($request->filled('specialization')) {
@@ -28,8 +28,10 @@ class DoctorController extends Controller
         $members = User::where('role', 'member')->orderBy('name')->get();
         $doctors = $query->orderBy('name')->paginate(5);
         $specializations = Specialization::orderBy('name')->get();
-        return view('doctor.index', compact('doctors', 'specializations', 'members'));;
 
+        $services = Service::orderBy('service_name')->get();
+
+        return view('doctor.index', compact('doctors', 'specializations', 'members', 'services'));;
     }
     public function getEditFormB(Request $request)
     {
@@ -64,7 +66,7 @@ class DoctorController extends Controller
             'str_number'        => $request->str_number,
         ]);
 
-        return redirect()->route('listDoctor.index')->with('success', 'Doctor added!');
+        return redirect()->route('listDoctor')->with('success', 'Doctor added!');
     }
 
     public function deleteData(Request $request)
@@ -102,5 +104,4 @@ class DoctorController extends Controller
 
         return view('admin.doctors.schedules', compact('doctor', 'schedules'));
     }
-    
 }

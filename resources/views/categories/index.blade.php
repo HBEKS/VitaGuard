@@ -8,16 +8,40 @@
 
 @push('styles')
 <style>
-    .table-bordered td, .table-bordered th { border: 1px solid #dee2e6 !important; vertical-align: middle; }
-    .table thead th { background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; font-weight: 600; }
-    .btn-sm { padding: 5px 12px; }
-    .modal-xl { max-width: 1140px; }
+    .table-bordered td,
+    .table-bordered th {
+        border: 1px solid #dee2e6 !important;
+        vertical-align: middle;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+    }
+
+    .btn-sm {
+        padding: 5px 12px;
+    }
+
+    .modal-xl {
+        max-width: 1140px;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="container mt-4">
-    <h1 class="mb-4">Categories List</h1>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-4">Categories List</h1>
+
+        @can('create-permission', Auth::user())
+        <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#btnFormModal">
+            <i class="bi bi-plus-circle"></i>
+            New Category (With Modals)
+        </button>
+        @endcan
+    </div>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
@@ -32,7 +56,7 @@
         <form method="GET" class="d-flex align-items-center gap-2">
             <label>Show</label>
             <select name="per_page" onchange="this.form.submit()">
-                <option value="5"  {{ request('per_page') == 5  ? 'selected' : '' }}>5</option>
+                <option value="5" {{ request('per_page') == 5  ? 'selected' : '' }}>5</option>
                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                 <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                 <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
@@ -42,11 +66,7 @@
         {{ $allCategories->links() }}
     </div>
 
-    @can('create-permission', Auth::user())
-    <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#btnFormModal">
-        + New Category (With Modals)
-    </button>
-    @endcan
+
 
     <table class="table table-bordered table-striped table-hover align-middle">
         <thead class="table-light">
@@ -84,10 +104,10 @@
                 @can('update-permission', Auth::user())
                 <td class="text-center">
                     <a href="#modalEditB" class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                       onclick="getEditFormB('{{ $cat->id }}')">Edit</a>
+                        onclick="getEditFormB('{{ $cat->id }}')">Edit</a>
                     @can('delete-permission', Auth::user())
                     <a href="#" class="btn btn-sm btn-danger"
-                       onclick="if(confirm('Hapus {{ $cat->category_name }}?')) deleteDataRemove('{{ $cat->id }}')">
+                        onclick="if(confirm('Hapus {{ $cat->category_name }}?')) deleteDataRemove('{{ $cat->id }}')">
                         Delete
                     </a>
                     @endcan
@@ -102,18 +122,7 @@
         </tbody>
     </table>
 
-    <hr class="my-4">
-
-    @can('create-permission', Auth::user())
-    <div class="d-flex gap-3 justify-content-center">
-        <a href="{{ url('/services') }}" class="btn btn-warning">
-            <i class="fas fa-stethoscope"></i> View Services
-        </a>
-        <a href="{{ url('/') }}" class="btn btn-outline-dark">
-            <i class="fas fa-home"></i> Back to Home
-        </a>
-    </div>
-    @endcan
+</div>
 </div>
 
 {{-- Image Modals --}}
@@ -128,25 +137,18 @@
             </div>
             <div class="modal-body text-center">
                 @php
-                    $imageFound = false; $imageUrl = null;
-                    $possiblePaths = [
-                        $cat->image,
-                        'img/categories/' . $cat->id . '.jpg',
-                        'img/categories/' . $cat->id . '.png',
-                    ];
-                    foreach ($possiblePaths as $path) {
-                        if ($path && file_exists(public_path('storage/' . $path))) {
-                            $imageFound = true; $imageUrl = asset('storage/' . $path); break;
-                        }
-                    }
+                $imagePath = public_path('adminlte4/assets/img/categories/' . $cat->image);
+                $imageFound = file_exists($imagePath);
+                $imageUrl = asset('adminlte4/assets/img/categories/' . $cat->image);
                 @endphp
+
                 @if($imageFound)
-                    <img src="{{ $imageUrl }}" class="img-fluid rounded" style="max-height: 300px;">
+                <img src="{{ $imageUrl }}" class="img-fluid rounded" style="max-height: 300px;">
                 @else
-                    <div class="p-5 bg-light rounded">
-                        <i class="fas fa-image fa-4x text-muted mb-3"></i>
-                        <p class="text-muted">No image available</p>
-                    </div>
+                <div class="p-5 bg-light rounded">
+                    <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                    <p class="text-muted">No image available</p>
+                </div>
                 @endif
             </div>
             <div class="modal-footer">
@@ -228,62 +230,71 @@
 
 @push('script')
 <script>
-function showDetail(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("categories.showListServices") }}',
-        data: { '_token': '<?php echo csrf_token(); ?>', 'idcat': id },
-        success: function(data) {
-            $('#detail-title').html(data.title);
-            $('#detail-body').html(data.body);
-        }
-    });
-}
-
-function getEditFormB(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("categories.getEditFormB") }}',
-        data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
-        success: function(data) {
-            $('#modalContentB').html(data.msg);
-        }
-    });
-}
-
-function saveDataUpdate(id) {
-    var name = $('#cname').val();
-    console.log(name);
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("categories.saveDataUpdate") }}',
-        data: {
-            '_token': '<?php echo csrf_token(); ?>',
-            'id': id,
-            'name': name,
-        },
-        success: function(data) {
-            if (data.status == "oke") {
-                $('#td_name_' + id).html(name);
-                $('#modalEditB').modal('hide');
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
+    function showDetail(id) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("categories.showListServices") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'idcat': id
+            },
+            success: function(data) {
+                $('#detail-title').html(data.title);
+                $('#detail-body').html(data.body);
             }
-        }
-    });
-}
+        });
+    }
 
-function deleteDataRemove(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("categories.deleteData") }}',
-        data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
-        success: function(data) {
-            if (data.status == "oke") {
-                $('#tr_' + id).remove();
+    function getEditFormB(id) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("categories.getEditFormB") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'id': id
+            },
+            success: function(data) {
+                $('#modalContentB').html(data.msg);
             }
-        }
-    });
-}
+        });
+    }
+
+    function saveDataUpdate(id) {
+        var name = $('#cname').val();
+        console.log(name);
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("categories.saveDataUpdate") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'id': id,
+                'name': name,
+            },
+            success: function(data) {
+                if (data.status == "oke") {
+                    $('#td_name_' + id).html(name);
+                    $('#modalEditB').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                }
+            }
+        });
+    }
+
+    function deleteDataRemove(id) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("categories.deleteData") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'id': id
+            },
+            success: function(data) {
+                if (data.status == "oke") {
+                    $('#tr_' + id).remove();
+                }
+            }
+        });
+    }
 </script>
 @endpush
