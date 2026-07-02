@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
@@ -15,11 +15,8 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
 
     #region FINAL ROUTE
-    //JUJUR PUYENK 
-    #region semua user bisa akses 
-    Route::get('/register', function () {
-        return view('auth.register');
-    })->name('register');
+    //JUJUR PUYENK
+    #region semua user bisa akses
 
     Route::get('/', function () {
         return redirect()->route('login');
@@ -29,7 +26,7 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('login');
     });
 
-    //articles 
+    //articles
     Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
     Route::get('/dashboard/article/{id}', [ArticleController::class, 'show'])->name('article.show');
 
@@ -120,7 +117,7 @@ Route::middleware(['auth'])->group(function () {
 
     #region doctor + member only
     Route::middleware(['role:doctor,member'])->group(function () {
-        //chat 
+        //chat
         Route::get('/chat/{appointment}', [MessageController::class, 'index'])->name('chat.show');
         Route::post('/chat/send', [MessageController::class, 'store'])->name('chat.send');
         Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
@@ -146,8 +143,12 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-    
-    
+Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
+
+
+
 
     // // ==================== TRANSACTION ROUTES ====================
     // Route::resource('/dashboard/transaction', TransactionController::class);
