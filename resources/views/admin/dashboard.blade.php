@@ -28,7 +28,7 @@
 
         <!-- Categories -->
         <div class="col-md-4">
-            <a href="{{ route('article') }}" class="text-decoration-none">
+            <a href="{{ route('categories.index') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Categories</h5>
                     <p class="text-muted">Daftar Categories</p>
@@ -38,7 +38,7 @@
 
         <!-- list dokter -->
         <div class="col-md-4">
-            <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
+            <a href="{{ route('listDoctor') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Dokter</h5>
                     <p class="text-muted">Daftar dokter</p>
@@ -48,7 +48,7 @@
 
         <!-- list member -->
         <div class="col-md-4">
-            <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
+            <a href="{{ route('members.index') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Member</h5>
                     <p class="text-muted">Daftar Member</p>
