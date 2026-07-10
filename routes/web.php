@@ -44,7 +44,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::post('/ajax/articles/getEditFormB', [ArticleController::class, 'getEditFormB'])->name('articles.getEditFormB');
         Route::post('/ajax/articles/saveDataUpdate', [ArticleController::class, 'saveDataUpdate'])->name('articles.saveDataUpdate');
         Route::post('/ajax/articles/deleteData', [ArticleController::class, 'deleteData'])->name('articles.deleteData');
-        
+
         Route::resource('/members', MemberController::class);
         Route::post('/ajax/members/getEditFormB', [MemberController::class, 'getEditFormB'])->name('members.getEditFormB');
         Route::post('/ajax/members/saveDataUpdate', [MemberController::class, 'saveDataUpdate'])->name('members.saveDataUpdate');
@@ -94,10 +94,9 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
     #region member only
     Route::middleware(['role:member'])->group(function () {
-        Route::get('/member', function () {
-            return view('member.dashboard');
-        })->name('member.dashboard');
-
+        Route::get('/member', [MemberController::class, 'dashboard'])
+            ->name('member.dashboard');
+        Route::get('/booking', [AppointmentController::class, 'create'])->name('booking.index');
     });
     #endregion
 

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Appointment;
+use App\Models\Article;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class MemberController extends Controller
 {
@@ -53,6 +57,50 @@ class MemberController extends Controller
         return response()->json(['status' => 'oke', 'msg' => 'Member deleted!'], 200);
     }
 
+    public function dashboard()
+    {
+        $memberId = Auth::id();
+
+        // Active Appointment
+        $activeAppointments = Appointment::with([
+            'doctor',
+            'service'
+        ])
+            ->where('member_id', $memberId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
+
+        // Latest Articles
+        $latestArticles = Article::latest()
+            ->take(3)
+            ->get();
+
+        // Featured Doctors
+        $featuredDoctors = User::where('role', 'doctor')
+            ->with('doctorProfile.specialization')
+            ->take(3)
+            ->get();
+
+        // Health Tips
+        $tips = [
+            "Drink at least 2 liters of water every day.",
+            "Exercise at least 30 minutes daily.",
+            "Get 7–8 hours of sleep every night.",
+            "Eat more vegetables and fruits.",
+            "Reduce sugar and salt intake."
+        ];
+
+        $healthTip = $tips[array_rand($tips)];
+
+        return view('member.dashboard', compact(
+            'activeAppointments',
+            'latestArticles',
+            'featuredDoctors',
+            'healthTip'
+        ));
+    }
     public function create() {}
     public function show($id) {}
     public function edit($id) {}
