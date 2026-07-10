@@ -13,7 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MemberController;
 
 Auth::routes();
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'nocache'])->group(function () {
 
     #region FINAL ROUTE
     //JUJUR PUYENK

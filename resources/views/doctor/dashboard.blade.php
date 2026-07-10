@@ -248,7 +248,12 @@
             'Confirmed',
             'Completed',
             'Cancelled'
-        ]
+        ],
+
+        legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
+        }
 
     }).render();
 
@@ -283,7 +288,13 @@
 
         series:@json($serviceChart->pluck('total')),
 
-        labels:@json($serviceChart->pluck('service.service_name'))
+        labels:@json($serviceChart->pluck('service.service_name')),
+
+        legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
+        },
+        
 
     }).render();
 
