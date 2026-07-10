@@ -86,9 +86,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
 
 
-        Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
-        Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
-        Route::post('/ajax/doctor/deleteData', [DoctorController::class, 'deleteData'])->name('doctor.deleteData');
+   
     });
     #endregion
 
@@ -142,6 +140,8 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
         //akses list of doctor
         Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
+
+        
     });
 });
 

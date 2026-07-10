@@ -53,8 +53,8 @@
                 @forelse($doctors as $doctor)
                 <tr id="tr_{{ $doctor->id }}">
                     <td class="text-center">
-                        @if($doctor->avatar && file_exists(public_path('adminlte4/assets/' . $doctor->avatar)))
-                        <img src="{{ asset('adminlte4/assets/' . $doctor->avatar) }}" width="60" height="60"
+                        @if($doctor->avatar && file_exists(public_path('storage/' . $doctor->avatar)))
+                        <img src="{{ asset('storage/' . $doctor->avatar) }}" width="60" height="60"
                             class="rounded-circle" style="object-fit:cover;">
                         @else
                         <i class="bi bi-person-circle text-primary" style="font-size:50px;"></i>
@@ -184,17 +184,32 @@ function getEditFormB(id) {
 }
 
 function saveDataUpdate(id) {
+    var formData = new FormData();
+    formData.append('_token', '<?php echo csrf_token(); ?>');
+    formData.append('id', id);
+    formData.append('name', $('#edit_name').val());
+    formData.append('email', $('#edit_email').val());
+    formData.append('specialization_id', $('#edit_specialization_id').val());
+    formData.append('experience_years', $('#edit_experience_years').val());
+    formData.append('str_number', $('#edit_str_number').val());
+
+    var serviceIds = $('#edit_service_ids').val();
+    if (serviceIds) {
+        serviceIds.forEach(function(sid) {
+            formData.append('service_ids[]', sid);
+        });
+    }
+
+    if ($('#edit_avatar')[0].files[0]) {
+        formData.append('avatar', $('#edit_avatar')[0].files[0]);
+    }
+
     $.ajax({
         type: 'POST',
         url: '{{ route("doctor.saveDataUpdate") }}',
-        data: {
-            '_token'           : '<?php echo csrf_token(); ?>',
-            'id'               : id,
-            'specialization_id': $('#edit_specialization_id').val(),
-            'experience_years' : $('#edit_experience_years').val(),
-            'str_number'       : $('#edit_str_number').val(),
-            'service_ids'      : $('#edit_service_ids').val(),
-        },
+        data: formData,
+        processData: false,
+        contentType: false,
         success: function(data) {
             if (data.status == "oke") {
                 $('#modalEditB').modal('hide');
@@ -202,6 +217,9 @@ function saveDataUpdate(id) {
                 $('.modal-backdrop').remove();
                 location.reload();
             }
+        },
+        error: function(xhr) {
+            alert(xhr.responseText);
         }
     });
 }

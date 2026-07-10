@@ -17,6 +17,13 @@
     @endcan
 
     <hr>
+    <form method="GET" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" 
+            placeholder="Cari artikel..." value="{{ request('search') }}">
+        <button type="submit" class="btn btn-primary">Cari</button>
+    </div>
+</form>
 
     <div class="row">
         @foreach ($articles as $article)
@@ -31,6 +38,7 @@
                     </div>
                     @endif
                 </a>
+
                 <div class="card-body d-flex flex-column">
                     <a href="{{ route('article.show', $article->id) }}" class="text-decoration-none text-dark">
                         <h5 class="fw-bold">{{ $article->title }}</h5>
@@ -66,34 +74,31 @@
                 <div class="modal-header">
                     <h4 class="modal-title">Add New Article</h4>
                 </div>
-                <form method="POST" action="{{ route('article.store') }}">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label>Title</label>
-                            <input type="text" name="title" class="form-control" placeholder="Article title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label>Content</label>
-                            <textarea name="content" class="form-control" rows="4" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label>Image URL</label>
-                            <input type="text" name="image_url" class="form-control" placeholder="img/articles/...">
-                        </div>
-                        <div class="mb-3">
-                            <label>Status</label>
-                            <select name="status" class="form-select">
-                                <option value="draft">Draft</option>
-                                <option value="published">Published</option>
-                            </select>
-                        </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Title</label>
+                        <input type="text" id="create_title" class="form-control" placeholder="Article title" required>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    <div class="mb-3">
+                        <label>Content</label>
+                        <textarea id="create_content" class="form-control" rows="4" required></textarea>
                     </div>
-                </form>
+                    <div class="mb-3">
+                        <label>Image</label>
+                        <input type="file" id="create_image" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select id="create_status" class="form-select">
+                            <option value="draft">Draft</option>
+                            <option value="published">Published</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="storeArticle()">Save</button>
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -119,6 +124,33 @@
 
 @push('script')
 <script>
+function storeArticle() {
+    var formData = new FormData();
+    formData.append('_token', '<?php echo csrf_token(); ?>');
+    formData.append('title', $('#create_title').val());
+    formData.append('content', $('#create_content').val());
+    formData.append('status', $('#create_status').val());
+    if ($('#create_image')[0].files[0]) {
+        formData.append('image', $('#create_image')[0].files[0]);
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '{{ route("article.store") }}',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            if (data.status == "oke") {
+                $('#modalCreate').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                location.reload();
+            }
+        }
+    });
+}
+
 function getEditFormB(id) {
     $.ajax({
         type: 'POST',

@@ -15,7 +15,7 @@
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{{ route('artikel') }}" class="text-decoration-none">Artikel</a>
+                <a href="{{ route('article') }}" class="text-decoration-none">Artikel</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
                 {{ Str::limit($article->title, 50) }}
@@ -66,7 +66,7 @@
                     <!-- Tombol Navigasi -->
                     <div class="mt-5 pt-3 border-top">
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('artikel') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('article') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Artikel
                             </a>
                             <a href="{{ url('/dashboard') }}" class="btn btn-primary">
