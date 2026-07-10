@@ -12,6 +12,7 @@ use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 class DoctorController extends Controller
 {
     public function index(Request $request)
@@ -48,12 +49,29 @@ class DoctorController extends Controller
     }
     public function saveDataUpdate(Request $request)
     {
+        $user = User::find($request->id);
+        $user->name  = $request->name;
+        $user->email = $request->email;
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && File::exists(public_path('storage/' . $user->avatar))) {
+                File::delete(public_path('storage/' . $user->avatar));
+            }
+            $file = $request->file('avatar');
+            $filename = 'doctor-' . $user->id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('storage/profiles/'), $filename);
+            $user->avatar = 'profiles/' . $filename;
+        }
+
+        $user->save();
+
         $profile = DoctorProfile::where('user_id', $request->id)->first();
         $profile->specialization_id = $request->specialization_id;
         $profile->experience_years  = $request->experience_years;
         $profile->str_number        = $request->str_number;
         $profile->save();
         $profile->services()->sync($request->service_ids ?? []);
+
         return response()->json(['status' => 'oke', 'msg' => 'Doctor updated!'], 200);
     }
     public function store(Request $request)
