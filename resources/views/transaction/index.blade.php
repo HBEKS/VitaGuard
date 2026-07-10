@@ -8,7 +8,7 @@
 
     <table class="table table-bordered table-striped table-hover align-middle">
         <thead class="table-light">
-            <tr scope="col" class="text-center" >
+            <tr scope="col" class="text-center">
                 <!-- <th>ID</th> -->
                 <th>Appointment</th>
                 <th>Amount</th>
@@ -30,13 +30,5 @@
     </table>
     <hr class="my-4">
 
-        <div class="d-flex gap-3 justify-content-center">
-            <a href="{{ url('dashboard/booking') }}" class="btn btn-warning">
-                <i class="fas fa-stethoscope"></i> View Appointments
-            </a>
-            <a href="{{ url('/') }}" class="btn btn-outline-dark">
-                <i class="fas fa-home"></i> Back to Home
-            </a>
-        </div>
 </div>
 @endsection

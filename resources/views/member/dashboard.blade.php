@@ -90,8 +90,8 @@
                 <div class="col-lg-4 col-md-6 portfolio-item isotope-item">
                     <div class="project-card">
                         <div class="image-wrapper">
-                            @if($article->image)
-                            <img src="{{ asset('storage/'.$article->image) }}"
+                            @if($article->image_url)
+                            <img src="{{ asset('storage/articles/'.$article->image_url) }}"
                                 class="img-fluid"
                                 alt="{{ $article->title }}"
                                 loading="lazy">
@@ -103,14 +103,14 @@
                             @endif
                             <div class="hover-overlay">
                                 <div class="overlay-actions">
-                                    @if($article->image)
-                                    <a href="{{ asset('storage/'.$article->image) }}"
+                                    @if($article->image_url)
+                                    <a href="{{ asset('storage/articles/'.$article->image_url) }}"
                                         class="glightbox action-btn"
                                         data-gallery="articles">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     @endif
-                                    <a href="{{ route('article.show',$article->id) }}"
+                                    <a href="{{ route('article.show', ['article' => $article->id]) }}"
                                         class="action-btn">
                                         <i class="bi bi-link-45deg"></i>
                                     </a>
@@ -172,7 +172,7 @@
                     </div>
                     <h3>Articles</h3>
                     <p>Read our latest health articles and expert insights.</p>
-                    <a href="service-details.html" class="service-link">
+                    <a href="{{ route('articleList') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -187,7 +187,7 @@
                     </div>
                     <h3>Categories</h3>
                     <p>Explore different health categories and find what you're looking for.</p>
-                    <a href="service-details.html" class="service-link">
+                    <a href="{{ route('categories.index') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -202,7 +202,7 @@
                     </div>
                     <h3>Services</h3>
                     <p>Discover our range of healthcare services designed to meet your needs.</p>
-                    <a href="service-details.html" class="service-link">
+                    <a href="{{ route('services.index') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -217,7 +217,7 @@
                     </div>
                     <h3>Doctors</h3>
                     <p>See our expert doctors and their profiles.</p>
-                    <a href="service-details.html" class="service-link">
+                    <a href="{{ route('listDoctor') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -232,7 +232,7 @@
                     </div>
                     <h3>Appointments</h3>
                     <p>See your upcoming and historical appointments and manage them easily.</p>
-                    <a href="service-details.html" class="service-link">
+                    <a href="{{ route('booking.index') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -247,7 +247,7 @@
                     </div>
                     <h3>Profile</h3>
                     <p>Manage your personal information and update your profile details.</p>
-                    <a href="service-details.html" class="service-link">
+                    <a href="{{ route('profile') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>

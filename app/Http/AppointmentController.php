@@ -6,17 +6,22 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use GuzzleHttp\Psr7\Response;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+
     public function index()
     {
-        $appointments = Appointment::with(['doctor', 'member', 'service'])->get();
-
-        return view('booking.index', compact('appointments'));
+        return view('booking.index', [
+            'appointments' => Appointment::paginate(10),
+            'transactions' => Transaction::paginate(10),
+        ]);
     }
     public function getEditFormB(Request $request)
     {
@@ -52,11 +57,11 @@ class AppointmentController extends Controller
         $appointment = Appointment::find($request->id);
 
         $appointment->doctor_notes = $request->doctor_notes;
-        $appointment -> save();
+        $appointment->save();
 
         return response()->json([
             'status' => 'oke',
-            'doctor_notes' => $appointment -> doctor_notes
+            'doctor_notes' => $appointment->doctor_notes
         ], 200);
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Service;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+
 class ServiceController extends Controller
 {
     /**
@@ -14,12 +15,12 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $perPage = request()->get('per_page', 5);
+        $perPage = request()->get('per_page', 10);
         $services = Service::with('category')->paginate($perPage)->withQueryString();
         $categories = Category::all();
         return view('services.index', compact('services', 'categories'));
     }
-        /**
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

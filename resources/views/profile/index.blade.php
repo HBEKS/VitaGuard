@@ -20,8 +20,8 @@
 
     <div class="card-body text-center">
         <div class="mb-4">
-            @if(!empty($user->avatar) && file_exists(public_path('storage/' . $user->avatar)))
-            <img src="{{ asset('storage/' . $user->avatar) }}"
+            @if(!empty($user->avatar) && file_exists(public_path('storage/profiles/' . $user->avatar)))
+            <img src="{{ asset('storage/profiles/' . $user->avatar) }}"
                 class="rounded-circle border shadow"
                 width="120"
                 height="120"

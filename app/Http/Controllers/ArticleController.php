@@ -22,8 +22,8 @@ class ArticleController extends Controller
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('content', 'like', '%'.$search.'%');
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('content', 'like', '%' . $search . '%');
             });
         }
 
@@ -40,31 +40,49 @@ class ArticleController extends Controller
 
     public function store(Request $request)
     {
-        $imagePath = '';
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = 'article-'.time().'.'.$file->getClientOriginalExtension();
-            $file->move(public_path('storage/img/articles/'), $filename);
-            $imagePath = 'img/articles/'.$filename;
-        }
-
-        Article::create([
+        $article = Article::create([
             'author_id' => Auth::id(),
             'title' => $request->title,
-            'slug' => Str::slug($request->title).'-'.Str::random(5),
+            'slug' => Str::slug($request->title) . '-' . Str::random(5),
             'content' => $request->content,
-            'image_url' => $imagePath,
             'status' => $request->status ?? 'draft',
         ]);
 
-        return response()->json(['status' => 'oke', 'msg' => 'Article created!'], 200);
+        if ($request->hasFile('image')) {
+
+            $file = $request->file('image');
+
+            $filename = $article->id . '.' . $file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('storage/articles'),
+                $filename
+            );
+
+            $article->image_url = $filename;
+            $article->save();
+        }
+
+        return response()->json([
+            'status' => 'oke',
+            'msg' => 'Article created!'
+        ]);
     }
 
-    public function show($id)
+    public function show(Article $article)
     {
-        $article = Article::with('author')->find($id);
+        $relatedArticles = Article::where('id', '!=', $article->id)
+            ->latest()
+            ->take(3)
+            ->get();
 
-        return view('article.show', compact('article'));
+        return view(
+            'article.show',
+            compact(
+                'article',
+                'relatedArticles'
+            )
+        );
     }
 
     public function getEditFormB(Request $request)

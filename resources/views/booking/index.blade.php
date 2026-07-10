@@ -4,11 +4,34 @@
 
 @section('content')
 <div class="container mt-4">
+    @if(Auth::user()->role=="doctor")
     <h1 class="mb-4">Appointments with
         {{Auth::user()->name}}
     </h1>
+    @endif
+    @if(Auth::user()->role=="admin")
+    <h1 class="mb-4">All Appointments</h1>
+    @endif
 
     <div class="table-responsive">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <form method="GET">
+                Show
+                <select name="appointment_per_page"
+                    onchange="this.form.submit()">
+
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="25">25</option>
+
+                </select>
+                entries
+            </form>
+
+            {{ $appointments->links() }}
+
+        </div>
         <table class="table table-bordered table-striped">
             <thead class="table-light">
                 <tr class="text-center">
@@ -20,7 +43,9 @@
                     <th>Patient Complaint</th>
                     <th>Doctor Notes</th>
                     <th>Status</th>
+                    @if(Auth::user()->role=="doctor")
                     <th>Action</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -148,12 +173,12 @@
                         @endif
                         @endif
                         <!-- admin -->
-                        @if(Auth::user()->role=="admin")
+                        <!-- @if(Auth::user()->role=="admin")
                         <a href="#modalEditB" class="btn btn-sm btn-primary mb-1" data-bs-toggle="modal"
                             onclick="getEditFormB('{{ $a->id }}')">Edit</a>
                         <a href="#" class="btn btn-sm btn-danger"
                             onclick="if(confirm('Hapus appointment ini?')) deleteDataRemove('{{ $a->id }}')">Delete</a>
-                        @endif
+                        @endif -->
                     </td>
 
                 </tr>
@@ -162,13 +187,16 @@
         </table>
     </div>
 
-    <hr class="my-4">
     @if(Auth::user()->role=="admin")
-    <div class="d-flex gap-3 justify-content-center">
-        <a href="{{ url('dashboard/transaction') }}" class="btn btn-warning">View Transactions</a>
-        <a href="{{ url('/') }}" class="btn btn-outline-dark">Back to Home</a>
+    <div class="text-center mt-4">
+        <a href="{{ route('transaction.index') }}"
+            class="btn btn-warning btn-lg">
+            <i class="bi bi-receipt"></i>
+            View Transactions
+        </a>
     </div>
     @endif
+
 </div>
 
 <!-- Modal Doctor Notes -->

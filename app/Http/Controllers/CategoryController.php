@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->get('per_page', 5);
+        $perPage = $request->get('per_page', 10);
         $allCategories = Category::with('services')->paginate($perPage)->withQueryString();
         return view('categories.index', compact('allCategories'));
     }
@@ -165,18 +165,24 @@ class CategoryController extends Controller
     {
         $data = new Category();
         $data->category_name = $request->name;
+
         if ($request->hasFile('image')) {
+
+            $nextId = Category::max('id') + 1;
+
             $file = $request->file('image');
-            $filename = strtolower(str_replace(' ', '_', $request->name))
-                . '.' .
-                $file->getClientOriginalExtension();
+            $filename = $nextId . '.' . $file->getClientOriginalExtension();
+
             $file->move(
-                public_path('adminlte4/assets/img/categories'),
+                public_path('storage/categories'),
                 $filename
             );
+
             $data->image = $filename;
         }
+
         $data->save();
+
         return redirect()
             ->route('categories.index')
             ->with('success', 'Successfully created data.');

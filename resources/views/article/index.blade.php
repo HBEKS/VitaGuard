@@ -18,12 +18,12 @@
 
     <hr>
     <form method="GET" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="search" class="form-control" 
-            placeholder="Cari artikel..." value="{{ request('search') }}">
-        <button type="submit" class="btn btn-primary">Cari</button>
-    </div>
-</form>
+        <div class="input-group">
+            <input type="text" name="search" class="form-control"
+                placeholder="Cari artikel..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </div>
+    </form>
 
     <div class="row">
         @foreach ($articles as $article)
@@ -31,7 +31,7 @@
             <div class="card shadow-sm h-100">
                 <a href="{{ route('article.show', $article->id) }}" class="text-decoration-none">
                     @if ($article->image_url)
-                    <img src="{{ asset('storage/' . $article->image_url) }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    <img src="{{ asset('storage/articles/' . $article->image_url) }}" class="card-img-top" style="height:200px; object-fit:cover;">
                     @else
                     <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height:200px;">
                         No Image
@@ -54,10 +54,10 @@
                     @can('update-permission', Auth::user())
                     <div class="mt-2 d-flex gap-2">
                         <a href="#modalEditB" class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                           onclick="getEditFormB('{{ $article->id }}')">Edit</a>
+                            onclick="getEditFormB('{{ $article->id }}')">Edit</a>
                         @can('delete-permission', Auth::user())
                         <a href="#" class="btn btn-sm btn-danger"
-                           onclick="if(confirm('Hapus artikel ini?')) deleteDataRemove('{{ $article->id }}')">Delete</a>
+                            onclick="if(confirm('Hapus artikel ini?')) deleteDataRemove('{{ $article->id }}')">Delete</a>
                         @endcan
                     </div>
                     @endcan
@@ -124,77 +124,83 @@
 
 @push('script')
 <script>
-function storeArticle() {
-    var formData = new FormData();
-    formData.append('_token', '<?php echo csrf_token(); ?>');
-    formData.append('title', $('#create_title').val());
-    formData.append('content', $('#create_content').val());
-    formData.append('status', $('#create_status').val());
-    if ($('#create_image')[0].files[0]) {
-        formData.append('image', $('#create_image')[0].files[0]);
+    function storeArticle() {
+        var formData = new FormData();
+        formData.append('_token', '<?php echo csrf_token(); ?>');
+        formData.append('title', $('#create_title').val());
+        formData.append('content', $('#create_content').val());
+        formData.append('status', $('#create_status').val());
+        if ($('#create_image')[0].files[0]) {
+            formData.append('image', $('#create_image')[0].files[0]);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("article.store") }}',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if (data.status == "oke") {
+                    $('#modalCreate').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    location.reload();
+                }
+            }
+        });
     }
 
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("article.store") }}',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(data) {
-            if (data.status == "oke") {
-                $('#modalCreate').modal('hide');
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-                location.reload();
+    function getEditFormB(id) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("articles.getEditFormB") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'id': id
+            },
+            success: function(data) {
+                $('#modalContentB').html(data.msg);
             }
-        }
-    });
-}
+        });
+    }
 
-function getEditFormB(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("articles.getEditFormB") }}',
-        data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
-        success: function(data) {
-            $('#modalContentB').html(data.msg);
-        }
-    });
-}
-
-function saveDataUpdate(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("articles.saveDataUpdate") }}',
-        data: {
-            '_token' : '<?php echo csrf_token(); ?>',
-            'id'     : id,
-            'title'  : $('#edit_title').val(),
-            'content': $('#edit_content').val(),
-            'status' : $('#edit_status').val(),
-        },
-        success: function(data) {
-            if (data.status == "oke") {
-                $('#modalEditB').modal('hide');
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-                location.reload();
+    function saveDataUpdate(id) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("articles.saveDataUpdate") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'id': id,
+                'title': $('#edit_title').val(),
+                'content': $('#edit_content').val(),
+                'status': $('#edit_status').val(),
+            },
+            success: function(data) {
+                if (data.status == "oke") {
+                    $('#modalEditB').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    location.reload();
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-function deleteDataRemove(id) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("articles.deleteData") }}',
-        data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
-        success: function(data) {
-            if (data.status == "oke") {
-                location.reload();
+    function deleteDataRemove(id) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("articles.deleteData") }}',
+            data: {
+                '_token': '<?php echo csrf_token(); ?>',
+                'id': id
+            },
+            success: function(data) {
+                if (data.status == "oke") {
+                    location.reload();
+                }
             }
-        }
-    });
-}
+        });
+    }
 </script>
 @endpush

@@ -1,111 +1,140 @@
-@extends('layouts.adminlte4')
+@extends('layouts.orbit')
 
-@section('title', $article->title)
-@section('sidebar-artikel', 'active')
+@section('title',$article->title)
 
-@section('content')
-<div class="container mt-4">
-
-    <!-- Breadcrumb / Navigasi -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ url('/dashboard') }}" class="text-decoration-none">
-                    <i class="fas fa-home"></i> Dashboard
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{{ route('article') }}" class="text-decoration-none">Artikel</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-                {{ Str::limit($article->title, 50) }}
-            </li>
-        </ol>
-    </nav>
-
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <!-- Judul Artikel -->
-                    <h1 class="display-6 fw-bold mb-3">{{ $article->title }}</h1>
-
-                    <!-- Informasi Artikel -->
-                    <div class="mb-4 pb-2 border-bottom">
-                        <div class="d-flex flex-wrap gap-3 text-muted">
-                            <small>
-                                <i class="fas fa-user"></i>
-                                {{ $article->author->name ?? 'Unknown Author' }}
-                            </small>
-                            <small>
-                                <i class="fas fa-calendar-alt"></i>
-                                {{ $article->created_at->format('d F Y') }}
-                            </small>
-                            <small>
-                                <i class="fas fa-clock"></i>
-                                {{ $article->created_at->diffForHumans() }}
-                            </small>
-                        </div>
-                    </div>
-
-                    <!-- Gambar Artikel -->
-                    @if ($article->image_url)
-                    <div class="text-center mb-4">
-                        <img src="{{ asset('storage/' . $article->image_url) }}"
-                             class="img-fluid rounded shadow-sm"
-                             alt="{{ $article->title }}"
-                             style="max-height: 500px; width: auto;">
-                    </div>
-                    @endif
-
-                    <!-- Konten Lengkap -->
-                    <div class="article-content" style="font-size: 1.1rem; line-height: 1.8;">
-                        {!! nl2br(e($article->content)) !!}
-                    </div>
-
-                    <!-- Tombol Navigasi -->
-                    <div class="mt-5 pt-3 border-top">
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('article') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Kembali ke Daftar Artikel
-                            </a>
-                            <a href="{{ url('/dashboard') }}" class="btn btn-primary">
-                                <i class="fas fa-tachometer-alt"></i> Kembali ke Dashboard
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+@push('styles')
 <style>
     .article-content {
+        font-size: 18px;
+        line-height: 2;
         text-align: justify;
     }
 
     .article-content p {
-        margin-bottom: 1.2rem;
+        margin-bottom: 20px;
     }
 
-    .article-content h2,
-    .article-content h3 {
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
+    .article-content img {
+        max-width: 100%;
+        border-radius: 20px;
+        margin: 20px 0;
     }
 
-    .card {
-        transition: transform 0.2s;
+    .project-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
+    .image-wrapper {
+        aspect-ratio: 16/9;
+        overflow: hidden;
+    }
+
+    .image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .project-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-info p {
+        flex: 1;
     }
 </style>
-
-@push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 @endpush
 
+
+@section('content')
+<section class="section py-5">
+    <div class="container">
+        <a href="{{ route('article') }}"
+            class="btn btn-outline-primary mb-4">
+            <i class="bi bi-arrow-left"></i>
+            Back to List Articles
+        </a>
+
+        @if($article->image_url)
+        <img
+            src="{{ asset('storage/articles/'.$article->image_url) }}"
+            class="img-fluid rounded-4 shadow mb-5 w-100"
+            style="max-height:500px;object-fit:cover;">
+        @endif
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="mb-3">
+                    <span class="badge bg-success">
+                        Health Article
+                    </span>
+
+                    <span class="ms-3">
+                        <i class="bi bi-calendar"></i>
+                        {{ $article->created_at->format('d F Y') }}
+                    </span>
+
+                    <span class="ms-3">
+                        <i class="bi bi-person"></i>
+                        {{ $article->author->name }}
+                    </span>
+                </div>
+
+                <h1 class="display-5 fw-bold mb-4">
+                    {{ $article->title }}
+                </h1>
+
+                <div class="article-content">
+                    {!! nl2br(e($article->content)) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section pb-5">
+    <div class="container">
+        <div class="section-title">
+            <h2>
+                Related Articles
+            </h2>
+        </div>
+
+        <div class="row">
+            @foreach($relatedArticles as $related)
+            <div class="col-lg-4">
+                <div class="project-card">
+                    <div class="image-wrapper">
+                        @if($related->image_url)
+                        <img
+                            src="{{ asset('storage/articles/'.$related->image_url) }}"
+                            class="card-img-top article-image">
+                        @endif
+                    </div>
+
+                    <div class="project-info">
+                        <h4>
+                            {{ $related->title }}
+                        </h4>
+
+                        <p>
+                            {{ Str::limit(strip_tags($related->content),80) }}
+                        </p>
+
+                        <a
+                            href="{{ route('article.show',$related->id) }}"
+                            class="btn btn-outline-primary">
+                            Read More
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
 @endsection

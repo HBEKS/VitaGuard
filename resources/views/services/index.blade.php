@@ -22,11 +22,11 @@
         <form method="GET" class="d-flex align-items-center">
             <label>Show</label>
             <select name="per_page" onchange="this.form.submit()">
-                <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                <option value="15" {{ request('per_page') == 15 ? 'selected' : '' }}>15</option>
+                <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
                 <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                 <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
             </select>
             entries
         </form>

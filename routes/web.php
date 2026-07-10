@@ -11,6 +11,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\SpecializationController;
 
 Auth::routes();
 Route::middleware(['auth', 'nocache'])->group(function () {
@@ -27,6 +28,8 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         return redirect()->route('login');
     });
 
+    Route::get('/tes-booking', [AppointmentController::class, 'index']);
+    Route::get('booking/index', [AppointmentController::class, 'index'])->name('booking');
 
 
     //profile
@@ -66,6 +69,14 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
         Route::delete('/listDoctor/{doctor}', [DoctorController::class, 'destroy'])
             ->name('listDoctor.destroy');
+
+        Route::post(
+            '/specializations',
+            [SpecializationController::class, 'store']
+        )->name('specializations.store');
+
+        Route::get('/transaction', [TransactionController::class, 'index'])
+            ->name('transaction.index');
     });
     #endregion
 
@@ -83,10 +94,6 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             'ajax/appointment/saveNotes',
             [AppointmentController::class, 'saveNotes']
         )->name('appointment.saveNotes');
-
-
-
-   
     });
     #endregion
 
@@ -99,9 +106,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
     #endregion
 
     #region admin + doctor only
-    Route::middleware(['role:doctor,admin'])->group(function () {
-        Route::get('booking/index', [AppointmentController::class, 'index'])->name('doctorBooking');
-    });
+    Route::middleware(['role:doctor,admin'])->group(function () {});
 
     #endregion
 
@@ -128,10 +133,6 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::post('/ajax/categories/saveDataUpdate', [CategoryController::class, 'saveDataUpdate'])->name('categories.saveDataUpdate');
         Route::post('/ajax/categories/deleteData', [CategoryController::class, 'deleteData'])->name('categories.deleteData');
 
-        //articles
-        Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
-        Route::get('/dashboard/article/{id}', [ArticleController::class, 'show'])->name('article.show');
-
         //akses list of categories
         Route::resource('/categories', CategoryController::class);
 
@@ -141,7 +142,9 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         //akses list of doctor
         Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
 
-        
+        //baca article
+        Route::get('dashboard/article', [ArticleController::class, 'index'])
+            ->name('article');
     });
 });
 
@@ -149,6 +152,12 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::get('dashboard/article/{article}', [ArticleController::class, 'show'])
+    ->name('article.show');
+
+Route::get('/tes', function () {
+    dd('TES BERHASIL');
+});
 
 
 

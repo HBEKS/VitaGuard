@@ -25,16 +25,18 @@ class SpecializationController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:specializations,name',
+        $request->validate([
+            'name' => 'required|unique:specializations,name'
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        Specialization::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name)
+        ]);
 
-        Specialization::create($validated);
-
-        return redirect()->route('admin.specializations.index')
-            ->with('success', 'Spesialisasi berhasil ditambahkan.');
+        return redirect()
+            ->back()
+            ->with('success', 'Specialization added successfully.');
     }
 
     public function show(Specialization $specialization)

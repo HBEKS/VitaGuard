@@ -12,21 +12,43 @@ use Carbon\Carbon;
 
 class MemberController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $members = User::where('role', 'member')->orderBy('name')->get();
+        $perPage = $request->get('per_page', 10);
+
+        $members = User::where('role', 'member')
+            ->paginate($perPage)
+            ->withQueryString();
+
         return view('member.index', compact('members'));
     }
-
     public function store(Request $request)
     {
         $data = new User();
-        $data->name     = $request->name;
-        $data->email    = $request->email;
+        $data->name = $request->name;
+        $data->email = $request->email;
         $data->password = Hash::make($request->password);
-        $data->role     = 'member';
+        $data->role = 'member';
+        
         $data->save();
-        return redirect()->route('members.index')->with('success', 'Member added!');
+
+        if ($request->hasFile('avatar')) {
+
+            $file = $request->file('avatar');
+
+            $filename = $data->id . '.' . $file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('storage/profile'),
+                $filename
+            );
+
+            $data->avatar = 'profile/' . $filename;
+            $data->save();
+        }
+
+        return redirect()->route('members.index')
+            ->with('success', 'Member added!');
     }
 
     public function getEditFormB(Request $request)
@@ -83,22 +105,10 @@ class MemberController extends Controller
             ->take(3)
             ->get();
 
-        // Health Tips
-        $tips = [
-            "Drink at least 2 liters of water every day.",
-            "Exercise at least 30 minutes daily.",
-            "Get 7–8 hours of sleep every night.",
-            "Eat more vegetables and fruits.",
-            "Reduce sugar and salt intake."
-        ];
-
-        $healthTip = $tips[array_rand($tips)];
-
         return view('member.dashboard', compact(
             'activeAppointments',
             'latestArticles',
             'featuredDoctors',
-            'healthTip'
         ));
     }
     public function create() {}

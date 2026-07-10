@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Service; 
+
+use App\Models\Service;
 use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -11,9 +12,19 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::all();
+        $perPage = $request->get('per_page', 10);
+
+        $transactions = Transaction::with([
+            'appointment.member',
+            'appointment.service',
+            'appointment.doctor'
+        ])
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
+
         return view('transaction.index', compact('transactions'));
     }
 

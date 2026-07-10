@@ -68,7 +68,7 @@
 
         <!-- list appointment + transaction -->
         <div class="col-md-4">
-            <a href="{{ route('doctorBooking') }}" class="text-decoration-none">
+            <a href="{{ route('booking.index') }}" class="text-decoration-none">
                 <div class="card shadow-sm p-4 text-center">
                     <h5>Consultations</h5>
                     <p class="text-muted">Daftar Janji Konsultasi dan transaksi</p>

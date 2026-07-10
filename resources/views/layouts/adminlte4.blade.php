@@ -41,6 +41,7 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 </head>
 <!--end::Head-->
@@ -352,7 +353,7 @@
 
                         <!-- appointment & payment -->
                         <li class="nav-item">
-                            <a href="{{ route('doctorBooking') }}" class="nav-link @yield('sidebar-booking')">
+                            <a href="{{ route('booking') }}" class="nav-link @yield('sidebar-booking')">
                                 <i class="nav-icon bi bi-box"></i>
                                 <p>List of Appointments</p>
                             </a>
@@ -638,6 +639,9 @@
     </script>
     <!--end::Script-->
 
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    @stack('script')
 </body>
 <!--end::Body-->
 

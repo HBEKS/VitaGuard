@@ -51,14 +51,22 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Dashboard</a></li>
-          <!-- <li><a href="#about">Artikel</a></li> -->
           <li><a href="#portfolio">Latest Articles</a></li>
           <li><a href="#services">Features</a></li>
           <li><a href="#testimonials">My Appointments</a></li>
-          <!-- <li><a href="#team">Doctor</a></li>
-          <li><a href="#team">My Appointments</a></li>
-          <li><a href="#contact">Profile</a></li>
-          <li><a href="#team">Logout</a></li> -->
+          <form id="logout-form"
+            action="{{ route('logout') }}"
+            method="POST"
+            style="display: none;">
+            @csrf
+          </form>
+          <li>
+            <a href="#"
+              onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              <i class="bi bi-box-arrow-right"></i>
+              Logout
+            </a>
+          </li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

@@ -30,7 +30,7 @@ class DoctorController extends Controller
             });
         }
         //$members = User::where('role', 'member')->orderBy('name')->get();
-        $doctors = $query->orderBy('name')->paginate(5);
+        $doctors = $query->orderBy('name')->paginate(10);
         $specializations = Specialization::orderBy('name')->get();
 
         $services = Service::orderBy('service_name')->get();

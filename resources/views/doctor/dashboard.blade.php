@@ -174,7 +174,7 @@
                 </div>
 
                 <div class="card-body d-grid gap-3">
-                    <a href="{{ route('doctorBooking') }}"
+                    <a href="{{ route('booking') }}"
                         class="btn btn-primary">
                         <i class="bi bi-calendar2-week"></i>
                         My Appointments
@@ -228,22 +228,21 @@
 
 @push('script')
 <script>
-
     new ApexCharts(document.querySelector("#statusChart"), {
 
-        chart:{
-            type:'pie',
-            height:300
+        chart: {
+            type: 'pie',
+            height: 300
         },
 
-        series:[
+        series: [
             {{ $pending }},
             {{ $confirmed }},
             {{ $completed }},
             {{ $cancelled }}
         ],
 
-        labels:[
+        labels: [
             'Pending',
             'Confirmed',
             'Completed',
@@ -251,52 +250,51 @@
         ],
 
         legend: {
-        position: 'bottom',
-        horizontalAlign: 'center'
+            position: 'bottom',
+            horizontalAlign: 'center'
         }
 
     }).render();
 
 
 
-    new ApexCharts(document.querySelector("#monthlyChart"),{
+    new ApexCharts(document.querySelector("#monthlyChart"), {
 
-        chart:{
-            type:'line',
-            height:300
+        chart: {
+            type: 'line',
+            height: 300
         },
 
-        series:[{
-            name:'Appointments',
-            data:@json(collect($monthlyChart)->pluck('count'))
+        series: [{
+            name: 'Appointments',
+            data: @json(collect($monthlyChart) -> pluck('count'))
         }],
 
-        xaxis:{
-            categories:@json(collect($monthlyChart)->pluck('month'))
+        xaxis: {
+            categories: @json(collect($monthlyChart) -> pluck('month'))
         }
 
     }).render();
 
 
 
-    new ApexCharts(document.querySelector("#serviceChart"),{
+    new ApexCharts(document.querySelector("#serviceChart"), {
 
-        chart:{
-            type:'pie',
-            height:300
+        chart: {
+            type: 'pie',
+            height: 300
         },
 
-        series:@json($serviceChart->pluck('total')),
+        series: @json($serviceChart -> pluck('total')),
 
-        labels:@json($serviceChart->pluck('service.service_name')),
+        labels: @json($serviceChart -> pluck('service.service_name')),
 
         legend: {
-        position: 'bottom',
-        horizontalAlign: 'center'
+            position: 'bottom',
+            horizontalAlign: 'center'
         },
-        
+
 
     }).render();
-
 </script>
 @endpush
