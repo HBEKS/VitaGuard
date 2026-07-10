@@ -1,92 +1,191 @@
 @extends('layouts.adminlte4')
 
-@section('title', 'Dashboard')
-@section('sidebar-dashboard', 'active')
+@section('title','Dashboard')
+@section('sidebar-dashboard','active')
 
 @section('content')
-<div class="container py-4">
+<div class="container-fluid">
 
-    <!-- Header -->
+    {{-- Header --}}
     <div class="mb-4">
-        <h3 class="text-muted">VitaGuard Dashboard</h3>
-        <h1 class="mb-4">
-            Welcome, {{ Auth::user()->name }}!
+        <h5 class="text-muted">Administrator Dashboard</h5>
+        <h1 class="fw-bold">
+            Welcome Back, {{ Auth::user()->name }}
         </h1>
     </div>
 
-    <div class="row g-4">
+    {{-- Statistik --}}
+    <div class="row">
 
-        <!-- Service -->
-        <div class="col-md-4">
-            <a href="{{ route('services.index') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Services</h5>
-                    <p class="text-muted">Daftar Service</p>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>{{ $doctorCount }}</h3>
+                    <p>Total Doctors</p>
                 </div>
-            </a>
+                <div class="icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- Categories -->
-        <div class="col-md-4">
-            <a href="{{ route('categories.index') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Categories</h5>
-                    <p class="text-muted">Daftar Categories</p>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $memberCount }}</h3>
+                    <p>Total Members</p>
                 </div>
-            </a>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- list dokter -->
-        <div class="col-md-4">
-            <a href="{{ route('listDoctor') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Dokter</h5>
-                    <p class="text-muted">Daftar dokter</p>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ $articleCount }}</h3>
+                    <p>Health Articles</p>
                 </div>
-            </a>
+                <div class="icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- list member -->
-        <div class="col-md-4">
-            <a href="{{ route('members.index') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Member</h5>
-                    <p class="text-muted">Daftar Member</p>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ $bookingCount }}</h3>
+                    <p>Total Bookings</p>
                 </div>
-            </a>
+                <div class="icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- artikel -->
-        <div class="col-md-4">
-            <a href="{{ route('article') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Artikel</h5>
-                    <p class="text-muted">Daftar Artikel</p>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ $ongoingConsultation }}</h3>
+                    <p>Ongoing Consultation</p>
                 </div>
-            </a>
+                <div class="icon">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- list appointment + transaction -->
-        <div class="col-md-4">
-            <a href="{{ route('booking.index') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Consultations</h5>
-                    <p class="text-muted">Daftar Janji Konsultasi dan transaksi</p>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="small-box bg-secondary">
+                <div class="inner">
+                    <h3>{{ $completedConsultation }}</h3>
+                    <p>Completed Consultation</p>
                 </div>
-            </a>
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- profile admin -->
-        <div class="col-md-4">
-            <a href="{{ route('profile') }}" class="text-decoration-none">
-                <div class="card shadow-sm p-4 text-center">
-                    <h5>Profile</h5>
-                    <p class="text-muted">Kelola akun</p>
+    </div>
+
+    {{-- Chart + Quick Access --}}
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <div class="card">
+                <div class="card-header">
+                    <strong>Appointment Status</strong>
                 </div>
-            </a>
+
+                <div class="card-body">
+                    <div id="statusChart"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card">
+
+                <div class="card-header">
+                    <strong>Quick Access</strong>
+                </div>
+
+                <div class="card-body d-grid gap-2">
+
+                    <a href="{{ route('services.index') }}" class="btn btn-primary">
+                        Services
+                    </a>
+
+                    <a href="{{ route('categories.index') }}" class="btn btn-success">
+                        Categories
+                    </a>
+
+                    <a href="{{ route('listDoctor') }}" class="btn btn-info text-white">
+                        Doctors
+                    </a>
+
+                    <a href="{{ route('members.index') }}" class="btn btn-warning">
+                        Members
+                    </a>
+
+                    <a href="{{ route('article') }}" class="btn btn-secondary">
+                        Articles
+                    </a>
+
+                    <a href="{{ route('booking.index') }}" class="btn btn-danger">
+                        Appointments
+                    </a>
+
+                    <a href="{{ route('profile') }}" class="btn btn-dark">
+                        My Profile
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
 @endsection
+
+@push('script')
+<script>
+
+new ApexCharts(document.querySelector("#statusChart"),{
+
+    chart:{
+        type:'pie',
+        height:350
+    },
+
+    series:[
+        {{ $pending }},
+        {{ $confirmed }},
+        {{ $completed }},
+        {{ $cancelled }}
+    ],
+
+    labels:[
+        "Pending",
+        "Confirmed",
+        "Completed",
+        "Cancelled"
+    ],
+
+    legend:{
+        position:'bottom'
+    }
+
+}).render();
+
+</script>
+@endpush

@@ -12,6 +12,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SpecializationController;
+use App\Http\Controllers\AdminController;
 
 Auth::routes();
 Route::middleware(['auth', 'nocache'])->group(function () {
@@ -40,9 +41,8 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
     #region admin only
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/admin', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/admin', [AdminController::class, 'dashboard'])
+            ->name('admin.dashboard');
         Route::post('/dashboard/article', [ArticleController::class, 'store'])->name('article.store');
         Route::post('/ajax/articles/getEditFormB', [ArticleController::class, 'getEditFormB'])->name('articles.getEditFormB');
         Route::post('/ajax/articles/saveDataUpdate', [ArticleController::class, 'saveDataUpdate'])->name('articles.saveDataUpdate');
