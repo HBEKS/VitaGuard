@@ -1,4 +1,5 @@
 @extends('layouts.adminlte4')
+@section('title', 'Profile')
 @section('sidebar-profile', 'active')
 @section('content')
 
@@ -19,18 +20,17 @@
 
     <div class="card-body text-center">
         <div class="mb-4">
-            @if(!empty($user->avatar) && file_exists(public_path('adminlte4/assets/' . $user->avatar)))
-                <img src="{{ asset('adminlte4/assets/' . $user->avatar) }}"
-                    class="rounded-circle border shadow"
-                    width="120"
-                    height="120"
-                    alt="Profile Picture"
-                    style="object-fit: cover;"
-                >
+            @if(!empty($user->avatar) && file_exists(public_path('storage/' . $user->avatar)))
+            <img src="{{ asset('storage/' . $user->avatar) }}"
+                class="rounded-circle border shadow"
+                width="120"
+                height="120"
+                alt="Profile Picture"
+                style="object-fit: cover;">
             @else
-                <i class="bi bi-person-circle text-primary"
+            <i class="bi bi-person-circle text-primary"
                 style="font-size: 100px;">
-                </i>
+            </i>
             @endif
         </div>
 
@@ -51,8 +51,31 @@
                 <th>Role</th>
                 <td>{{ $user->role }}</td>
             </tr>
+
+            @if($user->role == 'doctor')
+            <tr>
+                <th>Specialization</th>
+                <td>
+                    {{ $user->doctorProfile->specialization->name ?? '-' }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Services</th>
+                <td>
+                    @forelse($user->doctorProfile->services as $service)
+                    <span class="badge bg-primary me-1 mb-1">
+                        {{ $service->service_name }}
+                    </span>
+                    @empty
+                    -
+                    @endforelse
+                </td>
+            </tr>
+            @endif
         </table>
         <br>
+
         <button class="btn btn-primary" onClick="getEditProfileForm()">
             <i class="bi bi-pencil-square"></i>
             Edit Profile
@@ -61,12 +84,12 @@
 </div>
 
 <!-- modal -->
- @push('modal')
- <div class="modal fade" id="editProfileModal" tabindex="-1">
+@push('modal')
+<div class="modal fade" id="editProfileModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" id="editProfileContent">
 
-            
+
 
         </div>
     </div>
@@ -78,75 +101,165 @@
 @push('script')
 <script>
     function getEditProfileForm() {
-                $.ajax({
-                    type:'POST', 
-                    url: '{{ route("profile.edit") }}',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        $('#editProfileContent').html(response);
-                        $('#editProfileModal').modal('show');
-                    }
-                });
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("profile.edit") }}',
+            data: {
+                _token: '{{ csrf_token() }}',
+            },
+            success: function(response) {
+
+                $('#editProfileContent').html(response);
+
+                // tampilkan modal
+                $('#editProfileModal').modal('show');
+
+                // aktifkan validasi password
+                initPasswordValidation();
+            }
+        });
     }
 
-    function saveProfile(){
-    let formData = new FormData();
+    function saveProfile() {
 
-    formData.append('_token', '{{ csrf_token() }}');
-    formData.append('name', $('#editName').val());
-    formData.append('email', $('#editEmail').val());
-    formData.append('password', $('#editPassword').val());
-    formData.append('password_confirmation', $('#editPasswordConfirmation').val());
+        let formData = new FormData();
 
-    if ($('#editAvatar')[0].files.length > 0) {
-        formData.append('avatar', $('#editAvatar')[0].files[0]);
-    }
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('name', $('#editName').val());
+        formData.append('email', $('#editEmail').val());
+        formData.append('phone', $('#editPhone').val());
+        formData.append('password', $('#editPassword').val());
+        formData.append('password_confirmation', $('#editPasswordConfirmation').val());
 
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("profile.update") }}',
-        data: formData,
-        processData: false,
-        contentType: false,
+        if ($('#editAvatar')[0].files.length > 0) {
+            formData.append('avatar', $('#editAvatar')[0].files[0]);
+        }
 
-        success: function(response) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("profile.update") }}',
+            data: formData,
+            processData: false,
+            contentType: false,
 
-            alert("Profile berhasil diperbarui!");
+            success: function(response) {
 
-            $('#editProfileModal').modal('hide');
+                alert("Profile berhasil diperbarui!");
 
-            location.reload();
+                $('#editProfileModal').modal('hide');
 
-        },
+                location.reload();
 
-        error: function(xhr) {
+            },
 
-            if (xhr.status == 422) {
+            error: function(xhr) {
 
-                let errors = xhr.responseJSON.errors;
+                if (xhr.status == 422) {
 
-                let message = "";
+                    let errors = xhr.responseJSON.errors;
 
-                $.each(errors, function(key, value) {
-                    message += "• " + value[0] + "\n";
-                });
+                    let message = "";
 
-                alert(message);
+                    $.each(errors, function(key, value) {
+                        message += "• " + value[0] + "\n";
+                    });
 
-            } else {
+                    alert(message);
 
-                alert("Terjadi kesalahan pada server.");
+                } else {
 
-                console.log(xhr.responseText);
+                    alert("Terjadi kesalahan pada server.");
+
+                    console.log(xhr.responseText);
+
+                }
 
             }
 
+        });
+
+    }
+
+    function initPasswordValidation() {
+
+        const password = document.getElementById("editPassword");
+        const confirmPassword = document.getElementById("editPasswordConfirmation");
+
+        if (!password || !confirmPassword) return;
+
+        password.addEventListener("keyup", validatePassword);
+        confirmPassword.addEventListener("keyup", validatePassword);
+
+    }
+
+    function validatePassword() {
+
+        const password = document.getElementById("editPassword");
+        const confirmPassword = document.getElementById("editPasswordConfirmation");
+
+        const value = password.value;
+
+        // password kosong
+        if (value === "") {
+
+            document.getElementById("passwordRules").style.display = "none";
+            document.getElementById("passwordMatch").style.display = "none";
+
+            return;
         }
 
-    });
+        document.getElementById("passwordRules").style.display = "block";
 
-}
+        updateRule(value.length >= 8, "ruleLength", "Minimal 8 karakter");
+        updateRule(/[A-Z]/.test(value), "ruleUpper", "Mengandung huruf besar");
+        updateRule(/[a-z]/.test(value), "ruleLower", "Mengandung huruf kecil");
+        updateRule(/[0-9]/.test(value), "ruleNumber", "Mengandung angka");
+
+        let match = document.getElementById("passwordMatch");
+
+        if (confirmPassword.value === "") {
+
+            match.style.display = "none";
+            return;
+
+        }
+
+        match.style.display = "block";
+
+        if (value === confirmPassword.value) {
+
+            match.className = "text-success";
+            match.innerHTML =
+                '<i class="bi bi-check-circle-fill"></i> Password cocok';
+
+        } else {
+
+            match.className = "text-danger";
+            match.innerHTML =
+                '<i class="bi bi-x-circle-fill"></i> Password tidak cocok';
+
+        }
+
+    }
+
+    function updateRule(condition, id, text) {
+
+        let rule = document.getElementById(id);
+
+        if (condition) {
+
+            rule.className = "text-success";
+            rule.innerHTML =
+                '<i class="bi bi-check-circle-fill"></i> ' + text;
+
+        } else {
+
+            rule.className = "text-danger";
+            rule.innerHTML =
+                '<i class="bi bi-x-circle-fill"></i> ' + text;
+
+        }
+
+    }
 </script>
 @endpush

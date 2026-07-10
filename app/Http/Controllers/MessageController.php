@@ -40,10 +40,24 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
+        // Chat dikunci jika appointment sudah selesai atau dibatalkan
+        if (in_array($appointment->status, ['completed', 'cancelled'])) {
+            return redirect()->back()->with(
+                'error',
+                'Chat sudah ditutup karena appointment telah ' . $appointment->status . '.'
+            );
+        }
+
+        $request->validate([
+            'message' => 'required|string|max:1000'
+        ]);
+
         Message::create([
-            'appointment_id' => $request->appointment_id,
-            'sender_id' => auth()->id(),
-            'message' => $request->message
+            'appointment_id' => $appointment->id,
+            'sender_id'      => auth()->id(),
+            'message'        => $request->message,
         ]);
         return redirect()->back();
     }

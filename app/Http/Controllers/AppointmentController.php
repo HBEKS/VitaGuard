@@ -86,24 +86,47 @@ class AppointmentController extends Controller
 
     public function updateStatus(Request $request, Appointment $appointment)
     {
-        $request->validate([
-            'status' => 'required|in:confirmed,completed'
-        ]);
+        $appointment = Appointment::findOrFail($request->id);
 
-        $appointment->status = $request->status;
+        if (
+            $appointment->status == 'pending' &&
+            $request->status == 'confirmed'
+        ) {
+
+            $appointment->status = 'confirmed';
+        } elseif (
+            $appointment->status == 'confirmed' &&
+            $request->status == 'completed'
+        ) {
+
+            $appointment->status = 'completed';
+        } else {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Status tidak valid.'
+            ], 422);
+        }
+
         $appointment->save();
 
-        return back()->with('success', 'Status updated');
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 
     public function saveNotes(Request $request)
     {
         $appointment = Appointment::findOrFail($request->id);
-
+        // Tidak boleh edit notes jika appointment sudah selesai atau dibatalkan
+        if ($appointment->status == 'completed' && $appointment->status == 'cancelled') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Doctor notes tidak dapat diubah karena appointment sudah completed atau cancelled.'
+            ], 403);
+        }
         $appointment->doctor_notes = $request->doctor_notes;
-
         $appointment->save();
-
         return response()->json([
             'status' => 'success'
         ]);

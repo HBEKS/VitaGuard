@@ -55,6 +55,8 @@
                 @endforelse
             </div>
             {{-- FORM CHAT --}}
+            @if(in_array($appointment->status, ['pending','confirmed']))
+
             <form action="{{ route('chat.send') }}" method="POST">
                 @csrf
 
@@ -62,19 +64,27 @@
                     name="appointment_id"
                     value="{{ $appointment->id }}">
 
-                <div class="input-group">
+                <textarea
+                    name="message"
+                    class="form-control"
+                    placeholder="Type your message..."></textarea>
 
-                    <textarea
-                        class="form-control"
-                        name="message"
-                        rows="2"
-                        required></textarea>
-
-                    <button class="btn btn-primary">
-                        Send
-                    </button>
-                </div>
+                <button
+                    type="submit"
+                    class="btn btn-primary mt-2">
+                    Send
+                </button>
             </form>
+
+            @else
+
+            <div class="alert alert-secondary mt-3">
+                <i class="bi bi-lock-fill"></i>
+                Chat telah ditutup karena appointment sudah
+                <strong>{{ ucfirst($appointment->status) }}</strong>.
+            </div>
+
+            @endif
         </div>
     </div>
 </div>

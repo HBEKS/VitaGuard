@@ -8,6 +8,9 @@ use App\Models\Specialization;
 use Illuminate\Http\Request;
 use App\Models\DoctorProfile;
 use App\Models\Service;
+use App\Models\Appointment;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
@@ -103,5 +106,99 @@ class DoctorController extends Controller
         $schedules = $doctor->schedules()->orderBy('day_of_week')->orderBy('start_time')->get();
 
         return view('admin.doctors.schedules', compact('doctor', 'schedules'));
+    }
+
+    public function dashboard()
+    {
+        $doctorId = Auth::id();
+
+        $pending = Appointment::where('doctor_id', $doctorId)
+            ->where('status', 'pending')
+            ->count();
+
+        $confirmed = Appointment::where('doctor_id', $doctorId)
+            ->where('status', 'confirmed')
+            ->count();
+
+        $completed = Appointment::where('doctor_id', $doctorId)
+            ->where('status', 'completed')
+            ->count();
+
+        $cancelled = Appointment::where('doctor_id', $doctorId)
+            ->where('status', 'cancelled')
+            ->count();
+
+        $activePatients = Appointment::where('doctor_id', $doctorId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->distinct('member_id')
+            ->count('member_id');
+
+        $statusChart = [
+            'Pending' => Appointment::where('doctor_id', $doctorId)
+                ->where('status', 'pending')
+                ->count(),
+
+            'Confirmed' => Appointment::where('doctor_id', $doctorId)
+                ->where('status', 'confirmed')
+                ->count(),
+
+            'Completed' => Appointment::where('doctor_id', $doctorId)
+                ->where('status', 'completed')
+                ->count(),
+
+            'Cancelled' => Appointment::where('doctor_id', $doctorId)
+                ->where('status', 'cancelled')
+                ->count(),
+        ];
+
+        $monthlyChart = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlyChart[] = [
+                'month' => Carbon::create()->month($i)->format('M'),
+                'count' => Appointment::where('doctor_id', $doctorId)
+                    ->whereYear('appointment_date', now()->year)
+                    ->whereMonth('appointment_date', $i)
+                    ->count()
+            ];
+        }
+
+        $serviceChart = Appointment::selectRaw('service_id, COUNT(*) as total')
+            ->with('service')
+            ->where('doctor_id', $doctorId)
+            ->groupBy('service_id')
+            ->get();
+
+        $todayAppointments = Appointment::with(['member', 'service'])
+            ->where('doctor_id', $doctorId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
+
+        $recentAppointments = Appointment::with(['member', 'service'])
+            ->where('doctor_id', $doctorId)
+            ->latest('appointment_date')
+            ->take(5)
+            ->get();
+
+        $total = Appointment::where('doctor_id', $doctorId)->count();
+
+
+
+        return view('doctor.dashboard', compact(
+            'pending',
+            'confirmed',
+            'completed',
+            'activePatients',
+            'total',
+            'cancelled',
+
+            'statusChart',
+            'monthlyChart',
+            'serviceChart',
+
+            'todayAppointments',
+            'recentAppointments'
+        ));
     }
 }

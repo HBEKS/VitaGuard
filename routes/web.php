@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
@@ -26,24 +27,13 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('login');
     });
 
-    //articles
-    Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
-    Route::get('/dashboard/article/{id}', [ArticleController::class, 'show'])->name('article.show');
+
 
     //profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/ajax/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/ajax/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-    //akses list of categories
-    Route::resource('/categories', CategoryController::class);
-
-    //akses list of services
-    Route::resource('/services', ServiceController::class);
-
-    //akses list of doctor
-    Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
-    #endregion
 
     #region admin only
     Route::middleware(['role:admin'])->group(function () {
@@ -73,9 +63,8 @@ Route::middleware(['auth'])->group(function () {
 
     #region doctor only
     Route::middleware(['role:doctor'])->group(function () {
-        Route::get('/doctor', function () {
-            return view('doctor.dashboard');
-        })->name('doctor.dashboard');
+        Route::get('/doctor', [DoctorController::class, 'dashboard'])
+            ->name('doctor.dashboard');
 
         Route::put(
             '/appointment/{appointment}/status',
@@ -123,6 +112,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/ajax/appointment/getEditFormB', [AppointmentController::class, 'getEditFormB'])->name('appointment.getEditFormB');
         Route::post('/ajax/appointment/saveDataUpdate', [AppointmentController::class, 'saveDataUpdate'])->name('appointment.saveDataUpdate');
         Route::post('/ajax/appointment/deleteData', [AppointmentController::class, 'deleteData'])->name('appointment.deleteData');
+        Route::post('/ajax/appointment/updateStatus', [AppointmentController::class, 'updateStatus'])->name('appointment.updateStatus');
     });
 
     #endregion
@@ -136,16 +126,25 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/ajax/categories/getEditFormB', [CategoryController::class, 'getEditFormB'])->name('categories.getEditFormB');
         Route::post('/ajax/categories/saveDataUpdate', [CategoryController::class, 'saveDataUpdate'])->name('categories.saveDataUpdate');
         Route::post('/ajax/categories/deleteData', [CategoryController::class, 'deleteData'])->name('categories.deleteData');
+
+        //articles
+        Route::get('/dashboard/article', [ArticleController::class, 'index'])->name('article');
+        Route::get('/dashboard/article/{id}', [ArticleController::class, 'show'])->name('article.show');
+
+        //akses list of categories
+        Route::resource('/categories', CategoryController::class);
+
+        //akses list of services
+        Route::resource('/services', ServiceController::class);
+
+        //akses list of doctor
+        Route::get('/listDoctor', [DoctorController::class, 'index'])->name('listDoctor');
     });
-    #endregion
-
-    #endregion
-
 });
 
 Route::get('/register', function () {
-        return view('auth.register');
-    })->name('register');
+    return view('auth.register');
+})->name('register');
 
 
 

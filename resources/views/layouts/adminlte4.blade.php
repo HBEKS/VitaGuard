@@ -40,6 +40,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -58,25 +60,25 @@
                             <i class="bi bi-list"></i>
                         </a>
                     </li>
-                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
-                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
+                    <!-- <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
+                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li> -->
                 </ul>
                 <!--end::Start Navbar Links-->
                 <!--begin::End Navbar Links-->
                 <ul class="navbar-nav ms-auto">
                     <!--begin::Navbar Search-->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                             <i class="bi bi-search"></i>
                         </a>
-                    </li>
+                    </li> -->
                     <!--end::Navbar Search-->
                     <!--begin::Messages Dropdown Menu-->
                     <li class="nav-item dropdown">
-                        <a class="nav-link" data-bs-toggle="dropdown" href="#">
+                        <!-- <a class="nav-link" data-bs-toggle="dropdown" href="#">
                             <i class="bi bi-chat-text"></i>
                             <span class="navbar-badge badge text-bg-danger">3</span>
-                        </a>
+                        </a> -->
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                             <a href="#" class="dropdown-item">
                                 <!--begin::Message-->
@@ -151,7 +153,7 @@
                     </li>
                     <!--end::Messages Dropdown Menu-->
                     <!--begin::Notifications Dropdown Menu-->
-                    <li class="nav-item dropdown">
+                    <!-- <li class="nav-item dropdown">
                         <a class="nav-link" data-bs-toggle="dropdown" href="#">
                             <i class="bi bi-bell-fill"></i>
                             <span class="navbar-badge badge text-bg-warning">15</span>
@@ -176,48 +178,72 @@
                             <div class="dropdown-divider"></div>
                             <a href="#" class="dropdown-item dropdown-footer"> See All Notifications </a>
                         </div>
-                    </li>
+                    </li> -->
                     <!--end::Notifications Dropdown Menu-->
                     <!--begin::Fullscreen Toggle-->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#" data-lte-toggle="fullscreen">
                             <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
                             <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
                         </a>
-                    </li>
+                    </li> -->
                     <!--end::Fullscreen Toggle-->
                     <!--begin::User Menu Dropdown-->
                     <li class="nav-item dropdown user-menu">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="{{ asset('adminlte4/assets/img/user2-160x160.jpg') }}"
-                                class="user-image rounded-circle shadow" alt="User Image" />
-                            <span class="d-none d-md-inline">Alexander Pierce</span>
+
+                            @if(Auth::user()->avatar && file_exists(public_path('storage/'.Auth::user()->avatar)))
+
+                            <img src="{{ asset('storage/'.Auth::user()->avatar) }}"
+                                class="user-image rounded-circle shadow"
+
+                                alt="User Image" />
+
+                            @else
+                            <i class="bi bi-person-circle fs-3"></i>
+                            @endif
+                            <span class="d-none d-md-inline">
+                                {{ Auth::user()->name }}
+                            </span>
                         </a>
+
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                             <!--begin::User Image-->
                             <li class="user-header text-bg-primary">
-                                <img src="{{ asset('adminlte4/assets/img/user2-160x160.jpg') }}"
-                                    class="rounded-circle shadow" alt="User Image" />
+
+                                @if(Auth::user()->avatar && file_exists(public_path('storage/'.Auth::user()->avatar)))
+
+                                <img src="{{ asset('storage/'.Auth::user()->avatar) }}"
+                                    class="rounded-circle shadow"
+                                    style="width:100px;height:100px;object-fit:cover;"
+                                    alt="User Image" />
+                                @else
+                                <i class="bi bi-person-circle fs-1"></i>
+                                @endif
                                 <p>
-                                    Alexander Pierce - Web Developer
-                                    <small>Member since Nov. 2023</small>
+                                    {{ Auth::user()->name }}
+                                    <small>
+                                        Member since
+                                        {{auth()->user()->created_at->format('M. Y')}}
+                                    </small>
                                 </p>
                             </li>
                             <!--end::User Image-->
                             <!--begin::Menu Body-->
-                            <li class="user-body">
-                                <!--begin::Row-->
-                                <div class="row">
+                            <!-- <li class="user-body"> -->
+                            <!--begin::Row-->
+                            <!-- <div class="row">
                                     <div class="col-4 text-center"><a href="#">Followers</a></div>
                                     <div class="col-4 text-center"><a href="#">Sales</a></div>
                                     <div class="col-4 text-center"><a href="#">Friends</a></div>
-                                </div>
-                                <!--end::Row-->
-                            </li>
+                                </div> -->
+                            <!--end::Row-->
+                            <!-- </li> -->
                             <!--end::Menu Body-->
                             <!--begin::Menu Footer-->
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
+
+                                <a href="{{ route('profile') }}" class="btn btn-default btn-flat">Profile</a>
                                 <!--<a href="#" class="btn btn-default btn-flat float-end">Sign out</a>-->
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                     @csrf
@@ -284,8 +310,6 @@
                             </a>
                         </li>
 
-                        <!-- admin menu -->
-                        @if($role == "admin")
                         <!-- daftar service -->
                         <li class="nav-item">
                             <a href="{{ route('services.index') }}" class="nav-link @yield('sidebar-services')">
@@ -330,59 +354,20 @@
                         <li class="nav-item">
                             <a href="{{ route('doctorBooking') }}" class="nav-link @yield('sidebar-booking')">
                                 <i class="nav-icon bi bi-box"></i>
-                                <p>List of Consultations</p>
+                                <p>List of Appointments</p>
                             </a>
                         </li>
-                        @endif
-
-                        <!-- doctor menu -->
-                        @if($role == "doctor")
-                        <!-- appointment -->
-                        <li class="nav-item">
-                            <a href="{{ route('doctorBooking') }}" class="nav-link">
-                                <i class="nav-icon bi bi-box"></i>
-                                <p>My Appointments</p>
-                            </a>
-                        </li>
-                        @endif
-
-                        <!-- member menu -->
-                        @if($role == "member")
-                        <li class="nav-item">
-                            <a href="{{ route('article') }}" class="nav-link">
-                                <p>Articles</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('listDoctor') }}" class="nav-link">
-                                <p>Doctors</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('doctorBooking') }}" class="nav-link">
-                                <p>Booking</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('doctorBooking') }}" class="nav-link">
-                                <p>Appointment History</p>
-                            </a>
-                        </li>
-                        @endif
 
                         <!-- profile -->
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="{{ route('profile') }}" class="nav-link @yield('sidebar-profile')">
                                 <i class="nav-icon bi bi-person"></i>
                                 <p>Profile</p>
                             </a>
-                        </li>
+                        </li> -->
 
                         <!--  logout -->
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" style="background:none;border:none;width:100%;text-align:left;"
@@ -391,7 +376,7 @@
                                     <p>Logout</p>
                                 </button>
                             </form>
-                        </li>
+                        </li> -->
                     </ul>
                     <!--end::Sidebar Menu-->
                 </nav>

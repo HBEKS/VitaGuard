@@ -81,36 +81,45 @@
                     <td class="text-center">
                         <!-- doctor -->
                         @if(Auth::user()->role=="doctor")
+
                         {{-- Change Status --}}
-                        <form action="{{ route('appointment.updateStatus', $a->id) }}"
-                            method="POST"
-                            class="mb-2">
-                            @csrf
-                            @method('PUT')
+                        @if($a->status=="pending")
 
-                            @if($a->status=="pending")
-                            <input type="hidden" name="status" value="confirmed">
-                            <button type="submit" class="btn btn-warning btn-sm w-100">
-                                Pending
-                            </button>
+                        <button
+                            type="button"
+                            class="btn btn-warning btn-sm w-100 mb-2"
+                            onclick="changeStatus( {{ $a -> id }}, 'confirmed')">
+                            Pending
+                        </button>
 
-                            @elseif($a->status=="confirmed")
-                            <input type="hidden" name="status" value="completed">
-                            <button type="submit" class="btn btn-primary btn-sm w-100">
-                                Confirmed
-                            </button>
+                        @elseif($a->status=="confirmed")
 
-                            @elseif($a->status=="completed")
-                            <button type="button" class="btn btn-success btn-sm w-100" disabled>
-                                Completed
-                            </button>
-                            @else
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm w-100 mb-2"
+                            onclick="changeStatus({{ $a->id }}, 'completed')">
+                            Confirmed
+                        </button>
 
-                            <button type="button" class="btn btn-danger btn-sm w-100" disabled>
-                                Cancelled
-                            </button>
-                            @endif
-                        </form>
+                        @elseif($a->status=="completed")
+
+                        <button
+                            type="button"
+                            class="btn btn-success btn-sm w-100 mb-2"
+                            disabled>
+                            Completed
+                        </button>
+
+                        @elseif($a->status=="cancelled")
+
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm w-100 mb-2"
+                            disabled>
+                            Cancelled
+                        </button>
+
+                        @endif
 
                         {{-- Chat --}}
                         <a href="{{ route('chat.show', $a->id) }}"
@@ -119,6 +128,7 @@
                         </a>
 
                         {{-- Notes --}}
+                        @if($a->status != 'completed' && $a->status != 'cancelled')
                         <button
                             id="btnNotes{{ $a->id }}"
                             class="btn {{ $a->doctor_notes ? 'btn-dark' : 'btn-secondary' }} btn-sm w-100"
@@ -128,8 +138,15 @@
                             <i class="bi bi-journal-medical"></i>
                             {{ $a->doctor_notes ? 'Edit Notes' : 'Add Notes' }}
                         </button>
+                        @else
+                        <button
+                            class="btn btn-success btn-sm w-100"
+                            disabled>
+                            <i class="bi bi-lock-fill"></i>
+                            Notes Locked
+                        </button>
                         @endif
-
+                        @endif
                         <!-- admin -->
                         @if(Auth::user()->role=="admin")
                         <a href="#modalEditB" class="btn btn-sm btn-primary mb-1" data-bs-toggle="modal"
@@ -235,6 +252,58 @@
                 console.log(xhr);
                 alert("ERROR");
             }
+        });
+
+    }
+
+    function changeStatus(id, nextStatus) {
+
+        let message = "";
+
+        if (nextStatus == "confirmed") {
+
+            message =
+                "Appointment akan diubah menjadi CONFIRMED.\n\nLanjutkan?";
+
+        } else if (nextStatus == "completed") {
+
+            message =
+                "Pastikan konsultasi telah selesai.\n\nUbah status menjadi COMPLETED?";
+
+        }
+
+        if (!confirm(message)) {
+            return;
+        }
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "{{ route('appointment.updateStatus') }}",
+
+            data: {
+
+                _token: "{{ csrf_token() }}",
+
+                id: id,
+
+                status: nextStatus
+
+            },
+
+            success: function(response) {
+
+                location.reload();
+
+            },
+
+            error: function() {
+
+                alert("Gagal mengubah status.");
+
+            }
+
         });
 
     }

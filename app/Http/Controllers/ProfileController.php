@@ -16,9 +16,12 @@ class profileController extends Controller
      */
     public function index(/*$id*/)
     {
-        $user = Auth::user();
+        $user = User::with([
+            'doctorProfile.specialization',
+            'doctorProfile.services'
+        ])->find(Auth::id());
+
         return view('profile.index', compact('user'));
-        dd($user->avatar);
     }
 
     /**
@@ -62,6 +65,8 @@ class profileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -69,34 +74,32 @@ class profileController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-
+        $user->phone = $request->phone;
         // Update password 
         if ($request->filled('password')) {
-
-            $request->validate([
-                'password' => 'min:8|confirmed',
-            ]);
-
             $user->password = Hash::make($request->password);
         }
 
         // Update avatar
         if ($request->hasFile('avatar')) {
-
-            if ($user->avatar && File::exists(public_path('adminlte4/assets/' . $user->avatar))) {
-                File::delete(public_path('adminlte4/assets/' . $user->avatar));
+            //hapus profile yang lama
+            if ($user->avatar && File::exists(public_path('storage/' . $user->avatar))) {
+                File::delete(public_path('storage/' . $user->avatar));
             }
 
             $file = $request->file('avatar');
 
-            $filename = time() . '_' . $file->getClientOriginalName();
+            //nama file
+            $filename = 'user-' . $user->id . "." . $file->getClientOriginalExtension();
 
+            //simpan
             $file->move(
-                public_path('adminlte4/assets/img/profiles'),
+                public_path('storage/profiles/'),
                 $filename
             );
 
-            $user->avatar = 'img/profiles/' . $filename;
+            //simpan ke database
+            $user->avatar = 'profiles/' . $filename;
         }
 
         $user->save();
