@@ -7,94 +7,85 @@ use App\Models\Article;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
     public function index(Request $request)
     {
         $status = $request->query('status', 'all');
-
         $query = Article::with('author');
-
         if ($status !== 'all') {
             $query->where('status', $status);
         }
-
         $articles = $query->orderBy('created_at', 'desc')->paginate(12);
-
         $stats = [
-            'total' => Article::count(),
+            'total'     => Article::count(),
             'published' => Article::published()->count(),
-            'draft' => Article::draft()->count(),
+            'draft'     => Article::draft()->count(),
         ];
-
         return view('article.index', compact('articles', 'stats', 'status'));
-    }
-
-    public function create()
-    {
-        $authors = User::admins()->orderBy('name')->get();
-        return view('admin.articles.create', compact('authors'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image_url' => 'nullable|url',
-            'status' => 'required|in:draft,published',
-            'author_id' => 'required|exists:users,id',
+        Article::create([
+            'author_id' => Auth::id(),
+            'title'     => $request->title,
+            'slug'      => Str::slug($request->title) . '-' . Str::random(5),
+            'content'   => $request->content,
+            'image_url' => $request->image_url ?? '',
+            'status'    => $request->status ?? 'draft',
         ]);
-
-        $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
-
-        Article::create($validated);
-
-        return redirect()->route('admin.articles.index')
-            ->with('success', 'Artikel berhasil ditambahkan.');
+        return redirect()->route('article')->with('success', 'Article created!');
     }
 
     public function show(Article $article)
     {
         $article->load('author');
-
-        return view('admin.articles.show', compact('article'));
+        return view('article.show', compact('article'));
     }
 
-    public function edit(Article $article)
+    public function getEditFormB(Request $request)
     {
-        $authors = User::admins()->orderBy('name')->get();
-
-        return view('admin.articles.edit', compact('article', 'authors'));
+        $data = Article::find($request->id);
+        return response()->json([
+            'status' => 'oke',
+            'msg' => view('article.getEditFormB', compact('data'))->render()
+        ], 200);
     }
 
-    public function update(Request $request, Article $article)
+    public function saveDataUpdate(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image_url' => 'nullable|url',
-            'status' => 'required|in:draft,published',
-            'author_id' => 'required|exists:users,id',
-        ]);
-
-        // Only update slug if title changed
-        if ($article->title !== $validated['title']) {
-            $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
-        }
-
-        $article->update($validated);
-
-        return redirect()->route('admin.articles.index')
-            ->with('success', 'Artikel berhasil diperbarui.');
+        $data = Article::find($request->id);
+        $data->title   = $request->title;
+        $data->content = $request->content;
+        $data->status  = $request->status;
+        $data->save();
+        return response()->json(['status' => 'oke', 'msg' => 'Article updated!'], 200);
     }
 
-    public function destroy(Article $article)
+    public function deleteData(Request $request)
     {
-        $article->delete();
+        $data = Article::find($request->id);
+        $data->delete();
+        return response()->json(['status' => 'oke', 'msg' => 'Article deleted!'], 200);
+    }
 
-        return redirect()->route('admin.articles.index')
-            ->with('success', 'Artikel berhasil dihapus.');
+    public function create() 
+    {
+
+    }
+    public function edit(Article $article) 
+    {
+
+    }
+    public function update(Request $request, Article $article) 
+    {
+
+    }
+    public function destroy(Article $article) 
+    {
+        
     }
 }

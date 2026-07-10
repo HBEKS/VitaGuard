@@ -40,7 +40,15 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::get('/admin', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
-
+        Route::post('/dashboard/article', [ArticleController::class, 'store'])->name('article.store');
+        Route::post('/ajax/articles/getEditFormB', [ArticleController::class, 'getEditFormB'])->name('articles.getEditFormB');
+        Route::post('/ajax/articles/saveDataUpdate', [ArticleController::class, 'saveDataUpdate'])->name('articles.saveDataUpdate');
+        Route::post('/ajax/articles/deleteData', [ArticleController::class, 'deleteData'])->name('articles.deleteData');
+        
+        Route::resource('/members', MemberController::class);
+        Route::post('/ajax/members/getEditFormB', [MemberController::class, 'getEditFormB'])->name('members.getEditFormB');
+        Route::post('/ajax/members/saveDataUpdate', [MemberController::class, 'saveDataUpdate'])->name('members.saveDataUpdate');
+        Route::post('/ajax/members/deleteData', [MemberController::class, 'deleteData'])->name('members.deleteData');
         //CRUD DOCTOR
         Route::post('/ajax/doctor/getEditFormB', [DoctorController::class, 'getEditFormB'])->name('doctor.getEditFormB');
         Route::post('/ajax/doctor/saveDataUpdate', [DoctorController::class, 'saveDataUpdate'])->name('doctor.saveDataUpdate');
@@ -90,10 +98,6 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             return view('member.dashboard');
         })->name('member.dashboard');
 
-        Route::resource('/members', MemberController::class);
-        Route::post('/ajax/members/getEditFormB', [MemberController::class, 'getEditFormB'])->name('members.getEditFormB');
-        Route::post('/ajax/members/saveDataUpdate', [MemberController::class, 'saveDataUpdate'])->name('members.saveDataUpdate');
-        Route::post('/ajax/members/deleteData', [MemberController::class, 'deleteData'])->name('members.deleteData');
     });
     #endregion
 

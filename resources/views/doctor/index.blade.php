@@ -12,8 +12,6 @@
         <span class="badge bg-primary fs-6">
             {{ $doctors->total() }} Doctors
         </span>
-
-
         @can('create-permission', Auth::user())
         <div class="mt-3 mb-3">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreate">
@@ -36,7 +34,6 @@
         {{ $doctors->withQueryString()->links() }}
     </div>
 
-    {{-- Table --}}
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-light">
@@ -55,7 +52,6 @@
             <tbody>
                 @forelse($doctors as $doctor)
                 <tr id="tr_{{ $doctor->id }}">
-                    {{-- Avatar --}}
                     <td class="text-center">
                         @if($doctor->avatar && file_exists(public_path('adminlte4/assets/' . $doctor->avatar)))
                         <img src="{{ asset('adminlte4/assets/' . $doctor->avatar) }}" width="60" height="60"
@@ -64,11 +60,8 @@
                         <i class="bi bi-person-circle text-primary" style="font-size:50px;"></i>
                         @endif
                     </td>
-                    {{-- Name --}}
                     <td>{{ $doctor->name }}</td>
-                    {{-- Specialization --}}
                     <td>{{ $doctor->doctorProfile?->specialization?->name ?? '-' }}</td>
-                    {{-- Services --}}
                     <td>
                         @forelse($doctor->doctorProfile?->services ?? [] as $service)
                         <span class="badge bg-info mb-1">{{ $service->service_name }}</span>
@@ -76,11 +69,8 @@
                         -
                         @endforelse
                     </td>
-                    {{-- Experience --}}
                     <td>{{ $doctor->doctorProfile?->experience_years ?? '-' }} Years</td>
-                    {{-- STR --}}
                     <td>{{ $doctor->doctorProfile?->str_number ?? '-' }}</td>
-                    {{-- Action --}}
                     @can('update-permission', Auth::user())
                     <td class="text-center">
                         <a href="#modalEditB" class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
@@ -118,123 +108,115 @@
             </div>
         </div>
     </div>
-</div>
-{{-- Modal Create --}}
-<div class="modal fade" id="modalCreate" tabindex="-1" role="basic">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add Doctor</h4>
+
+    {{-- Modal Create --}}
+    <div class="modal fade" id="modalCreate" tabindex="-1" role="basic">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Doctor</h4>
+                </div>
+                <form method="POST" action="{{ route('listDoctor.store') }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Full name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Specialization</label>
+                            <select name="specialization_id" class="form-select" required>
+                                <option value="">-- Select Specialization --</option>
+                                @foreach($specializations as $s)
+                                <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Services</label>
+                            <select name="service_ids[]" class="form-select" multiple>
+                                @foreach($services as $service)
+                                <option value="{{ $service->id }}">{{ $service->service_name }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Hold Ctrl untuk memilih lebih dari satu service.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label>Experience (years)</label>
+                            <input type="number" name="experience_years" class="form-control" placeholder="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>STR Number</label>
+                            <input type="text" name="str_number" class="form-control" placeholder="STR Number">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
             </div>
-            <form method="POST" action="{{ route('listDoctor.store') }}">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Select Member</label>
-                        <select name="user_id" class="form-select" required>
-                            <option value="">-- Select Member --</option>
-                            @foreach($members as $m)
-                            <option value="{{ $m->id }}">{{ $m->name }} ({{ $m->email }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label>Specialization</label>
-                        <select name="specialization_id" class="form-select" required>
-                            <option value="">-- Select Specialization --</option>
-                            @foreach($specializations as $s)
-                            <option value="{{ $s->id }}">{{ $s->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label>Services</label>
-
-                        <select name="service_ids[]" class="form-select" multiple required>
-                            @foreach($services as $service)
-                            <option value="{{ $service->id }}">
-                                {{ $service->service_name }}
-                            </option>
-                            @endforeach
-                        </select>
-
-                        <small class="text-muted">
-                            Hold Ctrl untuk memilih lebih dari satu service.
-                        </small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label>Experience (years)</label>
-                        <input type="number" name="experience_years" class="form-control" placeholder="0" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>STR Number</label>
-                        <input type="text" name="str_number" class="form-control" placeholder="STR Number">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                </div>
-            </form>
         </div>
     </div>
+
 </div>
 @endsection
 
 @push('script')
 <script>
-    function getEditFormB(id) {
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("doctor.getEditFormB") }}',
-            data: {
-                '_token': '<?php echo csrf_token(); ?>',
-                'id': id
-            },
-            success: function(data) {
-                $('#modalContentB').html(data.msg);
-            }
-        });
-    }
+function getEditFormB(id) {
+    $.ajax({
+        type: 'POST',
+        url: '{{ route("doctor.getEditFormB") }}',
+        data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
+        success: function(data) {
+            $('#modalContentB').html(data.msg);
+        }
+    });
+}
 
-    function saveDataUpdate(id) {
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("doctor.saveDataUpdate") }}',
-            data: {
-                '_token': '<?php echo csrf_token(); ?>',
-                'id': id,
-                'specialization_id': $('#edit_specialization_id').val(),
-                'experience_years': $('#edit_experience_years').val(),
-                'str_number': $('#edit_str_number').val(),
-                'service_ids': $('#edit_service_ids').val(),
-            },
-            success: function(data) {
-                if (data.status == "oke") {
-                    $('#modalEditB').modal('hide');
-                    $('body').removeClass('modal-open');
-                    $('.modal-backdrop').remove();
-                    location.reload();
-                }
+function saveDataUpdate(id) {
+    $.ajax({
+        type: 'POST',
+        url: '{{ route("doctor.saveDataUpdate") }}',
+        data: {
+            '_token'           : '<?php echo csrf_token(); ?>',
+            'id'               : id,
+            'specialization_id': $('#edit_specialization_id').val(),
+            'experience_years' : $('#edit_experience_years').val(),
+            'str_number'       : $('#edit_str_number').val(),
+            'service_ids'      : $('#edit_service_ids').val(),
+        },
+        success: function(data) {
+            if (data.status == "oke") {
+                $('#modalEditB').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                location.reload();
             }
-        });
-    }
+        }
+    });
+}
 
-    function deleteDataRemove(id) {
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("doctor.deleteData") }}',
-            data: {
-                '_token': '<?php echo csrf_token(); ?>',
-                'id': id
-            },
-            success: function(data) {
-                if (data.status == "oke") {
-                    $('#tr_' + id).remove();
-                }
+function deleteDataRemove(id) {
+    $.ajax({
+        type: 'POST',
+        url: '{{ route("doctor.deleteData") }}',
+        data: { '_token': '<?php echo csrf_token(); ?>', 'id': id },
+        success: function(data) {
+            if (data.status == "oke") {
+                $('#tr_' + id).remove();
             }
-        });
-    }
+        }
+    });
+}
 </script>
 @endpush

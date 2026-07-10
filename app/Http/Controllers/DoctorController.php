@@ -11,7 +11,7 @@ use App\Models\Service;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Hash;
 class DoctorController extends Controller
 {
     public function index(Request $request)
@@ -28,13 +28,13 @@ class DoctorController extends Controller
                 $q->where('specialization_id', $request->specialization);
             });
         }
-        $members = User::where('role', 'member')->orderBy('name')->get();
+        //$members = User::where('role', 'member')->orderBy('name')->get();
         $doctors = $query->orderBy('name')->paginate(5);
         $specializations = Specialization::orderBy('name')->get();
 
         $services = Service::orderBy('service_name')->get();
 
-        return view('doctor.index', compact('doctors', 'specializations', 'members', 'services'));;
+        return view('doctor.index', compact('doctors', 'specializations', 'services'));;
     }
     public function getEditFormB(Request $request)
     {
@@ -58,16 +58,27 @@ class DoctorController extends Controller
     }
     public function store(Request $request)
     {
-        $user = User::find($request->user_id);
-        $user->role = 'doctor';
+        // buat user baru
+        $user = new User();
+        $user->name     = $request->name;
+        $user->email    = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->role     = 'doctor';
         $user->save();
 
+        // buat doctor profile
         DoctorProfile::create([
             'user_id'           => $user->id,
             'specialization_id' => $request->specialization_id,
             'experience_years'  => $request->experience_years,
             'str_number'        => $request->str_number,
         ]);
+
+        // sync services kalau ada
+        if ($request->service_ids) {
+            $profile = DoctorProfile::where('user_id', $user->id)->first();
+            $profile->services()->sync($request->service_ids);
+        }
 
         return redirect()->route('listDoctor')->with('success', 'Doctor added!');
     }
