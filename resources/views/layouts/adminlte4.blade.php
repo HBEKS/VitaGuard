@@ -310,7 +310,7 @@
                                 </p>
                             </a>
                         </li>
-
+                        @if(Auth::user()->role == 'admin')
                         <!-- daftar service -->
                         <li class="nav-item">
                             <a href="{{ route('services.index') }}" class="nav-link @yield('sidebar-services')">
@@ -318,7 +318,8 @@
                                 <p>List of Service</p>
                             </a>
                         </li>
-
+                        @endif
+                        @if(Auth::user()->role == 'admin')
                         <!-- daftar kategori -->
                         <li class="nav-item">
                             <a href="{{ route('categories.index') }}" class="nav-link @yield('sidebar-categories')">
@@ -326,7 +327,8 @@
                                 <p>List of Categories</p>
                             </a>
                         </li>
-
+                        @endif
+                        @if(Auth::user()->role == 'admin')
                         <!-- daftar dokter -->
                         <li class="nav-item">
                             <a href="{{ route('listDoctor') }}" class="nav-link @yield('sidebar-doctors')">
@@ -334,7 +336,7 @@
                                 <p>List of Doctors</p>
                             </a>
                         </li>
-
+                        @endif
                         <!-- daftar member -->
                         @if(Auth::user()->role=="admin")
                         <li class="nav-item">
@@ -344,6 +346,8 @@
                             </a>
                         </li>
                         @endif
+
+                        @if(Auth::user()->role == 'admin')
                         <!-- daftar artikel -->
                         <li class="nav-item">
                             <a href="{{ route('article') }}" class="nav-link @yield('sidebar-artikel')">
@@ -351,7 +355,7 @@
                                 <p>List Of Articles</p>
                             </a>
                         </li>
-
+                        @endif
                         <!-- appointment & payment -->
                         <li class="nav-item">
                             <a href="{{ route('booking') }}" class="nav-link @yield('sidebar-booking')">
@@ -359,6 +363,16 @@
                                 <p>List of Appointments</p>
                             </a>
                         </li>
+
+
+                        @if(Auth::user()->role == 'doctor')
+                        <li class="nav-item">
+                            <a href="{{ route('doctor.schedule.index') }}" class="nav-link @yield('sidebar-booking')">
+                                <i class="nav-icon bi bi-box"></i>
+                                <p>My Schedules</p>
+                            </a>
+                        </li>
+                        @endif
 
                         <!-- profile -->
                         <!-- <li class="nav-item">

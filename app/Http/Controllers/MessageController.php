@@ -18,15 +18,25 @@ class MessageController extends Controller
             ->orderBy('created_at')
             ->get();
 
-        return view(
-            'chat.index',
-            compact(
-                'appointment',
-                'messages'
-            )
-        );
+        if (auth()->user()->role == 'doctor') {
+            return view('chat.doctor', compact('appointment', 'messages'));
+        }
+
+        return view('chat.member', compact('appointment', 'messages'));
     }
 
+    public function getMessages(Appointment $appointment)
+    {
+        $messages = Message::with('sender')
+            ->where('appointment_id', $appointment->id)
+            ->orderBy('created_at')
+            ->get();
+
+        return view(
+            'chat.message',
+            compact('messages')
+        );
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -40,26 +50,23 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        $appointment = Appointment::findOrFail($request->appointment_id);
+        $appointment = Appointment::find($request->appointment_id);
 
-        // Chat dikunci jika appointment sudah selesai atau dibatalkan
-        if (in_array($appointment->status, ['completed', 'cancelled'])) {
-            return redirect()->back()->with(
-                'error',
-                'Chat sudah ditutup karena appointment telah ' . $appointment->status . '.'
-            );
+        if ($appointment->status != "confirmed") {
+            return response()->json([
+                'status' => 'error'
+            ]);
         }
+        $message = new Message();
+        $message->appointment_id = $request->appointment_id;
+        $message->sender_id = auth()->id();
+        $message->message = $request->message;
 
-        $request->validate([
-            'message' => 'required|string|max:1000'
-        ]);
+        $message->save();
 
-        Message::create([
-            'appointment_id' => $appointment->id,
-            'sender_id'      => auth()->id(),
-            'message'        => $request->message,
+        return response()->json([
+            'status' => 'oke'
         ]);
-        return redirect()->back();
     }
 
     /**

@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SpecializationController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ScheduleController;
 
 Auth::routes();
 Route::middleware(['auth', 'nocache'])->group(function () {
@@ -22,11 +23,26 @@ Route::middleware(['auth', 'nocache'])->group(function () {
     #region semua user bisa akses
 
     Route::get('/', function () {
+        if (auth()->check()) {
+            return redirect('/dashboard');
+        }
+
         return redirect()->route('login');
     });
 
     Route::get('/dashboard', function () {
-        return redirect()->route('login');
+
+        $role = auth()->user()->role;
+
+        if ($role == 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($role == 'doctor') {
+            return redirect()->route('doctor.dashboard');
+        }
+
+        return redirect()->route('member.dashboard');
     });
 
     Route::get('/tes-booking', [AppointmentController::class, 'index']);
@@ -94,6 +110,20 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             'ajax/appointment/saveNotes',
             [AppointmentController::class, 'saveNotes']
         )->name('appointment.saveNotes');
+
+        Route::resource('/doctor/schedule', ScheduleController::class)
+            ->names('doctor.schedule');
+        Route::post('/doctor/schedule/store', [ScheduleController::class, 'store'])
+            ->name('doctor.schedule.store');
+
+        Route::post('/ajax/schedule/getEditFormB', [ScheduleController::class, 'getEditFormB'])
+            ->name('doctor.schedule.getEditFormB');
+
+        Route::post('/ajax/schedule/saveDataUpdate', [ScheduleController::class, 'saveDataUpdate'])
+            ->name('doctor.schedule.saveDataUpdate');
+
+        Route::post('/ajax/schedule/deleteData', [ScheduleController::class, 'deleteData'])
+            ->name('doctor.schedule.deleteData');
     });
     #endregion
 
@@ -112,6 +142,9 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
         Route::post('/ajax/member/edit', [ProfileController::class, 'editMember'])->name('member.profile.edit');
         Route::post('/ajax/member/updateProfile', [ProfileController::class, 'updateMember'])->name('member.profile.update');
+
+        Route::resource('/member/appointment', AppointmentController::class)->names('member.appointment');
+        Route::get('/member/appointment/create/{id}', [AppointmentController::class, 'create'])->name('member.appointment.create');
     });
     #endregion
 
@@ -173,7 +206,7 @@ Route::post('/forgotPassword/reset', [App\Http\Controllers\Auth\ForgotPasswordCo
 Route::get('dashboard/article/{article}', [ArticleController::class, 'show'])
     ->name('article.show');
 
-
+Route::get('/chat/{appointment}/messages', [MessageController::class, 'getMessages'])->name('chat.messages');
 
     // // ==================== TRANSACTION ROUTES ====================
     // Route::resource('/dashboard/transaction', TransactionController::class);

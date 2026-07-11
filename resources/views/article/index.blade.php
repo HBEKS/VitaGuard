@@ -131,42 +131,6 @@
 
 @push('script')
 <script>
-    function storeArticle() {
-        var formData = new FormData();
-        formData.append('_token', '{{ csrf_token() }}');
-        formData.append('title', $('#create_title').val());
-        formData.append('content', $('#create_content').val());
-        formData.append('status', $('#create_status').val());
-        if ($('#create_image')[0].files[0]) {
-            formData.append('image', $('#create_image')[0].files[0]);
-        }
-
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("article.store") }}',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                if (data.status == "oke") {
-                    var modalEl = document.getElementById('modalCreate');
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
-
-                    $('#create_title').val('');
-                    $('#create_content').val('');
-                    $('#create_image').val('');
-
-                    if (data.html) {
-                        $('#articles-list').prepend(data.html);
-                    } else {
-                        $('#ajax-alert').html('<div class="alert alert-success alert-dismissible fade show" role="alert">Artikel berhasil ditambahkan!<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
-                    }
-                }
-            }
-        });
-    }
-
     function getEditFormB(id) {
         $.ajax({
             type: 'POST',

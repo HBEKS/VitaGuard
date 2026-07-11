@@ -27,9 +27,9 @@
                     <select name="specialization" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">-- All Specializations --</option>
                         @foreach($specializations as $spec)
-                            <option value="{{ $spec->id }}" {{ request('specialization') == $spec->id ? 'selected' : '' }}>
-                                {{ $spec->name }}
-                            </option>
+                        <option value="{{ $spec->id }}" {{ request('specialization') == $spec->id ? 'selected' : '' }}>
+                            {{ $spec->name }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -47,9 +47,9 @@
                 {{-- Reset Button --}}
                 <div class="col-md-4 col-sm-12 d-flex align-items-end">
                     @if(request('specialization') || request('per_page'))
-                        <a href="{{ route('member.listDoctor') }}" class="btn btn-outline-secondary btn-sm rounded-3">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
-                        </a>
+                    <a href="{{ route('member.listDoctor') }}" class="btn btn-outline-secondary btn-sm rounded-3">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                    </a>
                     @endif
                 </div>
             </form>
@@ -65,13 +65,13 @@
                         {{-- Avatar Foto Dokter --}}
                         <div class="mb-3 position-relative d-inline-block">
                             @if($doctor->avatar && file_exists(public_path('storage/' . $doctor->avatar)))
-                                <img src="{{ asset('storage/' . $doctor->avatar) }}"
-                                     width="100" height="100"
-                                     class="rounded-circle border border-3 border-primary shadow-sm"
-                                     style="object-fit:cover;"
-                                     alt="{{ $doctor->name }}">
+                            <img src="{{ asset('storage/' . $doctor->avatar) }}"
+                                width="100" height="100"
+                                class="rounded-circle border border-3 border-primary shadow-sm"
+                                style="object-fit:cover;"
+                                alt="{{ $doctor->name }}">
                             @else
-                                <i class="bi bi-person-circle text-primary" style="font-size: 90px;"></i>
+                            <i class="bi bi-person-circle text-primary" style="font-size: 90px;"></i>
                             @endif
                         </div>
 
@@ -96,20 +96,21 @@
                         <div class="mb-2">
                             <small class="d-block text-muted mb-1 fw-semibold">Services Offered:</small>
                             @forelse($doctor->doctorProfile?->services ?? [] as $service)
-                                <span class="badge bg-info-subtle text-info border border-info px-2 py-1 mb-1 rounded-2">
-                                    {{ $service->service_name }}
-                                </span>
+                            <span class="badge bg-info-subtle text-info border border-info px-2 py-1 mb-1 rounded-2">
+                                {{ $service->service_name }}
+                            </span>
                             @empty
-                                <span class="text-muted small">-</span>
+                            <span class="text-muted small">-</span>
                             @endforelse
                         </div>
 
                     </div>
-
                     {{-- Tombol Booking / Janji Temu --}}
                     <div class="card-footer bg-light border-0 p-3 text-center">
-                        <a href="{{ route('booking.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-semibold">
-                            <i class="bi bi-calendar-plus me-1"></i> Book Appointment
+                        <a href="{{ route('member.appointment.create', $doctor->id) }}"
+                            class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-semibold">
+                            <i class="bi bi-calendar-plus me-1"></i>
+                            Book Appointment
                         </a>
                     </div>
                 </div>

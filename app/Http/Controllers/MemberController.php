@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Appointment;
 use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class MemberController extends Controller
 {
@@ -29,7 +28,7 @@ class MemberController extends Controller
         $data->email = $request->email;
         $data->password = Hash::make($request->password);
         $data->role = 'member';
-        
+
         $data->save();
 
         if ($request->hasFile('avatar')) {
@@ -83,15 +82,26 @@ class MemberController extends Controller
     {
         $memberId = Auth::id();
 
-        // Active Appointment
-        $activeAppointments = Appointment::with([
-            'doctor',
+        //
+
+        $appointmentsActive = Appointment::with([
+            'doctor.doctorProfile.specialization',
             'service'
         ])
-            ->where('member_id', $memberId)
+            ->where('member_id', Auth::id())
             ->whereIn('status', ['pending', 'confirmed'])
-            ->orderBy('appointment_date')
-            ->orderBy('appointment_time')
+            ->orderByDesc('appointment_date')
+            ->orderByDesc('appointment_time')
+            ->get();
+
+
+        $appointments = Appointment::with([
+            'doctor.doctorProfile.specialization',
+            'service'
+        ])
+            ->where('member_id', Auth::id())
+            ->orderByDesc('appointment_date')
+            ->orderByDesc('appointment_time')
             ->get();
 
         // Latest Articles
@@ -106,9 +116,10 @@ class MemberController extends Controller
             ->get();
 
         return view('member.dashboard', compact(
-            'activeAppointments',
+            'appointments',
             'latestArticles',
             'featuredDoctors',
+            'appointmentsActive',
         ));
     }
     public function create() {}

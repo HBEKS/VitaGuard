@@ -204,7 +204,7 @@
                     </div>
                     <h3>Appointments</h3>
                     <p>See your upcoming and historical appointments and manage them easily.</p>
-                    <a href="{{ route('booking.index') }}" class="service-link">
+                    <a href="{{ route('member.listDoctor') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -276,14 +276,14 @@
                 <div class="testimonials-sidebar">
 
                     <div class="avatar-stack">
-                        @foreach($activeAppointments->take(4) as $appointment)
+                        @foreach($appointmentsActive->take(4) as $appointment)
                         <img src="{{ $appointment->doctor->avatar
                 ? asset('storage/'.$appointment->doctor->avatar)
                 : asset('orbit/img/person/person-m-3.webp') }}"
                             class="avatar">
                         @endforeach
                         <span class="avatar-count">
-                            {{ $activeAppointments->count() }}
+                            {{ $appointmentsActive->count() }}
                         </span>
                     </div>
 
@@ -295,14 +295,9 @@
                         <h3>Your Upcoming Consultations</h3>
                         <p>
                             You currently have
-                            <strong>{{ $activeAppointments->count() }}</strong>
+                            <strong>{{ $appointmentsActive->count() }}</strong>
                             active appointment(s).
                         </p>
-                        <a href="{{ route('booking.index') }}"
-                            class="btn-view-all">
-                            View All Appointments
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             </div><!-- End Left Sidebar -->
@@ -312,7 +307,7 @@
                 <div class="testimonials-carousel swiper init-swiper">
                     <script type="application/json" class="swiper-config">
                         {
-                            "loop": true,
+                            "loop": false,
                             "speed": 700,
                             "autoplay": {
                                 "delay": 5000
@@ -333,7 +328,7 @@
                     </script>
 
                     <div class="swiper-wrapper">
-                        @forelse($activeAppointments as $appointment)
+                        @forelse($appointments as $appointment)
                         <div class="swiper-slide">
                             <div class="testimonial-card">
                                 <div class="card-top">
@@ -368,6 +363,39 @@
                                     at
                                     {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
                                 </p>
+                                <div class="mt-3">
+                                    @if($appointment->status == 'confirmed')
+                                    <a href="{{ route('chat.show',$appointment->id) }}"
+                                        class="btn btn-primary btn-sm w-100">
+                                        <i class="bi bi-chat-dots"></i>
+                                        Start Consultation
+                                    </a>
+                                    @elseif($appointment->status == 'completed')
+                                    <a href="{{ route('chat.show',$appointment->id) }}"
+                                        class="btn btn-outline-success btn-sm w-100">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        View Consultation
+                                    </a>
+                                    @elseif($appointment->status == 'pending')
+                                    <button class="btn btn-warning btn-sm w-100" disabled>
+                                        Waiting Confirmation
+                                    </button>
+                                    @elseif($appointment->status == 'cancelled')
+                                    <button class="btn btn-danger btn-sm w-100" disabled>
+                                        Cancelled
+                                    </button>
+                                    @endif
+                                </div>
+                                @if($appointment->status == 'completed')
+
+                                @if($appointment->status == 'completed')
+                                <div class="alert alert-light mt-3">
+                                    <strong>Doctor Notes</strong><br>
+                                    {{ $appointment->doctor_notes ?? 'No consultation notes.' }}
+                                </div>
+                                @endif
+
+                                @endif
                                 <div class="author-info">
                                     <img
                                         src="{{ $appointment->doctor->avatar

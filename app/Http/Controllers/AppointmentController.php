@@ -6,9 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Schedule;
+use App\Models\Service;
 
 class AppointmentController extends Controller
 {
+    public function create($id)
+    {
+        $doctor = User::find($id);
+
+        $services = $doctor->doctorProfile->services;
+
+        $schedules = Schedule::where('doctor_id', $doctor->id)
+            ->where('is_active', 1)
+            ->get();
+
+        return view('member.appointment.create', compact(
+            'doctor',
+            'services',
+            'schedules'
+        ));
+    }
+
     public function index(Request $request)
     {
         $status = $request->query('status', 'all');
@@ -130,5 +150,32 @@ class AppointmentController extends Controller
         return response()->json([
             'status' => 'success'
         ]);
+    }
+
+
+    public function store(Request $request)
+    {
+        $service = Service::find($request->service_id);
+        $schedule = Schedule::find($request->schedule_id);
+
+        $appointment = new Appointment();
+
+        $appointment->member_id = Auth::id();
+        $appointment->doctor_id = $request->doctor_id;
+        $appointment->service_id = $request->service_id;
+
+        $appointment->appointment_date = $request->appointment_date;
+        $appointment->appointment_time = $schedule->start_time;
+
+        $appointment->consultation_fee = $service->price;
+
+        $appointment->status = "pending";
+
+        $appointment->member_complaint = $request->member_complaint;
+
+        $appointment->save();
+
+        return redirect()->route('member.dashboard')
+            ->with('success', 'Appointment created successfully.');
     }
 }
