@@ -55,11 +55,11 @@ class ArticleController extends Controller
             $filename = $article->id . '.' . $file->getClientOriginalExtension();
 
             $file->move(
-                public_path('storage/articles'),
+                public_path('storage/img/articles/'),
                 $filename
             );
 
-            $article->image_url = $filename;
+            $article->image_url = 'img/articles/' . $filename;
             $article->save();
         }
 

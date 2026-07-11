@@ -53,7 +53,8 @@ class profileController extends Controller
      */
     public function edit()
     {
-        $user = Auth::user();
+
+        $user = User::findOrFail(Auth::id());
         return view('profile.edit', compact('user'));
     }
 
@@ -70,12 +71,12 @@ class profileController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
-        // Update password 
+        // Update password
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
@@ -94,15 +95,19 @@ class profileController extends Controller
 
             //simpan
             $file->move(
-                public_path('storage/profiles/'),
+                public_path('storage/img/profiles/'),
                 $filename
             );
 
             //simpan ke database
-            $user->avatar = 'profiles/' . $filename;
+            $user->avatar = 'img/profiles/' . $filename;
         }
 
         $user->save();
+
+        if (ob_get_length()) {
+            ob_clean();
+        }
 
         return response()->json([
             'status' => 'success'

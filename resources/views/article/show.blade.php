@@ -53,7 +53,8 @@
 @section('content')
 <section class="section py-5">
     <div class="container">
-        <a href="{{ route('article') }}"
+        <a href="{{ route('article') }}" {{-- Back to dashboard nya member harus kembali ke bagian member bukan di admin atau dokter --}}
+        {{-- back to dashboard dokter hanya boleh kembali ke bagiannya dokter bukan ke member dan kalo admin bisa kembali ke /dashboard/article --}}
             class="btn btn-outline-primary mb-4">
             <i class="bi bi-arrow-left"></i>
             Back to List Articles

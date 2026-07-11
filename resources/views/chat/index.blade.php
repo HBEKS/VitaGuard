@@ -3,7 +3,7 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item">
-    <a href="{{ route('doctorBooking') }}">Appointments</a>
+    <a href="{{ route('booking') }}">Appointments</a>
 </li>
 <li class="breadcrumb-item active">Chat</li>
 @endsection

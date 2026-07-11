@@ -20,17 +20,18 @@
 
     <div class="card-body text-center">
         <div class="mb-4">
-            @if(!empty($user->avatar) && file_exists(public_path('storage/profiles/' . $user->avatar)))
-            <img src="{{ asset('storage/profiles/' . $user->avatar) }}"
-                class="rounded-circle border shadow"
-                width="120"
-                height="120"
-                alt="Profile Picture"
-                style="object-fit: cover;">
+            {{-- CEK APAKAH USER PUNYA AVATAR DAN FILE TERSEBUT ADA DI STORAGE --}}
+            @if(!empty($user->avatar) && file_exists(public_path('storage/' . $user->avatar)))
+                <img src="{{ asset('storage/' . $user->avatar) }}"
+                     class="rounded-circle border shadow"
+                     width="120"
+                     height="120"
+                     alt="Profile Picture"
+                     style="object-fit: cover;">
             @else
-            <i class="bi bi-person-circle text-primary"
-                style="font-size: 100px;">
-            </i>
+                <i class="bi bi-person-circle text-primary"
+                   style="font-size: 100px;">
+                </i>
             @endif
         </div>
 
@@ -83,13 +84,10 @@
     </div>
 </div>
 
-<!-- modal -->
 @push('modal')
 <div class="modal fade" id="editProfileModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" id="editProfileContent">
-
-
 
         </div>
     </div>
@@ -186,7 +184,6 @@
         const confirmPassword = document.getElementById("editPasswordConfirmation");
 
         if (!password || !confirmPassword) return;
-
         password.addEventListener("keyup", validatePassword);
         confirmPassword.addEventListener("keyup", validatePassword);
 
@@ -201,10 +198,8 @@
 
         // password kosong
         if (value === "") {
-
             document.getElementById("passwordRules").style.display = "none";
             document.getElementById("passwordMatch").style.display = "none";
-
             return;
         }
 
@@ -218,26 +213,21 @@
         let match = document.getElementById("passwordMatch");
 
         if (confirmPassword.value === "") {
-
             match.style.display = "none";
             return;
-
         }
 
         match.style.display = "block";
 
         if (value === confirmPassword.value) {
-
             match.className = "text-success";
             match.innerHTML =
                 '<i class="bi bi-check-circle-fill"></i> Password cocok';
-
         } else {
 
             match.className = "text-danger";
             match.innerHTML =
                 '<i class="bi bi-x-circle-fill"></i> Password tidak cocok';
-
         }
 
     }

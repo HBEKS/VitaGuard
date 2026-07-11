@@ -10,13 +10,16 @@
 <div class="modal-body">
 
     <div class="text-center mb-3">
-
-        @if(!empty($user->avatar))
-        <img src="{{ asset('storage/'.$user->avatar) }}"
-            style="width:100px;height:100px;object-fit:cover;"
-            class="rounded-circle border">
+        @if(!empty($user->avatar) && file_exists(public_path('storage/' . $user->avatar)))
+            <img src="{{ asset('storage/' . $user->avatar) }}"
+                style="width:100px; height:100px; object-fit:cover;"
+                class="rounded-circle border shadow"
+                alt="Profile Picture">
+        @else
+            <i class="bi bi-person-circle text-primary"
+                style="font-size: 80px;">
+            </i>
         @endif
-
     </div>
 
     <div class="mb-3">
@@ -51,7 +54,6 @@
             class="form-control">
     </div>
 
-    <!-- Password rules -->
     <div id="passwordRules" class="mb-3" style="display:none;">
         <div id="ruleLength" class="text-danger">
             <i class="bi bi-x-lg"></i> Minimal 8 karakter
@@ -75,7 +77,6 @@
             class="form-control">
     </div>
 
-    <!-- Password match message -->
     <div
         id="passwordMatch"
         class="mb-3"
