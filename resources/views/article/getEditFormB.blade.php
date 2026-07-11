@@ -1,4 +1,12 @@
 <div class="mb-3">
+    @if($data->image_url)
+    <img src="{{ asset('storage/' . $data->image_url) }}"
+        class="img-fluid rounded mb-2" style="max-height:150px;">
+    @endif
+    <label>Image (kosongkan jika tidak diubah)</label>
+    <input type="file" id="edit_image" class="form-control" accept="image/*">
+</div>
+<div class="mb-3">
     <label>Title</label>
     <input type="text" id="edit_title" class="form-control" value="{{ $data->title }}">
 </div>

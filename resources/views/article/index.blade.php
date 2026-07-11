@@ -31,7 +31,7 @@
             <div class="card shadow-sm h-100">
                 <a href="{{ route('article.show', $article->id) }}" class="text-decoration-none">
                     @if ($article->image_url)
-                    <img src="{{ asset('storage/articles/' . $article->image_url) }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    <img src="{{ asset('storage/' . $article->image_url) }}" class="card-img-top" style="height:200px; object-fit:cover;">
                     @else
                     <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height:200px;">
                         No Image
@@ -166,16 +166,22 @@
     }
 
     function saveDataUpdate(id) {
+        var formData = new FormData();
+        formData.append('_token', '<?php echo csrf_token(); ?>');
+        formData.append('id', id);
+        formData.append('title', $('#edit_title').val());
+        formData.append('content', $('#edit_content').val());
+        formData.append('status', $('#edit_status').val());
+        if ($('#edit_image')[0].files[0]) {
+            formData.append('image', $('#edit_image')[0].files[0]);
+        }
+
         $.ajax({
             type: 'POST',
             url: '{{ route("articles.saveDataUpdate") }}',
-            data: {
-                '_token': '<?php echo csrf_token(); ?>',
-                'id': id,
-                'title': $('#edit_title').val(),
-                'content': $('#edit_content').val(),
-                'status': $('#edit_status').val(),
-            },
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(data) {
                 if (data.status == "oke") {
                     $('#modalEditB').modal('hide');

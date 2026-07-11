@@ -91,7 +91,7 @@
                     <div class="project-card">
                         <div class="image-wrapper">
                             @if($article->image_url)
-                            <img src="{{ asset('storage/articles/'.$article->image_url) }}"
+                            <img src="{{ asset('storage/' . $article->image_url) }}"
                                 class="img-fluid"
                                 alt="{{ $article->title }}"
                                 loading="lazy">
@@ -104,7 +104,7 @@
                             <div class="hover-overlay">
                                 <div class="overlay-actions">
                                     @if($article->image_url)
-                                    <a href="{{ asset('storage/articles/'.$article->image_url) }}"
+                                    <img src="{{ asset('storage/' . $article->image_url) }}"
                                         class="glightbox action-btn"
                                         data-gallery="articles">
                                         <i class="bi bi-eye"></i>

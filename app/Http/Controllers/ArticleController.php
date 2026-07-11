@@ -6,7 +6,7 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\File;
 class ArticleController extends Controller
 {
     public function index(Request $request)
@@ -98,14 +98,23 @@ class ArticleController extends Controller
     public function saveDataUpdate(Request $request)
     {
         $data = Article::find($request->id);
-        $data->title = $request->title;
+        $data->title   = $request->title;
         $data->content = $request->content;
-        $data->status = $request->status;
-        $data->save();
+        $data->status  = $request->status;
 
+        if ($request->hasFile('image')) {
+            if ($data->image_url && File::exists(public_path('storage/' . $data->image_url))) {
+                File::delete(public_path('storage/' . $data->image_url));
+            }
+            $file = $request->file('image');
+            $filename = 'article-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('storage/img/articles/'), $filename);
+            $data->image_url = 'img/articles/' . $filename;
+        }
+
+        $data->save();
         return response()->json(['status' => 'oke', 'msg' => 'Article updated!'], 200);
     }
-
     public function deleteData(Request $request)
     {
         $data = Article::find($request->id);
