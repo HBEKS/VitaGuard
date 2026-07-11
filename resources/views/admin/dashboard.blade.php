@@ -138,10 +138,6 @@
                         Articles
                     </a>
 
-                    <a href="{{ route('booking.index') }}" class="btn btn-danger">
-                        Appointments
-                    </a>
-
                     <a href="{{ route('profile') }}" class="btn btn-dark">
                         My Profile
                     </a>
