@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\File;
 class CategoryController extends Controller
 {
     /**
@@ -28,12 +28,34 @@ class CategoryController extends Controller
             'msg' => view('categories.getEditFormB', compact('data'))->render()
         ], 200);
     }
-
     public function saveDataUpdate(Request $request)
     {
         $data = Category::find($request->id);
         $data->category_name = $request->name;
+
+        if ($request->hasFile('image')) {
+            // hapus image lama jika ada
+            if ($data->image && File::exists(public_path('storage/' . $data->image))) {
+                File::delete(public_path('storage/' . $data->image));
+            }
+
+            $file = $request->file('image');
+            $filename = 'category-' . $data->id . '.' . $file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('storage/img/categories/'),
+                $filename
+            );
+
+            $data->image = 'img/categories/' . $filename;
+        }
+
         $data->save();
+
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
         return response()->json(['status' => 'oke', 'msg' => 'category data is up-to-date!'], 200);
     }
 
@@ -165,27 +187,22 @@ class CategoryController extends Controller
     {
         $data = new Category();
         $data->category_name = $request->name;
+        $data->save();
 
         if ($request->hasFile('image')) {
-
-            $nextId = Category::max('id') + 1;
-
             $file = $request->file('image');
-            $filename = $nextId . '.' . $file->getClientOriginalExtension();
+            $filename = 'category-' . $data->id . '.' . $file->getClientOriginalExtension();
 
             $file->move(
-                public_path('storage/categories'),
+                public_path('storage/img/categories/'),
                 $filename
             );
 
-            $data->image = $filename;
+            $data->image = 'img/categories/' . $filename;
+            $data->save();
         }
 
-        $data->save();
-
-        return redirect()
-            ->route('categories.index')
-            ->with('success', 'Successfully created data.');
+        return redirect()->route('categories.index')->with('success', 'Successfully created data.');
     }
     /**
      * Display the specified resource.
