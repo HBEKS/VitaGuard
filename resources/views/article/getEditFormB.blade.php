@@ -21,4 +21,4 @@
         <option value="published" {{ $data->status == 'published' ? 'selected' : '' }}>Published</option>
     </select>
 </div>
-<button type="button" class="btn btn-primary" onclick="saveDataUpdate({{ $data->id }})">Update</button>
+<button type="button" class="btn btn-primary" onclick="saveDataUpdate('{{ $data->id }}')">Update</button>

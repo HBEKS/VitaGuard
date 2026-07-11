@@ -199,6 +199,7 @@
         </table>
     </div>
 
+    {{--
     @if(Auth::user()->role=="admin")
     <div class="text-center mt-4">
         <a href="{{ route('transaction.index') }}"
@@ -208,7 +209,8 @@
         </a>
     </div>
     @endif
-
+    --}}
+    
 </div>
 
 <!-- Modal Doctor Notes -->

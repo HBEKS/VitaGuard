@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+
 class CategoryController extends Controller
 {
     /**
@@ -185,13 +186,17 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
         $data = new Category();
         $data->category_name = $request->name;
-        $data->save();
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = 'category-' . $data->id . '.' . $file->getClientOriginalExtension();
+            $filename = 'category-' . time() . '.' . $file->getClientOriginalExtension();
 
             $file->move(
                 public_path('storage/img/categories/'),
@@ -199,8 +204,11 @@ class CategoryController extends Controller
             );
 
             $data->image = 'img/categories/' . $filename;
-            $data->save();
+        } else {
+            $data->image = null;
         }
+
+        $data->save();
 
         return redirect()->route('categories.index')->with('success', 'Successfully created data.');
     }

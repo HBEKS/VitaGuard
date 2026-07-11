@@ -90,8 +90,8 @@ class DoctorController extends Controller
             }
             $file = $request->file('avatar');
             $filename = 'doctor-' . $user->id . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/profiles/'), $filename);
-            $user->avatar = 'profiles/' . $filename;
+            $file->move(public_path('storage/img/profiles/'), $filename);
+            $user->avatar = 'img/profiles/' . $filename;
         }
 
         $user->save();
@@ -102,6 +102,10 @@ class DoctorController extends Controller
         $profile->str_number        = $request->str_number;
         $profile->save();
         $profile->services()->sync($request->service_ids ?? []);
+
+        if (ob_get_length()) {
+            ob_clean();
+        }
 
         return response()->json(['status' => 'oke', 'msg' => 'Doctor updated!'], 200);
     }

@@ -107,11 +107,11 @@
                     </div>
 
                     {{-- Tombol Booking / Janji Temu --}}
-                    {{-- <div class="card-footer bg-light border-0 p-3 text-center">
+                    <div class="card-footer bg-light border-0 p-3 text-center">
                         <a href="{{ route('booking.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-semibold">
                             <i class="bi bi-calendar-plus me-1"></i> Book Appointment
                         </a>
-                    </div> --}}
+                    </div>
                 </div>
             </div>
             @empty

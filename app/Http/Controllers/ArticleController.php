@@ -83,6 +83,9 @@ class ArticleController extends Controller
             $article->save();
         }
 
+        return redirect()->route('article')
+            ->with('success', 'Artikel berhasil ditambahkan.');
+
         return response()->json([
             'status' => 'oke',
             'msg' => 'Article created!'

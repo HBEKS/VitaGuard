@@ -63,4 +63,4 @@
     </select>
 </div>
 
-<button type="button" class="btn btn-primary" onclick="saveDataUpdate({{ $doctor->id }})">Update</button>
+<button type="button" class="btn btn-primary" onclick="saveDataUpdate('{{ $doctor->id }}')">Update</button>
