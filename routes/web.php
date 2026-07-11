@@ -101,7 +101,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
     Route::middleware(['role:member'])->group(function () {
         Route::get('/member', [MemberController::class, 'dashboard'])
             ->name('member.dashboard');
-        Route::get('/booking', [AppointmentController::class, 'create'])->name('booking.index');
+        Route::get('/booking', [AppointmentController::class, 'index'])->name('booking.index');
 
         Route::get('/member/article', [ArticleController::class, 'indexMember'])->name('member.article');
         Route::get('/member/article/{id}', [ArticleController::class, 'showMember'])->name('member.article.show');

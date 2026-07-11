@@ -336,13 +336,14 @@
                         </li>
 
                         <!-- daftar member -->
+                        @if(Auth::user()->role=="admin")
                         <li class="nav-item">
                             <a href="{{ route('members.index') }}" class="nav-link @yield('sidebar-members')">
                                 <i class="nav-icon bi bi-people"></i>
                                 <p>List of Members</p>
                             </a>
                         </li>
-
+                        @endif
                         <!-- daftar artikel -->
                         <li class="nav-item">
                             <a href="{{ route('article') }}" class="nav-link @yield('sidebar-artikel')">

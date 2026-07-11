@@ -51,6 +51,7 @@
             <tbody>
                 <!-- isi tabel -->
                 @foreach ($appointments as $a)
+                @if(Auth::user()->role=="admin" || $a->member->name == Auth::user()->name || $a->doctor->name == Auth::user()->name)
                 <tr id="tr_{{ $a->id }}">
                     <td class="text-center"><span class="badge bg-secondary">{{ $a->id }}</span></td>
                     <!-- nama pasien -->
@@ -180,9 +181,20 @@
                             onclick="if(confirm('Hapus appointment ini?')) deleteDataRemove('{{ $a->id }}')">Delete</a>
                         @endif -->
                     </td>
-
                 </tr>
+                @endif
                 @endforeach
+                @if(Auth::user()->role=="member")
+                <tr>
+                    <td colspan="8">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm w-100 mb-2">
+                            Book an Appointment
+                        </button>
+                    </td>
+                </tr>
+                @endif
             </tbody>
         </table>
     </div>
