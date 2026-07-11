@@ -114,7 +114,7 @@
                         <button
                             type="button"
                             class="btn btn-warning btn-sm w-100 mb-2"
-                            onclick="changeStatus({{ $a->id }}, 'confirmed')">
+                            onclick="changeStatus('{{ $a->id }}', 'confirmed')">
                             Pending
                         </button>
 
@@ -123,7 +123,7 @@
                         <button
                             type="button"
                             class="btn btn-primary btn-sm w-100 mb-2"
-                            onclick="changeStatus({{ $a->id }}, 'completed')">
+                            onclick="changeStatus('{{ $a->id }}', 'completed')">
                             Confirmed
                         </button>
 

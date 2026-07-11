@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+
 class DoctorController extends Controller
 {
     public function index(Request $request)
@@ -37,6 +38,36 @@ class DoctorController extends Controller
 
         return view('doctor.index', compact('doctors', 'specializations', 'services'));;
     }
+
+    public function indexMember(Request $request)
+    {
+        // 1. Inisialisasi Query untuk User ber-role 'doctor'
+        $query = User::where('role', 'doctor')
+            ->with([
+                'doctorProfile.specialization',
+                'doctorProfile.services'
+            ]);
+
+        // 2. Filter berdasarkan Specialization (opsional jika member memilih filter)
+        if ($request->filled('specialization')) {
+            $query->whereHas('doctorProfile', function ($q) use ($request) {
+                $q->where('specialization_id', $request->specialization);
+            });
+        }
+
+        // 3. Ambil jumlah data per halaman (default 10)
+        $perPage = $request->get('per_page', 10);
+
+        // 4. Eksekusi Query dengan Order By & Pagination
+        $doctors = $query->orderBy('name')->paginate($perPage);
+
+        // 5. Ambil daftar spesialisasi untuk dropdown filter (jika dibutuhkan di view)
+        $specializations = Specialization::orderBy('name')->get();
+
+        // 6. Return ke view member/listDoctor.blade.php
+        return view('member.listDoctor', compact('doctors', 'specializations'));
+    }
+
     public function getEditFormB(Request $request)
     {
         $doctor = User::with(['doctorProfile.specialization', 'doctorProfile.services'])->find($request->id);

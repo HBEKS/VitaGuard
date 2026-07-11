@@ -191,7 +191,7 @@
                     </div>
                     <h3>Doctors</h3>
                     <p>See our expert doctors and their profiles.</p>
-                    <a href="{{ route('listDoctor') }}" class="service-link">
+                    <a href="{{ route('member.listDoctor') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>

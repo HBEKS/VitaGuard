@@ -108,6 +108,8 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
         Route::get('/member/profile', [ProfileController::class, 'indexMember'])->name('member.profile');
 
+        Route::get('/member/doctor', [DoctorController::class, 'indexMember'])->name('member.listDoctor');
+
         Route::post('/ajax/member/edit', [ProfileController::class, 'editMember'])->name('member.profile.edit');
         Route::post('/ajax/member/updateProfile', [ProfileController::class, 'updateMember'])->name('member.profile.update');
     });
