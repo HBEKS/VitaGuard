@@ -26,6 +26,7 @@
 
   <!-- Main CSS File -->
   <link href="{{ asset('orbit/css/main.css') }}" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
   <!-- =======================================================
   * Template Name: Orbit
@@ -42,7 +43,7 @@
 
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+      <a href="{{ route('member.dashboard') }}" class="logo d-flex align-items-center me-auto me-xl-0">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.webp" alt=""> -->
         <h1 class="sitename">VitaGuard</h1><span>.</span>
@@ -50,10 +51,10 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="#hero" class="active">Dashboard</a></li>
-          <li><a href="#portfolio">Latest Articles</a></li>
-          <li><a href="#services">Features</a></li>
-          <li><a href="#testimonials">My Appointments</a></li>
+          <li><a href="{{ route('member.dashboard') }}" class="active">Dashboard</a></li>
+          <li><a href="{{ route('member.dashboard') }}#portfolio">Latest Articles</a></li>
+          <li><a href="{{ route('member.dashboard') }}#services">Features</a></li>
+          <li><a href="{{ route('member.dashboard') }}#testimonials">My Appointments</a></li>
           <form id="logout-form"
             action="{{ route('logout') }}"
             method="POST"
@@ -76,6 +77,8 @@
   <main class="main">
 
     @yield('content')
+    @stack('script')
+    @stack('modal')
 
   </main>
 

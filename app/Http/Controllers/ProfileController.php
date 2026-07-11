@@ -24,6 +24,12 @@ class profileController extends Controller
         return view('profile.index', compact('user'));
     }
 
+    public function indexMember()
+    {
+        $user = Auth::user();
+        return view('member.profile', compact('user'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -105,6 +111,73 @@ class profileController extends Controller
 
         $user->save();
 
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    /**
+     * AJAX: Tampilkan Form Edit Profile Member
+     */
+    public function editMember(Request $request)
+    {
+        $user = Auth::user();
+        return view('member.editMember', compact('user'));
+    }
+
+    /**
+     * AJAX: Simpan Perubahan Profile Member
+     */
+    public function updateMember(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = User::findOrFail(Auth::id());
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+
+        // Update password
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        // Update avatar
+        if ($request->hasFile('avatar')) {
+            // Hapus avatar lama jika ada
+            if ($user->avatar && File::exists(public_path('storage/' . $user->avatar))) {
+                File::delete(public_path('storage/' . $user->avatar));
+            }
+
+            $file = $request->file('avatar');
+
+            // Format nama file unik berdasarkan ID user
+            $filename = 'user-' . $user->id . '.' . $file->getClientOriginalExtension();
+
+            // Simpan file ke folder public/storage/img/profiles/
+            $file->move(
+                public_path('storage/img/profiles/'),
+                $filename
+            );
+
+            // Simpan path relatif ke database
+            $user->avatar = 'img/profiles/' . $filename;
+        }
+
+        $user->save();
+
+        // Membersihkan output buffer jika ada whitespace liar
         if (ob_get_length()) {
             ob_clean();
         }

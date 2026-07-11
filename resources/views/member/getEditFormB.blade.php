@@ -10,4 +10,4 @@
     <label>Password <small class="text-muted">(kosongkan jika tidak diubah)</small></label>
     <input type="password" id="edit_password" class="form-control">
 </div>
-<button type="button" class="btn btn-primary" onclick="saveDataUpdate({{ $data->id }})">Update</button>
+<button type="button" class="btn btn-primary" onclick="saveDataUpdate('{{ $data->id }}')">Update</button>

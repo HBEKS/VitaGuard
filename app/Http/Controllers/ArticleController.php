@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+
 class ArticleController extends Controller
 {
     public function index(Request $request)
@@ -36,6 +37,25 @@ class ArticleController extends Controller
         ];
 
         return view('article.index', compact('articles', 'stats', 'status'));
+    }
+
+    public function indexMember(Request $request)
+    {
+        $search = $request->query('search');
+
+        // Member HANYA bisa membaca artikel yang statusnya 'published'
+        $query = Article::with('author')->where('status', 'published');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('content', 'like', '%' . $search . '%');
+            });
+        }
+
+        $articles = $query->orderBy('created_at', 'desc')->paginate(9);
+
+        return view('member.listArticle', compact('articles'));
     }
 
     public function store(Request $request)
@@ -83,6 +103,18 @@ class ArticleController extends Controller
                 'relatedArticles'
             )
         );
+    }
+
+    public function showMember($id)
+    {
+        $article = Article::with('author')->findOrFail($id);
+        $relatedArticles = Article::where('id', '!=', $id)
+            ->where('status', 'published')
+            ->inRandomOrder()
+            ->take(3)
+            ->get();
+
+        return view('member.show', compact('article', 'relatedArticles'));
     }
 
     public function getEditFormB(Request $request)

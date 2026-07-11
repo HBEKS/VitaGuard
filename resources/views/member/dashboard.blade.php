@@ -104,13 +104,16 @@
                             <div class="hover-overlay">
                                 <div class="overlay-actions">
                                     @if($article->image_url)
-                                    <img src="{{ asset('storage/' . $article->image_url) }}"
+                                    {{-- PERBAIKAN: Tag <img> preview glightbox disesuaikan ke tag <a> agar sintaks valid --}}
+                                    <a href="{{ asset('storage/' . $article->image_url) }}"
                                         class="glightbox action-btn"
                                         data-gallery="articles">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     @endif
-                                    <a href="{{ route('article.show', ['article' => $article->id]) }}"
+
+                                    {{-- PERBAIKAN: Route diarahkan ke member.article.show --}}
+                                    <a href="{{ route('member.article.show', $article->id) }}"
                                         class="action-btn">
                                         <i class="bi bi-link-45deg"></i>
                                     </a>
@@ -120,7 +123,10 @@
 
                         <div class="project-info">
                             <h3>
-                                {{ $article->title }}
+                                {{-- PERBAIKAN: Judul artikel juga bisa diklik mengarah ke member.article.show --}}
+                                <a href="{{ route('member.article.show', $article->id) }}" class="text-decoration-none text-dark">
+                                    {{ $article->title }}
+                                </a>
                             </h3>
                             <p>
                                 {{ \Illuminate\Support\Str::limit(strip_tags($article->content),80) }}
@@ -164,53 +170,21 @@
 
     <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row g-4">
-            <!-- Service Card 1 - List Articles-->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
                 <div class="service-card">
                     <div class="icon-wrapper">
                         <i class="bi bi-journal-medical"></i>
                     </div>
                     <h3>Articles</h3>
                     <p>Read our latest health articles and expert insights.</p>
-                    <a href="{{ route('article') }}" class="service-link">
+                    <a href="{{ route('member.article') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-            </div><!-- End Service Card -->
-
-            <!-- Service Card 2 - Categories -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="service-card">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-tags"></i>
-                    </div>
-                    <h3>Categories</h3>
-                    <p>Explore different health categories and find what you're looking for.</p>
-                    <a href="{{ route('categories.index') }}" class="service-link">
-                        <span>Discover More</span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-            </div><!-- End Service Card -->
-
-            <!-- Service Card 3 - Services -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="service-card">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-heart-pulse"></i>
-                    </div>
-                    <h3>Services</h3>
-                    <p>Discover our range of healthcare services designed to meet your needs.</p>
-                    <a href="{{ route('services.index') }}" class="service-link">
-                        <span>Discover More</span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-            </div><!-- End Service Card -->
-
-            <!-- Service Card 4 - Doctors -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            </div>
+            <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
                 <div class="service-card">
                     <div class="icon-wrapper">
                         <i class="bi bi-person-vcard"></i>
@@ -222,10 +196,8 @@
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-            </div><!-- End Service Card -->
-
-            <!-- Service Card 5 - Appointments -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            </div>
+            <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
                 <div class="service-card">
                     <div class="icon-wrapper">
                         <i class="bi bi-calendar2-check"></i>
@@ -237,54 +209,52 @@
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-            </div><!-- End Service Card -->
-
-            <!-- Service Card 6 - Profile -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            </div>
+            <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
                 <div class="service-card">
                     <div class="icon-wrapper">
                         <i class="bi bi-person-circle"></i>
                     </div>
                     <h3>Profile</h3>
                     <p>Manage your personal information and update your profile details.</p>
-                    <a href="{{ route('profile') }}" class="service-link">
+                    <a href="{{ route('member.profile') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-            </div><!-- End Service Card -->
-
+            </div>
         </div>
+    </div>
 
-        <!-- Stats Row -->
-        <div class="stats-row" data-aos="fade-up" data-aos-delay="400">
-            <div class="row g-4 justify-content-center">
-                <div class="col-6 col-md-3">
-                    <div class="stat-item">
-                        <span class="stat-number">250+</span>
-                        <span class="stat-label">Projects Delivered</span>
-                    </div>
+    <!-- Stats Row -->
+    <div class="stats-row" data-aos="fade-up" data-aos-delay="400">
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">250+</span>
+                    <span class="stat-label">Projects Delivered</span>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-item">
-                        <span class="stat-number">98%</span>
-                        <span class="stat-label">Client Satisfaction</span>
-                    </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Client Satisfaction</span>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-item">
-                        <span class="stat-number">15+</span>
-                        <span class="stat-label">Years Experience</span>
-                    </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">15+</span>
+                    <span class="stat-label">Years Experience</span>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-item">
-                        <span class="stat-number">40+</span>
-                        <span class="stat-label">Team Experts</span>
-                    </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">40+</span>
+                    <span class="stat-label">Team Experts</span>
                 </div>
             </div>
         </div>
+    </div>
 
     </div>
 

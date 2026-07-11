@@ -102,6 +102,14 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::get('/member', [MemberController::class, 'dashboard'])
             ->name('member.dashboard');
         Route::get('/booking', [AppointmentController::class, 'create'])->name('booking.index');
+
+        Route::get('/member/article', [ArticleController::class, 'indexMember'])->name('member.article');
+        Route::get('/member/article/{id}', [ArticleController::class, 'showMember'])->name('member.article.show');
+
+        Route::get('/member/profile', [ProfileController::class, 'indexMember'])->name('member.profile');
+
+        Route::post('/ajax/member/edit', [ProfileController::class, 'editMember'])->name('member.profile.edit');
+        Route::post('/ajax/member/updateProfile', [ProfileController::class, 'updateMember'])->name('member.profile.update');
     });
     #endregion
 
@@ -152,12 +160,16 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::get('/forgotPassword', function () {
+    return view('auth.forgotPassword');
+})->name('password.request');
+
+// Proses Simpan Password Baru
+Route::post('/forgotPassword/reset', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetDirect'])
+    ->name('password.update.direct');
+
 Route::get('dashboard/article/{article}', [ArticleController::class, 'show'])
     ->name('article.show');
-
-Route::get('/tes', function () {
-    dd('TES BERHASIL');
-});
 
 
 

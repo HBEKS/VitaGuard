@@ -1,6 +1,6 @@
-@extends('layouts.adminlte4')
+@extends('layouts.orbit')
 
-@section('title',$article->title)
+@section('title', $article->title)
 
 @push('styles')
 <style>
@@ -49,15 +49,15 @@
 </style>
 @endpush
 
-
 @section('content')
 <section class="section py-5">
     <div class="container">
-        <a href="{{ route('article') }}" {{-- Back to dashboard nya member harus kembali ke bagian member bukan di admin atau dokter --}}
-            {{-- back to dashboard dokter hanya boleh kembali ke bagiannya dokter bukan ke member dan kalo admin bisa kembali ke /dashboard/article --}}
-            class="btn btn-outline-primary mb-4">
+        <a href="{{ route('member.article') }}" class="btn btn-outline-primary mb-4">
             <i class="bi bi-arrow-left"></i>
             Back to List Articles
+        </a>
+        <a href="{{ route('member.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-house me-1"></i> Back to Home
         </a>
 
         <div class="row justify-content-center">
@@ -74,7 +74,7 @@
 
                     <span class="ms-3">
                         <i class="bi bi-person"></i>
-                        {{ $article->author->name }}
+                        {{ $article->author->name ?? 'Penulis' }}
                     </span>
                 </div>
 
@@ -86,7 +86,8 @@
                 <img
                     src="{{ asset('storage/'.$article->image_url) }}"
                     class="img-fluid rounded-4 shadow mb-5 w-100"
-                    style="max-height:500px;object-fit:cover;">
+                    style="max-height:500px;object-fit:cover;"
+                    onerror="this.onerror=null; this.src='https://via.placeholder.com/800x500?text=No+Image';">
                 @endif
 
                 <div class="article-content">
@@ -113,21 +114,22 @@
                         @if($related->image_url)
                         <img
                             src="{{ asset('storage/'.$related->image_url) }}"
-                            class="card-img-top article-image">
+                            class="card-img-top article-image"
+                            onerror="this.onerror=null; this.src='https://via.placeholder.com/400x225?text=No+Image';">
                         @endif
                     </div>
 
-                    <div class="project-info">
+                    <div class="project-info mt-3">
                         <h4>
                             {{ $related->title }}
                         </h4>
 
                         <p>
-                            {{ Str::limit(strip_tags($related->content),80) }}
+                            {{ Str::limit(strip_tags($related->content), 80) }}
                         </p>
 
                         <a
-                            href="{{ route('article.show',$related->id) }}"
+                            href="{{ route('member.article.show', $related->id) }}"
                             class="btn btn-outline-primary">
                             Read More
                         </a>
