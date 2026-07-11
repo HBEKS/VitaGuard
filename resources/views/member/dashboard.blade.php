@@ -172,7 +172,7 @@
                     </div>
                     <h3>Articles</h3>
                     <p>Read our latest health articles and expert insights.</p>
-                    <a href="{{ route('articleList') }}" class="service-link">
+                    <a href="{{ route('article') }}" class="service-link">
                         <span>Discover More</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
