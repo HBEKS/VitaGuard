@@ -224,21 +224,23 @@
 @push('script')
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Data dari Laravel Blade
-        const pendingCount = {{ (int)$pending }};
-        const confirmedCount = {{ (int)$confirmed }};
-        const completedCount = {{ (int)$completed }};
-        const cancelledCount = {{ (int)$cancelled }};
+        // 1. Data Integer (Atasi error Linter dengan quotes + parseInt)
+        const pendingCount = parseInt("{{ $pending }}") || 0;
+        const confirmedCount = parseInt("{{ $confirmed }}") || 0;
+        const completedCount = parseInt("{{ $completed }}") || 0;
+        const cancelledCount = parseInt("{{ $cancelled }}") || 0;
 
-        const monthlyData = {!! json_encode(collect($monthlyChart)->pluck('count')) !!};
-        const monthlyMonths = {!! json_encode(collect($monthlyChart)->pluck('month')) !!};
+        // 2. Data Array / JSON
+        const monthlyData = JSON.parse('{!! json_encode(collect($monthlyChart)->pluck("count")) !!}');
+        const monthlyMonths = JSON.parse('{!! json_encode(collect($monthlyChart)->pluck("month")) !!}');
 
-        const serviceTotals = {!! json_encode($serviceChart->pluck('total')) !!};
-        const serviceNames = {!! json_encode($serviceChart->pluck('service.service_name')) !!};
+        const serviceTotals = JSON.parse('{!! json_encode($serviceChart->pluck("total")) !!}');
+        const serviceNames = JSON.parse('{!! json_encode($serviceChart->pluck("service.service_name")) !!}');
 
-        // 1. Status Chart
+        // --- CHART 1: APPOINTMENT STATUS ---
         const statusChartEl = document.querySelector("#statusChart");
         if (statusChartEl) {
+            statusChartEl.innerHTML = ''; // Bersihkan container dari render ganda
             new ApexCharts(statusChartEl, {
                 chart: {
                     type: 'pie',
@@ -253,9 +255,10 @@
             }).render();
         }
 
-        // 2. Monthly Chart
+        // --- CHART 2: MONTHLY APPOINTMENTS ---
         const monthlyChartEl = document.querySelector("#monthlyChart");
         if (monthlyChartEl) {
+            monthlyChartEl.innerHTML = '';
             new ApexCharts(monthlyChartEl, {
                 chart: {
                     type: 'line',
@@ -271,9 +274,10 @@
             }).render();
         }
 
-        // 3. Service Chart
+        // --- CHART 3: SERVICE DISTRIBUTION ---
         const serviceChartEl = document.querySelector("#serviceChart");
         if (serviceChartEl) {
+            serviceChartEl.innerHTML = '';
             new ApexCharts(serviceChartEl, {
                 chart: {
                     type: 'pie',
@@ -289,4 +293,4 @@
         }
     });
 </script>
-@push('script')
+@endpush

@@ -160,15 +160,15 @@
 @push('script')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const pendingCount = {{ (int)$pending }};
-    const confirmedCount = {{ (int)$confirmed }};
-    const completedCount = {{ (int)$completed }};
-    const cancelledCount = {{ (int)$cancelled }};
+    // Gunakan quotes "" agar VS Code linter membacanya sebagai string biasa
+    const pendingCount = parseInt("{{ $pending }}") || 0;
+    const confirmedCount = parseInt("{{ $confirmed }}") || 0;
+    const completedCount = parseInt("{{ $completed }}") || 0;
+    const cancelledCount = parseInt("{{ $cancelled }}") || 0;
 
     const statusChartEl = document.querySelector("#statusChart");
 
     if (statusChartEl) {
-        // Bersihkan kontainer jika sudah ada isi sebelumnya
         statusChartEl.innerHTML = '';
 
         new ApexCharts(statusChartEl, {
