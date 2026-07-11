@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="card-body">
-                    <div id="statusChart"></div>
+                    <div id="statusChart" style="min-height: 350px;"></div>
                 </div>
             </div>
 
@@ -159,33 +159,40 @@
 
 @push('script')
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const pendingCount = {{ (int)$pending }};
+    const confirmedCount = {{ (int)$confirmed }};
+    const completedCount = {{ (int)$completed }};
+    const cancelledCount = {{ (int)$cancelled }};
 
-new ApexCharts(document.querySelector("#statusChart"),{
+    const statusChartEl = document.querySelector("#statusChart");
 
-    chart:{
-        type:'pie',
-        height:350
-    },
+    if (statusChartEl) {
+        // Bersihkan kontainer jika sudah ada isi sebelumnya
+        statusChartEl.innerHTML = '';
 
-    series:[
-        {{ $pending }},
-        {{ $confirmed }},
-        {{ $completed }},
-        {{ $cancelled }}
-    ],
-
-    labels:[
-        "Pending",
-        "Confirmed",
-        "Completed",
-        "Cancelled"
-    ],
-
-    legend:{
-        position:'bottom'
+        new ApexCharts(statusChartEl, {
+            chart: {
+                type: 'pie',
+                height: 350
+            },
+            series: [
+                pendingCount,
+                confirmedCount,
+                completedCount,
+                cancelledCount
+            ],
+            labels: [
+                "Pending",
+                "Confirmed",
+                "Completed",
+                "Cancelled"
+            ],
+            legend: {
+                position: 'bottom'
+            }
+        }).render();
     }
-
-}).render();
-
+});
 </script>
 @endpush

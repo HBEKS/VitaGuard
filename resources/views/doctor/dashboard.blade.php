@@ -7,7 +7,6 @@
 
 <div class="container-fluid">
 
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold">
@@ -30,17 +29,16 @@
         </div>
     </div>
 
-    <!-- Chart -->
     <div class="row mb-4">
 
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
-                    <h5>Appointment Status</h5>
+                    <h5 class="mb-0">Appointment Status</h5>
                 </div>
 
                 <div class="card-body">
-                    <div id="statusChart"></div>
+                    <div id="statusChart" style="min-height: 300px;"></div>
                 </div>
             </div>
         </div>
@@ -48,11 +46,11 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
-                    <h5>Appointments per Month</h5>
+                    <h5 class="mb-0">Appointments per Month</h5>
                 </div>
 
                 <div class="card-body">
-                    <div id="monthlyChart"></div>
+                    <div id="monthlyChart" style="min-height: 300px;"></div>
                 </div>
             </div>
         </div>
@@ -60,19 +58,19 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
-                    <h5>Service Distribution</h5>
+                    <h5 class="mb-0">Service Distribution</h5>
                 </div>
 
                 <div class="card-body">
-                    <div id="serviceChart"></div>
+                    <div id="serviceChart" style="min-height: 300px;"></div>
                 </div>
             </div>
         </div>
 
     </div>
-    <!-- Statistik -->
+
     <div class="row">
-        <h5>Appointment Statistics </h5>
+        <h5 class="mb-3">Appointment Statistics</h5>
         <div class="col-lg-3">
             <div class="small-box bg-warning">
                 <div class="inner">
@@ -127,7 +125,6 @@
     </div>
 
     <div class="row">
-        <!-- Jadwal Hari Ini -->
         <div class="col-lg-7">
             <div class="card">
                 <div class="card-header">
@@ -156,7 +153,7 @@
                         </div>
                     </div>
                     @empty
-                    <div class="alert alert-success">
+                    <div class="alert alert-success mb-0">
                         No appointments today.
                     </div>
                     @endforelse
@@ -164,7 +161,6 @@
             </div>
         </div>
 
-        <!-- Quick Menu -->
         <div class="col-lg-5">
             <div class="card">
                 <div class="card-header">
@@ -176,13 +172,13 @@
                 <div class="card-body d-grid gap-3">
                     <a href="{{ route('booking') }}"
                         class="btn btn-primary">
-                        <i class="bi bi-calendar2-week"></i>
+                        <i class="bi bi-calendar2-week me-1"></i>
                         My Appointments
                     </a>
 
                     <a href="{{ route('profile') }}"
                         class="btn btn-success">
-                        <i class="bi bi-person-circle"></i>
+                        <i class="bi bi-person-circle me-1"></i>
                         My Profile
                     </a>
                 </div>
@@ -190,7 +186,6 @@
         </div>
     </div>
 
-    <!-- Latest Appointments -->
     <div class="card mt-4">
         <div class="card-header">
             <h4>
@@ -228,73 +223,70 @@
 
 @push('script')
 <script>
-    new ApexCharts(document.querySelector("#statusChart"), {
+    document.addEventListener("DOMContentLoaded", function () {
+        // Data dari Laravel Blade
+        const pendingCount = {{ (int)$pending }};
+        const confirmedCount = {{ (int)$confirmed }};
+        const completedCount = {{ (int)$completed }};
+        const cancelledCount = {{ (int)$cancelled }};
 
-        chart: {
-            type: 'pie',
-            height: 300
-        },
+        const monthlyData = {!! json_encode(collect($monthlyChart)->pluck('count')) !!};
+        const monthlyMonths = {!! json_encode(collect($monthlyChart)->pluck('month')) !!};
 
-        series: [
-            {{ $pending }},
-            {{ $confirmed }},
-            {{ $completed }},
-            {{ $cancelled }}
-        ],
+        const serviceTotals = {!! json_encode($serviceChart->pluck('total')) !!};
+        const serviceNames = {!! json_encode($serviceChart->pluck('service.service_name')) !!};
 
-        labels: [
-            'Pending',
-            'Confirmed',
-            'Completed',
-            'Cancelled'
-        ],
-
-        legend: {
-            position: 'bottom',
-            horizontalAlign: 'center'
+        // 1. Status Chart
+        const statusChartEl = document.querySelector("#statusChart");
+        if (statusChartEl) {
+            new ApexCharts(statusChartEl, {
+                chart: {
+                    type: 'pie',
+                    height: 300
+                },
+                series: [pendingCount, confirmedCount, completedCount, cancelledCount],
+                labels: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center'
+                }
+            }).render();
         }
 
-    }).render();
-
-
-
-    new ApexCharts(document.querySelector("#monthlyChart"), {
-
-        chart: {
-            type: 'line',
-            height: 300
-        },
-
-        series: [{
-            name: 'Appointments',
-            data: @json(collect($monthlyChart) -> pluck('count'))
-        }],
-
-        xaxis: {
-            categories: @json(collect($monthlyChart) -> pluck('month'))
+        // 2. Monthly Chart
+        const monthlyChartEl = document.querySelector("#monthlyChart");
+        if (monthlyChartEl) {
+            new ApexCharts(monthlyChartEl, {
+                chart: {
+                    type: 'line',
+                    height: 300
+                },
+                series: [{
+                    name: 'Appointments',
+                    data: monthlyData
+                }],
+                xaxis: {
+                    categories: monthlyMonths
+                }
+            }).render();
         }
 
-    }).render();
-
-
-
-    new ApexCharts(document.querySelector("#serviceChart"), {
-
-        chart: {
-            type: 'pie',
-            height: 300
-        },
-
-        series: @json($serviceChart -> pluck('total')),
-
-        labels: @json($serviceChart -> pluck('service.service_name')),
-
-        legend: {
-            position: 'bottom',
-            horizontalAlign: 'center'
-        },
-
-
-    }).render();
+        // 3. Service Chart
+        const serviceChartEl = document.querySelector("#serviceChart");
+        if (serviceChartEl) {
+            new ApexCharts(serviceChartEl, {
+                chart: {
+                    type: 'pie',
+                    height: 300
+                },
+                series: serviceTotals,
+                labels: serviceNames,
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center'
+                }
+            }).render();
+        }
+    });
 </script>
-@endpush
+@push('script')
