@@ -4,6 +4,11 @@
 
 <section class="section py-5">
     <div class="container">
+        <div class="mb-3">
+            <a href="{{ route('member.dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                <i class="bi bi-arrow-left"></i> Back to Home
+            </a>
+        </div>
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Chat</h4>

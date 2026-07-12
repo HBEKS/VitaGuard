@@ -226,6 +226,7 @@
         </div>
     </div>
 
+    {{--
     <!-- Stats Row -->
     <div class="stats-row" data-aos="fade-up" data-aos-delay="400">
         <div class="row g-4 justify-content-center">
@@ -254,7 +255,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>--}}
 
     </div>
 
@@ -404,7 +405,9 @@
                                         class="author-img">
                                     <div class="author-details">
                                         <h5>
+                                            @unless(Illuminate\Support\Str::startsWith(strtolower($appointment->doctor->name), 'dr.'))
                                             Dr.
+                                            @endunless
                                             {{ $appointment->doctor->name }}
                                         </h5>
                                         <span>

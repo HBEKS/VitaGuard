@@ -28,6 +28,9 @@
                     {{ $appointment->service->service_name }}
                     <br>
 
+                    <strong>Status :</strong>
+                    {{ ucfirst($appointment->status) }}
+
                     <strong>Complaint :</strong>
                     {{ $appointment->member_complaint ?? '-' }}
                 </div>
