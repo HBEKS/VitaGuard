@@ -30,7 +30,7 @@
         </div>
 
         <div class="col-lg-4 col-md-6 mb-3">
-            <div class="small-box bg-success">
+            <div class="small-box bg-secondary">
                 <div class="inner">
                     <h3>{{ $memberCount }}</h3>
                     <p>Total Members</p>
@@ -78,7 +78,7 @@
         </div>
 
         <div class="col-lg-4 col-md-6 mb-3">
-            <div class="small-box bg-secondary">
+            <div class="small-box bg-success">
                 <div class="inner">
                     <h3>{{ $completedConsultation }}</h3>
                     <p>Completed Consultation</p>
@@ -183,6 +183,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Confirmed",
                 "Completed",
                 "Cancelled"
+            ],
+            colors: [
+                '#0d6efd',
+                '#ffc107',
+                '#28a745',
+                '#dc3545'
             ],
             legend: {
                 position: 'bottom'
