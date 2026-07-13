@@ -428,7 +428,7 @@
                                     <p>
                                         You don't have any active appointments.
                                     </p>
-                                    <a href="{{ route('booking.index') }}"
+                                    <a href="{{ route('member.listDoctor') }}"
                                         class="btn btn-primary">
                                         Book Now
                                     </a>
